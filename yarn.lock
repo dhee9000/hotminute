@@ -5424,6 +5424,12 @@ react-native-tab-view@^2.11.0:
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.13.0.tgz#23037aa43b0f8f682ddc20415a4baaaf6f82ae8f"
   integrity sha512-AeYbp/u91+D/C9+PmVEPBmFb3ixv8IkLMC3Sc5MajJ/fg0Zl3Of+BcEknBvTnKoe7Fj2y8+Qf9zorBbh5xzh4A==
 
+"react-native-twilio-video-webrtc@https://github.com/blackuy/react-native-twilio-video-webrtc":
+  version "1.0.2"
+  resolved "https://github.com/blackuy/react-native-twilio-video-webrtc#76ad1da76c449ec5d048f2b14d4238b7ecc831ea"
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-unimodules@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.7.0.tgz#ce4e48898c3ef0b986b87e7421303abf8afc862c"
