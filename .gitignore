@@ -12,3 +12,8 @@ web-report/
 
 # macOS
 .DS_Store
+
+# Build Artifacts
+**/build/*
+**/generated/*
+**/.gradle/*
