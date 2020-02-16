@@ -5,10 +5,10 @@ import MainNavigator from './MainNavigator';
 
 const RootNavigator  = createSwitchNavigator(
     {
+        Main: MainNavigator,
         Start,
         Login,
         Signup,
-        Main: MainNavigator
     },
     {
 

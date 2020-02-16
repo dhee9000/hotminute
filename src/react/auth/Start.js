@@ -1,16 +1,18 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 
 import { Text } from '../common/components';
 
 import { connect } from 'react-redux';
 import { ActionTypes } from '../../redux/';
+import { Colors, Fonts } from '../../config';
 
 class Start extends React.Component{
     render(){
         return(
-            <View>
-                
+            <View style={{flex: 1, backgroundColor: Colors.background, padding: 16.0, justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{fontFamily: Fonts.heading, fontSize: 32.0}}>Hot Minute</Text>
+                <ActivityIndicator size={'large'} />
             </View>
         )
     }

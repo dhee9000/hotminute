@@ -6,8 +6,8 @@ import { Chat } from '../chat';
 
 const MainNavigator = createMaterialTopTabNavigator(
     {
-        Profile,
         Matching,
+        Profile,
         Chat,
     },
     {
