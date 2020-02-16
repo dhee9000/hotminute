@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "350931211842",
+    "firebase_url": "https://hot-minute.firebaseio.com",
+    "project_id": "hot-minute",
+    "storage_bucket": "hot-minute.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350931211842:android:d637c97f3b88e086247fdb",
+        "android_client_info": {
+          "package_name": "com.hotminute"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350931211842-lh0k67a63qbgtt1bu2cus2du0hvkf4jh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hotminute",
+            "certificate_hash": "d724d84121a6576bf4b827002ebf5435eef9e346"
+          }
+        },
+        {
+          "client_id": "350931211842-b7pcgku8n0unbmpk9k7cnge5378rr80e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQJYUMrICnXjNZI-_TyfF9v5kWvKoYUEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350931211842-b7pcgku8n0unbmpk9k7cnge5378rr80e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

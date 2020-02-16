@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>350931211842-tpds3kru0narnmjape75efa154ss3b0i.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.350931211842-tpds3kru0narnmjape75efa154ss3b0i</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>350931211842-lh0k67a63qbgtt1bu2cus2du0hvkf4jh.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB0io0DmR58rBldcAzQ5wAxdCLmVhzbHus</string>
+	<key>GCM_SENDER_ID</key>
+	<string>350931211842</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.hotminute</string>
+	<key>PROJECT_ID</key>
+	<string>hot-minute</string>
+	<key>STORAGE_BUCKET</key>
+	<string>hot-minute.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:350931211842:ios:2c30298ea4bb9a16247fdb</string>
+	<key>DATABASE_URL</key>
+	<string>https://hot-minute.firebaseio.com</string>
+</dict>
+</plist>
