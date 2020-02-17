@@ -5357,6 +5357,13 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-native-agora@^2.9.1-alpha.2:
+  version "2.9.1-alpha.2"
+  resolved "https://registry.yarnpkg.com/react-native-agora/-/react-native-agora-2.9.1-alpha.2.tgz#1150694df758328110adf78fc4eb76455fc450c4"
+  integrity sha512-T98WaWETKa4iB1ATkQqQIqYMs9R8gXEUYaN0mlcdZk4crF025+pGByZ3eF6I0wc3+fSJY1x8fAJxFamauVJ3+w==
+  dependencies:
+    tslib "^1.9.3"
+
 react-native-elements@^1.2.7:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/react-native-elements/-/react-native-elements-1.2.7.tgz#1eca2db715c41722aeb67aea62bd2a4621adb134"
@@ -5431,12 +5438,6 @@ react-native-tab-view@^2.11.0:
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.13.0.tgz#23037aa43b0f8f682ddc20415a4baaaf6f82ae8f"
   integrity sha512-AeYbp/u91+D/C9+PmVEPBmFb3ixv8IkLMC3Sc5MajJ/fg0Zl3Of+BcEknBvTnKoe7Fj2y8+Qf9zorBbh5xzh4A==
-
-"react-native-twilio-video-webrtc@https://github.com/blackuy/react-native-twilio-video-webrtc":
-  version "1.0.2"
-  resolved "https://github.com/blackuy/react-native-twilio-video-webrtc#76ad1da76c449ec5d048f2b14d4238b7ecc831ea"
-  dependencies:
-    prop-types "^15.5.10"
 
 react-native-unimodules@~0.7.0:
   version "0.7.0"
@@ -6481,6 +6482,11 @@ tr46@^1.0.1:
   integrity sha1-qLE/1r/SSJUZZ0zN5VujaTtwbQk=
   dependencies:
     punycode "^2.1.0"
+
+tslib@^1.9.3:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
+  integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
 tunnel-agent@^0.6.0:
   version "0.6.0"
