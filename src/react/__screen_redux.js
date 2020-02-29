@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 
 import { Text } from '../common/components';
+import { Fonts, Colors } from '../../config';
 
 import { connect } from 'react-redux';
 import { ActionTypes } from '../../redux/';
