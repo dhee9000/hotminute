@@ -43,4 +43,8 @@ target 'HotMinute' do
 
   # Automatically detect installed unimodules
   use_unimodules!
+  pod 'react-native-agora', :path => '../node_modules/react-native-agora'
+
+  pod 'RNDateTimePicker', :path => '../node_modules/@react-native-community/datetimepicker'
+
 end
