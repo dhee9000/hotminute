@@ -9,10 +9,18 @@ import { createAppContainer } from 'react-navigation';
 import { Provider } from 'react-redux';
 import { createReduxStore } from './src/redux';
 
+import { ThemeProvider } from 'react-native-elements';
+
 import * as Font from 'expo-font';
 
 const appState = createReduxStore();
 const AppContainer = createAppContainer(RootNavigator);
+
+const theme = {
+  colors: {
+    primary: Colors.background,
+  }
+}
 
 export default function App() {
 
@@ -34,7 +42,9 @@ export default function App() {
             <StatusBar barStyle={'light-content'} translucent />
             <SafeAreaView style={{flex: 1, backgroundColor: Colors.primary, paddingTop: StatusBar.currentHeight}}>
               <Provider store={appState} style={{flex: 1}}>
-                <AppContainer style={{flex: 1}} />
+                <ThemeProvider theme={theme}>
+                  <AppContainer style={{flex: 1}} />
+                </ThemeProvider>
               </Provider>
             </SafeAreaView>
         </View>
