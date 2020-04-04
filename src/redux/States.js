@@ -1,0 +1,6 @@
+// Auth States
+export const INITIALIZING = 'INITIALIZING';
+export const SIGNUP_REQUESTED = 'SIGNUP_REQUESTED'
+export const CODE_SENT = 'CODE_SENT'
+export const AUTHENTICATED = 'AUTHENTICATED'
+

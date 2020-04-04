@@ -5,6 +5,7 @@ import { VerifyPhoneNumber } from '../onboarding';
 import { GetPermissions } from '../onboarding';
 import { CreateProfileBio } from '../onboarding';
 import { CreateProfileMedia } from '../onboarding';
+import { SelectPreferences } from '../onboarding';
 
 const OnboardingNavigator = createSwitchNavigator(
     {
@@ -12,7 +13,8 @@ const OnboardingNavigator = createSwitchNavigator(
         VerifyPhoneNumber,
         GetPermissions,
         CreateProfileBio,
-        CreateProfileMedia
+        CreateProfileMedia,
+        SelectPreferences,
     },
     {
 

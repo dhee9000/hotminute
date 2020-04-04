@@ -4,7 +4,8 @@ import { View, ActivityIndicator } from 'react-native';
 import { Text } from '../common/components';
 
 import { connect } from 'react-redux';
-import { ActionTypes } from '../../redux/';
+import * as ActionTypes from '../../redux/ActionTypes';
+import * as States from '../../redux/ActionTypes';
 import { Colors, Fonts } from '../../config';
 
 class Start extends React.Component{

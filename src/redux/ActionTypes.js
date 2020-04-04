@@ -6,4 +6,8 @@ const action = actionName => (
     }
 );
 
-export const GET_NEARBY_ALL = action('GET_NEARBY_ALL');
+// Auth Actions
+export const AUTHENTICATE_USER = 'AUTHENTICATE_USER';
+export const CREATE_ACCOUNT = action('CREATE_ACCOUNT');
+export const VERIFICATION_CODE_SENT = 'VERIFICATION_CODE_SENT'
+export const CODE_VERIFICATION = action('CODE_VERIFICATION');

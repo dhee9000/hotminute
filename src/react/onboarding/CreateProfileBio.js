@@ -4,7 +4,8 @@ import { View } from 'react-native';
 import { Text } from '../common/components';
 
 import { connect } from 'react-redux';
-import { ActionTypes } from '../../redux/';
+import * as ActionTypes from '../../redux/ActionTypes';
+import * as States from '../../redux/ActionTypes';
 
 import { Fonts, Colors } from '../../config';
 
@@ -30,34 +31,34 @@ class CreateProfileBio extends React.Component{
 
     render(){
         return(
-            <View style={{flex: 1, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0}}>
+            <View style={{flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0}}>
                 <View style={{flex: 1, paddingTop: 16.0, width: '100%'}}>
-                    <Text style={{fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.background}}>Who Are You?</Text>
-                    <Text style={{color: Colors.background}}>Let's get to know you.</Text>
+                    <Text style={{fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading}}>Who Are You?</Text>
+                    <Text style={{color: Colors.text}}>Let's get to know you.</Text>
                 </View>
                 <View style={{flex: 3, justifyContent: 'center', width: '100%'}}>
                     <Input 
                         containerStyle={{marginBottom: 32.0}}
-                        inputStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.background}}
+                        inputStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text}}
                         inputContainerStyle={{borderColor: Colors.accent}}
                         label={'What do people call you?'}
-                        labelStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.background}}
+                        labelStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text}}
                         keyboardType={'number-pad'}
                         placeholder={'First Name'}
                         placeholderTextColor={Colors.textLightGray}
                     />
                     <Input
                         containerStyle={{marginBottom: 32.0}}
-                        inputStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.background}}
+                        inputStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text}}
                         inputContainerStyle={{borderColor: Colors.accent}}
                         label={'Bond, James Bond.'}
-                        labelStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.background}}
+                        labelStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text}}
                         keyboardType={'number-pad'}
                         placeholder={'Last Name'}
                         placeholderTextColor={Colors.textLightGray}
                     />
                     <View style={{marginHorizontal: 8.0, marginBottom: 32.0}}>
-                        <Text style={{color: Colors.background}}>Are you old enough to be dating?</Text>
+                        <Text style={{color: Colors.text}}>Are you old enough to be dating?</Text>
                         <Text style={{color: Colors.accent}} onPress={this.onChooseDateTapped}>
                             {this.state.date ? dateToNiceString(this.state.date) : "Choose Date of Birth"}
                         </Text>
@@ -71,10 +72,10 @@ class CreateProfileBio extends React.Component{
                     />}
                     <Input
                         containerStyle={{marginBottom: 32.0}}
-                        inputStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.background}}
+                        inputStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text}}
                         inputContainerStyle={{borderColor: Colors.accent}}
                         label={'What do you do?'}
-                        labelStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.background}}
+                        labelStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text}}
                         keyboardType={'number-pad'}
                         placeholder={'ex. Student, Youtuber, Model'}
                         placeholderTextColor={Colors.textLightGray}
