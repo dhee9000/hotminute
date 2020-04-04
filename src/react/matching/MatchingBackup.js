@@ -140,29 +140,48 @@ class Matching extends React.Component {
 					source={{ uri: 'https://scontent-dfw5-1.cdninstagram.com/v/t51.2885-15/sh0.08/e35/s750x750/83920414_144946376985449_3639079263977706456_n.jpg?_nc_ht=scontent-dfw5-1.cdninstagram.com&_nc_cat=105&_nc_ohc=cyMRXpmVVScAX_HRXoz&oh=485d26bc9220356c425a44cdd6d01a10&oe=5EAF5044' }}
 				>
 					<View style={{ flex: 1, padding: 16.0 }}>
-						<View style={{ flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16.0 }}>
+						{/* <LinearGradient
+					colors={[Colors.primaryDark, Colors.primary]}
+					style={{ justifyContent: 'center', alignItems: 'center', borderRadius: 24.0, elevation:0.0, padding: 16.0, margin: 8.0 }}>
+				</LinearGradient> */}
+						<View style={{flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16.0}}>
 							<Icon name={'chat'} color={Colors.primary} size={36} />
-							<Icon name={'person'} color={Colors.primary} size={36} />
+							<Icon name={'person'} color={Colors.primary} size={36}/>
 						</View>
 						<View style={{ alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
 							<Switch style={{ marginBottom: 16.0 }} />
 							<Text style={{ color: Colors.background }}>Auto-Connect</Text>
 						</View>
-						<View style={{ flex: 2, alignItems: 'center', justifyContent: 'flex-start', }}>
-							<View>
-								<LottieView
-									ref={animation => {
-										this.animation = animation;
-									}}
-									style={{
-										width,
-										height: 400,
-									}}
-									source={require('../../..//assets/animations/waveform.json')}
-									autoPlay
-									loop
+						<View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-evenly', }}>
+							{/* <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch' }}>
+							<Animated.View style={{
+								backgroundColor: Colors.white,
+								alignItems: 'center', justifyContent: 'center',
+								borderRadius: 24.0, borderColor: Colors.text,
+								elevation: 4.0, overflow: 'hidden',
+								transform: [{ translateX: this.decisionAnimation.interpolate({ inputRange: [0.4, 1], outputRange: [0, 500], extrapolate: 'clamp' }) }, { scale: this.decisionAnimation.interpolate({ inputRange: [0, 0.6], outputRange: [1, 0.5], extrapolate: 'clamp' }) }]
+							}}>
+								<Animated.Image
+									style={{ height: 360, width: 360, }}
+									blurRadius={18}
+									source={{ uri: 'https://scontent-dfw5-1.cdninstagram.com/v/t51.2885-15/sh0.08/e35/s750x750/83920414_144946376985449_3639079263977706456_n.jpg?_nc_ht=scontent-dfw5-1.cdninstagram.com&_nc_cat=105&_nc_ohc=cyMRXpmVVScAX_HRXoz&oh=485d26bc9220356c425a44cdd6d01a10&oe=5EAF5044' }}
 								/>
+								{/* <Animated.Text style={{
+								fontFamily: Fonts.heading,
+								color: this.test.interpolate({ inputRange: [0, 1], outputRange: [Colors.text, '#fff9fe',] }),
+								fontSize: 42.0,
+								position: 'absolute', bottom: 0,
+							}} numberOfLines={1}>Ricky Matam</Animated.Text> */}
+							{/*</Animated.View>
+						</View> */}
+							<View>
+
 							</View>
+							{/* <LinearGradient
+						colors={[Colors.primaryDark, Colors.primary]}
+						style={{ justifyContent: 'center', alignItems: 'center', borderRadius: 24.0, paddingVertical: 8, paddingHorizontal: 64, elevation: 4.0, margin: 8.0 }}>
+						<Text style={{ fontFamily: Fonts.heading, color: Colors.textWhite, fontSize: 32.0, }}>Hot Minute</Text>
+					</LinearGradient> */}
 							<View style={{ width: '100%', paddingVertical: 16.0, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', position: 'absolute', bottom: 0 }}>
 								<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>
 									<Cross height={TOGGLE_SIZE} width={TOGGLE_SIZE} />
@@ -180,6 +199,7 @@ class Matching extends React.Component {
 										autoPlay
 										loop
 									/>
+									{/* <View style={{ height: TOGGLE_SIZE, width: TOGGLE_SIZE, justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>+30</Text></View> */}
 								</View>
 								<TouchableOpacity onPress={this.heartPressed}>
 									<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>

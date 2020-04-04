@@ -6,8 +6,8 @@ import OnboardingNavigator from './OnboardingNavigator';
 
 const RootNavigator  = createSwitchNavigator(
     {
-        Onboarding: OnboardingNavigator,
         Main: MainNavigator,
+        Onboarding: OnboardingNavigator,
         Start,
         Login,
     },
