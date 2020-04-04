@@ -2,6 +2,7 @@
   "scripts": {
     "start": "react-native start",
     "android": "react-native run-android",
+    "reverse": "adb reverse tcp:8081 tcp:8081",
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "postinstall": "jetify"
@@ -9,6 +10,9 @@
   "dependencies": {
     "@react-native-community/datetimepicker": "^2.2.2",
     "expo": "~36.0.0",
+    "expo-linear-gradient": "^8.1.0",
+    "firebase": "^7.10.0",
+    "lottie-react-native": "^3.3.2",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "~0.61.4",
@@ -19,6 +23,8 @@
     "react-native-gesture-handler": "~1.5.0",
     "react-native-reanimated": "~1.4.0",
     "react-native-screens": "^2.0.0-beta.4",
+    "react-native-svg": "^12.0.3",
+    "react-native-svg-transformer": "^0.14.3",
     "react-native-unimodules": "~0.7.0",
     "react-native-web": "~0.11.7",
     "react-navigation": "^4.1.1",

@@ -18,7 +18,7 @@ const AppContainer = createAppContainer(RootNavigator);
 
 const theme = {
   colors: {
-    primary: Colors.background,
+    primary: Colors.primary,
   }
 }
 
@@ -42,10 +42,15 @@ export default function App() {
             <StatusBar barStyle={'light-content'} translucent />
             <SafeAreaView style={{flex: 1, backgroundColor: Colors.primary, paddingTop: StatusBar.currentHeight}}>
               <Provider store={appState} style={{flex: 1}}>
-                <ThemeProvider theme={theme}>
+                <ThemeProvider theme={theme} style={{flex: 1}}>
                   <AppContainer style={{flex: 1}} />
                 </ThemeProvider>
               </Provider>
+              <View style={{position: 'absolute', top: 24, left: 0, padding: 2.0,}}>
+                  <Text style={{color: '#555', fontSize: 8.0,}}>ALPHA BUILD v0.0.1</Text>
+                  <Text style={{color: '#555', fontSize: 8.0,}}>NOT FOR PUBLIC RELEASE</Text>
+                  <Text style={{color: '#555', fontSize: 8.0,}}>Hot Minute LLC</Text>
+              </View>
             </SafeAreaView>
         </View>
     );
