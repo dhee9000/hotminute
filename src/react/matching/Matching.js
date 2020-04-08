@@ -5,25 +5,19 @@ import { Text } from '../common/components';
 
 import { RtcEngine, AgoraView } from 'react-native-agora'
 import { AgoraConfig } from '../../config';
-const { Agora } = NativeModules;
 
-const {
-	FPS30,
-	AudioProfileDefault,
-	AudioScenarioDefault,
-	Host,
-	Adaptative
-} = Agora
+const { Agora } = NativeModules;
+const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = Agora
 
 import * as Permissions from 'expo-permissions';
 
 import { connect } from 'react-redux';
 
-import { Colors, Fonts } from '../../config';
 import * as ActionTypes from '../../redux/ActionTypes';
 import * as States from '../../redux/ActionTypes';
-import { Button, Icon } from 'react-native-elements';
+import { Colors, Fonts } from '../../config';
 
+import { Button, Icon } from 'react-native-elements';
 import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native'
 
@@ -37,10 +31,9 @@ import Cross from '../../../assets/svg/x.svg';
 const { width, height } = Dimensions.get('screen');
 
 const TOGGLE_SIZE = 80;
+const TEST_PROFILE_IMAGE = 'https://scontent-dfw5-2.xx.fbcdn.net/v/t1.0-9/92129151_1175951836087183_6356546886500876288_n.jpg?_nc_cat=100&_nc_sid=07e735&_nc_ohc=swJ8yNDW6dMAX_y_hUj&_nc_ht=scontent-dfw5-2.xx&oh=9e264f0c1a1fa80e6a00a37eeb4d2fa4&oe=5EB26EF3';
 
 class Matching extends React.Component {
-
-	test = new Animated.Value(0);
 
 	decisionAnimation = new Animated.Value(0);
 
@@ -74,9 +67,17 @@ class Matching extends React.Component {
 	}
 
 	heartPressed = () => {
+		this.playDecisionAnimation(1);
+	}
+
+	crossPressed = () => {
+		this.playDecisionAnimation(-1);
+	}
+
+	playDecisionAnimation = direction => {
 		Animated.sequence([
 			Animated.timing(this.decisionAnimation, {
-				toValue: 1,
+				toValue: direction,
 				duration: 500,
 			}),
 			Animated.timing(this.decisionAnimation, {
@@ -87,11 +88,6 @@ class Matching extends React.Component {
 	}
 
 	componentDidMount() {
-
-		Animated.timing(this.test, {
-			toValue: 1,
-			duration: 5000,
-		}).start();
 
 		Permissions.askAsync(Permissions.AUDIO_RECORDING);
 
@@ -127,65 +123,20 @@ class Matching extends React.Component {
 
 	render() {
 		return (
-			<LinearGradient
-				colors={['#000', Colors.primary,]}
-				// locations={[0.8, 1]}
-				style={{ flex: 1, padding: 0, alignItems: 'center', borderRadius: 5 }}>
-				<ImageBackground
-					style={{
-						width,
-						height: height - 72,
-					}}
-					blurRadius={18}
-					source={{ uri: 'https://scontent-dfw5-1.cdninstagram.com/v/t51.2885-15/sh0.08/e35/s750x750/83920414_144946376985449_3639079263977706456_n.jpg?_nc_ht=scontent-dfw5-1.cdninstagram.com&_nc_cat=105&_nc_ohc=cyMRXpmVVScAX_HRXoz&oh=485d26bc9220356c425a44cdd6d01a10&oe=5EAF5044' }}
-				>
-					<View style={{ flex: 1, padding: 16.0 }}>
-						<View style={{ flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16.0 }}>
-							<Icon name={'chat'} color={Colors.primary} size={36} />
-							<Icon name={'person'} color={Colors.primary} size={36} />
-						</View>
-						<View style={{ alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
+			<LinearGradient colors={['#000', Colors.primary,]} style={{ flex: 1, padding: 0, alignItems: 'center', borderRadius: 5 }}>
+				<ImageBackground style={{ width, height: height, paddingTop: 16.0, }} blurRadius={4} source={{ uri: TEST_PROFILE_IMAGE }}>
+					<View style={{ flex: 1, padding: 16.0, paddingTop: 64.0, }}>
+						<View style={{ alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginVertical: 16.0 }}>
 							<Switch style={{ marginBottom: 16.0 }} />
-							<Text style={{ color: Colors.background }}>Auto-Connect</Text>
+							<Text style={{ color: Colors.background }}>Find Matches</Text>
 						</View>
+
+						{/* Decision Buttons */}
 						<View style={{ flex: 2, alignItems: 'center', justifyContent: 'flex-start', }}>
-							<View>
-								<LottieView
-									ref={animation => {
-										this.animation = animation;
-									}}
-									style={{
-										width,
-										height: 400,
-									}}
-									source={require('../../..//assets/animations/waveform.json')}
-									autoPlay
-									loop
-								/>
-							</View>
 							<View style={{ width: '100%', paddingVertical: 16.0, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', position: 'absolute', bottom: 0 }}>
-								<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>
-									<Cross height={TOGGLE_SIZE} width={TOGGLE_SIZE} />
-								</View>
-								<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 8.0 }}>
-									<LottieView
-										ref={animation => {
-											this.animation = animation;
-										}}
-										style={{
-											width: 120,
-											height: 120,
-										}}
-										source={require('../../..//assets/animations/stopwatch.json')}
-										autoPlay
-										loop
-									/>
-								</View>
-								<TouchableOpacity onPress={this.heartPressed}>
-									<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>
-										<Heart height={TOGGLE_SIZE} width={TOGGLE_SIZE} />
-									</View>
-								</TouchableOpacity>
+								<NoDecisionButton onPress={this.crossPressed} />
+								<TimerButton />
+								<YesDecisionButton onPress={this.heartPressed} />
 							</View>
 							<View style={{ backgroundColor: Colors.primary, height: 0, width: 0, overflow: 'hidden' }}>
 								<AgoraView style={{ flex: 1 }}
@@ -208,3 +159,22 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Matching);
+
+const TimerButton = props => 
+(<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 8.0 }}>
+	<LottieView style={{ width: 120, height: 120, }} source={require('../../..//assets/animations/stopwatch.json')} autoPlay loop />
+</View>)
+
+const NoDecisionButton = props => 
+(<TouchableOpacity onPress={props.onPress}>
+	<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>
+		<Cross height={TOGGLE_SIZE} width={TOGGLE_SIZE} />
+	</View>
+</TouchableOpacity>);
+
+const YesDecisionButton = props => 
+(<TouchableOpacity onPress={props.onPress}>
+	<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>
+		<Heart height={TOGGLE_SIZE} width={TOGGLE_SIZE} />
+	</View>
+</TouchableOpacity>);
