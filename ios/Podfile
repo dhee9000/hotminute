@@ -51,4 +51,14 @@ target 'HotMinute' do
 
   pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
 
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
+
+  pod 'RNFBAuth', :path => '../node_modules/@react-native-firebase/auth'
+
+  pod 'RNFBFirestore', :path => '../node_modules/@react-native-firebase/firestore'
+
+  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics'
+
+  pod 'RNFBMessaging', :path => '../node_modules/@react-native-firebase/messaging'
+
 end

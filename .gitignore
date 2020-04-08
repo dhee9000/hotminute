@@ -17,3 +17,5 @@ web-report/
 **/build/*
 **/generated/*
 **/.gradle/*
+
+**/.idea/*

@@ -3,6 +3,11 @@ package com.hotminute;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
+import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
+import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;
+import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
 import com.horcrux.svg.SvgPackage;
 import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage;
@@ -44,6 +49,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativeFirebaseMessagingPackage(),
+            new ReactNativeFirebaseAnalyticsPackage(),
+            new ReactNativeFirebaseFirestorePackage(),
+            new ReactNativeFirebaseAuthPackage(),
+            new ReactNativeFirebaseAppPackage(),
             new LottiePackage(),
             new SvgPackage(),
             new RNDateTimePickerPackage(),
