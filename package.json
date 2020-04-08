@@ -8,10 +8,13 @@
     "postinstall": "jetify"
   },
   "dependencies": {
+    "@apollo/react-hooks": "^3.1.4",
     "@react-native-community/datetimepicker": "^2.2.2",
+    "apollo-client": "^2.6.8",
     "expo": "~36.0.0",
     "expo-linear-gradient": "^8.1.0",
     "firebase": "^7.10.0",
+    "graphql": "^15.0.0",
     "lottie-react-native": "^3.3.2",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
