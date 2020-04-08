@@ -9,6 +9,20 @@ import { createAppContainer } from 'react-navigation';
 import { Provider } from 'react-redux';
 import { createReduxStore } from './src/redux';
 
+import { AppRegistry } from 'react-native';
+import { ApolloClient } from 'apollo-client';
+import { ApolloProvider } from '@apollo/react-hooks';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { HttpLink } from 'apollo-link-http';
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: new HttpLink(
+    {
+      uri: 'http://your.graphql.url/graphql'
+    })
+  });
+
 import { ThemeProvider } from 'react-native-elements';
 
 import * as Font from 'expo-font';
@@ -36,28 +50,34 @@ export default function App() {
     loadFonts().then(() => setFontsLoaded(true));
   }, []);
 
-  if(fontsLoaded){
+  if (fontsLoaded) {
     return (
-      <View style={{flex: 1}}>
-            <StatusBar barStyle={'light-content'} translucent />
-            <SafeAreaView style={{flex: 1, backgroundColor: Colors.primary, paddingTop: StatusBar.currentHeight}}>
-              <Provider store={appState} style={{flex: 1}}>
-                <ThemeProvider theme={theme} style={{flex: 1}}>
-                  <AppContainer style={{flex: 1}} />
-                </ThemeProvider>
-              </Provider>
-              <View style={{position: 'absolute', top: 24, left: 0, padding: 2.0,}}>
-                  <Text style={{color: '#555', fontSize: 8.0,}}>ALPHA BUILD v0.0.1</Text>
-                  <Text style={{color: '#555', fontSize: 8.0,}}>NOT FOR PUBLIC RELEASE</Text>
-                  <Text style={{color: '#555', fontSize: 8.0,}}>Hot Minute LLC</Text>
-              </View>
-            </SafeAreaView>
-        </View>
+      <View style={{ flex: 1 }}>
+        <StatusBar barStyle={'dark-content'} backgroundColor={'transparent'} translucent />
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primary }}>
+          <ApolloProvider client={client}>
+            <Provider store={appState} style={{ flex: 1 }}>
+              <ThemeProvider theme={theme} style={{ flex: 1 }}>
+                <AppContainer style={{ flex: 1 }} />
+              </ThemeProvider>
+            </Provider>
+          </ApolloProvider>
+          <AlphaWarning />
+        </SafeAreaView>
+      </View>
     );
   }
-  else{
-    return(
+  else {
+    return (
       <View />
     )
   }
 }
+
+const AlphaWarning = props => (
+  <View style={{ position: 'absolute', top: 24, left: 0, padding: 2.0, }}>
+    <Text style={{ color: '#555', fontSize: 8.0, }}>ALPHA BUILD v0.0.1</Text>
+    <Text style={{ color: '#555', fontSize: 8.0, }}>NOT FOR PUBLIC RELEASE</Text>
+    <Text style={{ color: '#555', fontSize: 8.0, }}>Hot Minute LLC</Text>
+  </View>
+)
