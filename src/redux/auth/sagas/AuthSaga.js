@@ -1,43 +1,70 @@
-import { all, apply, call, put, takeEvery, fork, } from 'redux-saga/effects';
-import { rsf } from '../../ReduxSagaFirebase';
+import { all, apply, call, put, takeEvery, fork, select } from 'redux-saga/effects';
+
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
+import { default as firebaseAuth } from '@react-native-firebase/auth';
+
+const db = firestore();
+const auth = firebaseAuth();
 
 import * as ActionTypes from '../../ActionTypes';
 import * as States from '../../States';
 
-function* onCreateAccountRequested(action){
-    let phno = action.payload;
-    try{
-        const confirmationResult = yield call([rsf, rsf.auth.signInWithPhoneNumber], phno);
-        yield put({type: ActionTypes.CREATE_ACCOUNT.SUCCESS});
-        yield put({type: ActionTypes.VERIFICATION_CODE_SENT, payload: confirmationResult});
-    }
-    catch(e){
-        yield put({type: ActionTypes.CREATE_ACCOUNT.FAILURE});
-    }
-}
+// function* watchSendCodeRequested() {
+//     yield takeEvery(ActionTypes.SEND_CODE.REQUEST,
+//         function* onSendCodeRequested(action) {
 
-function* onVerifyCodeRequested(action){
-    let code = action.payload;
-    try{
-        yield call([rsf, rsf.auth.signInWithPhone])
-    }
-    catch (e){
-        console.log(e);
-    }
-}
+//             let phno = action.payload;
+            
+//             try {
+//                 if(auth.currentUser){
+//                     console.log("Signing Out Existing User!");
+//                     yield call([auth, auth.signOut]);
+//                 }
+//                 const confirmationResult = yield call([auth, auth.signInWithPhoneNumber], phno);
+//                 console.log(confirmationResult);
+//                 yield put({ type: ActionTypes.SEND_CODE.SUCCESS, payload: confirmationResult });
+//             }
+//             catch (e) {
+//                 console.log(e);
+//                 yield put({ type: ActionTypes.SEND_CODE.FAILURE, paylod: e });
+//             }
 
-function* watchCreateAccountRequested(){
-	console.log('Signup Watcher Running');
-	yield takeEvery(ActionTypes.CREATE_ACCOUNT.REQUESTED, onCreateAccountRequested);
-}
+//         }
+//     );
+// }
+
+// function* watchVerifyCodeRequested() {
+//     yield takeEvery(ActionTypes.VERIFY_CODE.REQUEST,
+//         function* onVerifyCodeRequested(action) {
+
+//             let code = action.payload;
+
+//             const confirmationResult = yield select(state => state.auth.confirmation);
+//             console.log(confirmationResult);
+            
+//             try{
+//                 const cred = firebase.auth.PhoneAuthProvider.credential(confirmationResult.verificationId, code);
+//                 let result = yield call([auth, auth.signInWithCredential], cred);
+//                 yield put({ type: ActionTypes.VERIFY_CODE.SUCCESS, })
+//             }
+//             catch(e) {
+//                 console.error("Verify Code Error", e);
+//                 yield put({ type: ActionTypes.VERIFY_CODE.FAILURE, error: e });
+//             }
+
+//         }
+//     )
+// }
 
 const authWatchers = [
-	watchCreateAccountRequested,
+    // watchSendCodeRequested,
+    // watchVerifyCodeRequested
 ];
 
-export default function* watchAuthActions(){
-	console.log('Auth Actions Watcher Running');
-	yield all(
-		authWatchers.map(watcher => fork(watcher))
-	);
+export default function* watchAuthActions() {
+    console.log('Auth Actions Watcher Running');
+    yield all(
+        authWatchers.map(watcher => fork(watcher))
+    );
 }
