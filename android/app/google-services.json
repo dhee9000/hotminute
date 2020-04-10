@@ -15,7 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "350931211842-lh0k67a63qbgtt1bu2cus2du0hvkf4jh.apps.googleusercontent.com",
+          "client_id": "350931211842-gm7fbhu6p23crb9emrpo0qncuq5j6bm6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.hotminute",
@@ -38,6 +38,13 @@
             {
               "client_id": "350931211842-b7pcgku8n0unbmpk9k7cnge5378rr80e.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "350931211842-tpds3kru0narnmjape75efa154ss3b0i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hotminute"
+              }
             }
           ]
         }
