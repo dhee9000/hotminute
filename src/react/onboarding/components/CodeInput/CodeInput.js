@@ -36,18 +36,20 @@ const animateCell = ({hasValue, index, isFocused}) => {
     Animated.timing(animationsColor[index], {
       toValue: isFocused ? 1 : 0,
       duration: 250,
+      useNativeDriver: false,
     }),
     Animated.spring(animationsScale[index], {
       toValue: hasValue ? 0 : 1,
       duration: hasValue ? 300 : 250,
+      useNativeDriver: false,
     }),
   ]).start();
 };
 
-const AnimatedExample = () => {
+const AnimatedExample = (props) => {
   const [value, setValue] = useState('');
   const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
-  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+  const [incomingProps, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
     setValue,
   });
@@ -97,9 +99,8 @@ const AnimatedExample = () => {
   return (
       <CodeField
         ref={ref}
+        {...incomingProps}
         {...props}
-        value={value}
-        onChangeText={setValue}
         cellCount={CELL_COUNT}
         rootStyle={styles.codeFiledRoot}
         keyboardType="number-pad"

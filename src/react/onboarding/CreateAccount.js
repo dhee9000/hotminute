@@ -36,8 +36,8 @@ class CreateAccount extends React.Component {
                 console.log("Signing Out Existing User!");
                 await auth.signOut();
             }
-            const confirmationResult = await auth().signInWithPhoneNumber(this.state.phno);
-            this.setState({ confirm: confirmationResult });
+            const confirmation = await auth().signInWithPhoneNumber('+1 650-555-1234');
+            this.setState({ confirm: confirmation });
             this.props.onCodeSendSuccess();
         }
         catch (e) {
@@ -49,8 +49,7 @@ class CreateAccount extends React.Component {
     onVerifyCodePressed = async () => {
         this.props.onVerifyCodeRequested();
         try {
-            console.log(this.state.confirm);
-            const result = this.state.confirm.confirm(this.state.code);
+            await this.state.confirm.confirm(this.state.code);
             this.props.onVerifyCodeSuccess();
         }
         catch (e) {
@@ -60,9 +59,6 @@ class CreateAccount extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        // if (prevProps.codeSent != this.props.codeSent)
-        //     if (this.props.codeSent)
-        //         this.props.navigation.navigate('VerifyPhoneNumber');
         if (prevProps.codeVerified != this.props.codeVerified)
             if (this.props.codeVerified)
                 this.props.navigation.navigate('CreateProfileBio');
@@ -103,7 +99,7 @@ class CreateAccount extends React.Component {
                             <Text style={{ color: Colors.text }}>We texted you a code to make sure your number is right.</Text>
                         </View>
                         <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
-                            <CodeInput onChangeText={text => this.setState({ code: text })} />
+                            <CodeInput onChangeText={text => this.setState({ code: text })} value={this.state.code} />
                         </View>
                         {this.props.verifyingCode ? <ActivityIndicator size={'large'} /> : null}
                         <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
@@ -119,6 +115,7 @@ class CreateAccount extends React.Component {
 const mapStateToProps = state => ({
     codeSent: state.auth.status == States.CODE_SEND.COMPLETED,
     sendingCode: state.auth.status == States.CODE_SEND.REQUESTED,
+    codeVerified: state.auth.status == States.CODE_VERIFY.COMPLETED,
 });
 
 const mapDispatchToProps = dispatch => ({

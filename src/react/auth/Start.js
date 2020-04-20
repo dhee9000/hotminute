@@ -18,8 +18,12 @@ const BACKGROUND_IMAGE_URI = 'https://static01.nyt.com/images/2020/03/15/fashion
 
 class Start extends React.Component{
 
+    componentDidMount(){
+        alert('THIS IS A DISABLED VERSION OF THE APP!');
+    }
+
     onLoginPressed = () => {
-        this.props.navigation.navigate('Login');
+        this.props.navigation.navigate('Main');
     }
 
     onSignupPressed = () => {
@@ -41,6 +45,7 @@ class Start extends React.Component{
                             <WelcomeSVG width={width} height={225} />
                         </View>
                         <View style={{position: 'absolute', width, paddingHorizontal: 16.0, bottom: 16, alignContent: 'stretch'}}>
+                            <Button title='GodMode' onPress={() => this.props.navigation.navigate('GodMode')} containerStyle={{marginVertical: 2.0}} />
                             <Button title='Login' onPress={this.onLoginPressed} containerStyle={{marginVertical: 2.0}} />
                             <Button title='Signup' onPress={this.onSignupPressed} containerStyle={{marginVertical: 2.0}} />
                         </View>
