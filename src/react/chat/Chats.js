@@ -7,11 +7,20 @@ import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
 import * as States from '../../redux/ActionTypes';
 
+import { Colors, Fonts } from '../../config';
+
+import Matches from './components/Matches';
+
 class Chats extends React.Component{
     render(){
         return(
-            <View>
-                
+            <View style={{ backgroundColor: Colors.background, flex: 1, paddingTop: 64.0, }}>
+                <View style={{padding: 16.0,}}>
+                    <Text style={{fontFamily: Fonts.heading, fontSize: 32.0}}>Chats</Text>
+                </View>
+                <View>
+                    <Matches />
+                </View>
             </View>
         )
     }

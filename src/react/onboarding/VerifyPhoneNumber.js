@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 
 import { Text } from '../common/components';
 
@@ -18,14 +18,14 @@ class VerifyPhoneNumber extends React.Component{
         code: ''
     }
 
-    onCreateAccountPressed = () => {
+    onVerifyCodePressed = () => {
         this.props.verifyCode(this.state.code);
     }
 
     componentDidUpdate(prevProps, prevState){
-        if(prevProps.accountCreated != this.props.accountCreated)
-            if(this.props.accountCreated)
-                this.props.navigation.navigate('VerifyPhoneNumber');
+        if(prevProps.codeVerified != this.props.codeVerified)
+            if(this.props.codeVerified)
+                this.props.navigation.navigate('CreateProfileBio');
     }
 
     render(){
@@ -36,10 +36,11 @@ class VerifyPhoneNumber extends React.Component{
                     <Text style={{color: Colors.text}}>We texted you a code to make sure your number is right.</Text>
                 </View>
                 <View style={{flex: 3, justifyContent: 'center', width: '100%'}}>
-                    <CodeInput />
+                    <CodeInput onChangeText={text => this.setState({code: text})} />
                 </View>
+                {this.props.verifyingCode ? <ActivityIndicator size={'large'} /> : null}
                 <View style={{flex: 1,justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%'}}>
-                    <Button title="Verify Code" onPress={() => {this.props.navigation.navigate('GetPermissions')}} />
+                    <Button title="Verify Code" onPress={this.onVerifyCodePressed} />
                 </View>
             </View>
         )
@@ -47,11 +48,12 @@ class VerifyPhoneNumber extends React.Component{
 }
 
 const mapStateToProps = state => ({
-    codeVerified: state.auth.status == States.AUTHENTICATED,
+    codeVerified: state.auth.status == States.CODE_VERIFY.COMPLETED,
+    verifyingCode: state.auth.status == States.CODE_VERIFY.REQUESTED,
 });
 
 const mapDispatchToProps = dispatch => ({
-    verifyCode: code => dispatch({type: ActionTypes.CODE_VERIFICATION.REQUESTED}),
+    verifyCode: code => dispatch({type: ActionTypes.VERIFY_CODE.REQUEST, payload: code}),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(VerifyPhoneNumber);

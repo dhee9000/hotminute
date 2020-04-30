@@ -23,7 +23,7 @@ import styles, {
 
 const {Value, Text: AnimatedText} = Animated;
 
-const CELL_COUNT = 4;
+const CELL_COUNT = 6;
 const source = {
   uri:
     'https://user-images.githubusercontent.com/4661784/56352614-4631a680-61d8-11e9-880d-86ecb053413d.png',
@@ -36,18 +36,20 @@ const animateCell = ({hasValue, index, isFocused}) => {
     Animated.timing(animationsColor[index], {
       toValue: isFocused ? 1 : 0,
       duration: 250,
+      useNativeDriver: false,
     }),
     Animated.spring(animationsScale[index], {
       toValue: hasValue ? 0 : 1,
       duration: hasValue ? 300 : 250,
+      useNativeDriver: false,
     }),
   ]).start();
 };
 
-const AnimatedExample = () => {
+const AnimatedExample = (props) => {
   const [value, setValue] = useState('');
   const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
-  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+  const [incomingProps, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
     setValue,
   });
@@ -97,9 +99,8 @@ const AnimatedExample = () => {
   return (
       <CodeField
         ref={ref}
+        {...incomingProps}
         {...props}
-        value={value}
-        onChangeText={setValue}
         cellCount={CELL_COUNT}
         rootStyle={styles.codeFiledRoot}
         keyboardType="number-pad"

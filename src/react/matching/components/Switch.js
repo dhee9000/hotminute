@@ -7,6 +7,8 @@ import { Fonts, Colors } from '../../../config';
 import Animated, { Easing } from 'react-native-reanimated';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
+import Heart from '../../../../assets/svg/heart.svg';
+
 const {
     color,
     Extrapolate,
@@ -33,8 +35,8 @@ const {
     max,
 } = Animated;
 
-const WIDTH = 64.0;
-const HEIGHT = 24.0;
+const WIDTH = 92.0;
+const HEIGHT = 42.0;
 
 const HANDLE_EXTRA = 8.0;
 const HANDLE_WIDTH = HEIGHT + HANDLE_EXTRA;
@@ -190,7 +192,7 @@ class Switch extends React.Component {
                         borderRadius: HANDLE_WIDTH / 2,
                         position: 'absolute', left: -EXTRA_OFFSET, top: -EXTRA_OFFSET,
                         transform: [{ translateX: this._transX }],
-                    }} />
+                    }}><Heart height={HANDLE_HEIGHT} width={HANDLE_WIDTH} /></Animated.View>
                 </PanGestureHandler>
             </View>
         )
