@@ -7,12 +7,13 @@ import { Fonts, Colors } from '../../config';
 import { connect } from 'react-redux';
 import { ActionTypes } from '../../redux/';
 
-import { Input, Button } from 'react-native-elements';
+import { Input, Button, ThemeConsumer } from 'react-native-elements';
 
-import io from 'socket.io-client';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+
+import { w3cwebsocket as WebSocket } from "websocket";
 
 import { RtcEngine, AgoraView } from 'react-native-agora'
 import { AgoraConfig } from '../../config';
@@ -22,23 +23,22 @@ const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = A
 
 import * as Permissions from 'expo-permissions';
 
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag'
-
-var SERVER_IP = 'http://192.168.1.18';
-
 class GodMode extends React.Component {
 
     state = {
-        socket: null,
         userId: -1,
-        uid: auth().currentUser.uid,
+        uid: null,
         idToken: null,
         inQueue: false,
         roomId: null,
         roomToken: null,
         joinedRoom: false,
 
+        //
+        socket: null,
+        socketActive: false,
+
+        //
         peerIds: [],                                //Array for storing connected peers
         appid: AgoraConfig.AppID,                    //Enter the App ID generated from the Agora Website
         channelName: "TestRoom",        //Channel Name for the current session
@@ -65,34 +65,19 @@ class GodMode extends React.Component {
         RtcEngine.init(config);                     //Initialize the RTC engine
     }
 
-    async componentDidMount() {
-        
-        SERVER_IP = await (await firestore().collection('meta').doc('test').get()).data().server_url;
+    componentDidMount() {
+        alert('You are in God Mode! Proceed with caution!');
 
-        alert('YOU ARE IN GOD MODE! USE WITH CAUTION!');
+        // Get Signed In User
+        try {
+            auth().currentUser.uid;
+            this.setState({ uid });
+        }
+        catch (e) {
+            this.setState({ uid: null })
+        }
 
-        const socket = io(`${SERVER_IP}/matchmaker`);
-        socket.on('connect', () => {
-            alert('Socket Connected!');
-        })
-        socket.on('debug', message => {
-            alert(message);
-        })
-        socket.on('matchfound', data => {
-            this.setState({ roomToken: data.token, roomId: data.roomId, inQueue: false, })
-        });
-        socket.on('joinqueue', result => {
-            if (result === 'success') {
-                this.setState({ inQueue: true });
-            }
-        });
-        socket.on('leavequeue', result => {
-            if (result === 'success') {
-                this.setState({ inQueue: false });
-            }
-        });
-        this.setState({ socket });
-
+        //
         Permissions.askAsync(Permissions.AUDIO_RECORDING);
 
         RtcEngine.on('userJoined', (data) => {
@@ -114,18 +99,16 @@ class GodMode extends React.Component {
                 joinSucceed: true,                                           //Set state variable to true
             });
         });
+        RtcEngine.on('error', (data) => {
+            if(data.errorCode != 11 && data.errorCode != "11" && data.errorCode != 18 && data.errorCode != "18"){
+                alert("Error Code: " + data.errorCode);
+                console.log(data);
+            }
+            if(data.errorCode == 17 || data.errorCode == 110){
+                this.startCall();
+            }
+        })
     }
-
-    startCall() {
-        RtcEngine.registerLocalUserAccount(this.state.uid);
-		RtcEngine.joinChannelWithUserAccount(this.state.roomId, this.state.uid, this.state.roomToken);  //Join Channel
-        RtcEngine.enableAudio();
-        RtcEngine.disableVideo();
-	}
-
-	endCall() {
-		RtcEngine.leaveChannel();
-	}
 
     onSignInPressed = async userId => {
         this.setState({ userId });
@@ -136,57 +119,124 @@ class GodMode extends React.Component {
         this.setState({ userId, uid: auth().currentUser.uid });
     }
 
-    onTestSocketPressed = async () => {
-        this.state.socket.emit('debug', 'test');
+    handleSocketMessage = message => {
+        switch (message.type) {
+            case 'debug': {
+                alert(message.body);
+                break;
+            }
+            case 'matchfound': {
+                var data = message.body;
+                this.setState({ roomToken: data.token, roomId: data.roomId, inQueue: false, });
+                break;
+            }
+        }
     }
 
-    joinQueue = async () => {
-        this.state.socket.emit('joinqueue', { uid: auth().currentUser.uid });
+    onConnectSocketPressed = () => {
+        const socket = new WebSocket('ws://apitest.hotminute.app');
+        socket.onopen = () => {
+            console.log('WebSocket Client Connected!');
+            socket.send(JSON.stringify({ type: 'auth', body: this.state.uid }))
+        }
+        socket.onmessage = messageRaw => {
+            var message = JSON.parse(messageRaw.data);
+            console.log(message);
+            this.handleSocketMessage(message);
+        }
+        this.setState({ socket });
     }
 
-    leaveQueue = async () => {
-        this.state.socket.emit('leavequeue', { uid: auth().currentUser.uid });
+    onTestSocketPressed = () => {
+        this.state.socket.send(JSON.stringify({
+            type: 'debug',
+            body: 'test'
+        }));
+
+    }
+
+    onJoinQueuePressed = () => {
+        this.state.socket.send(JSON.stringify({
+            type: 'joinqueue',
+            body: { uid: this.state.uid }
+        }));
+        this.setState({ inQueue: true });
+    }
+
+    onLeaveQueuePressed = () => {
+        this.state.socket.send(JSON.stringify({
+            type: 'leavequeue',
+            body: { uid: this.state.uid }
+        }));
+        this.setState({ inQueue: false });
+    }
+
+    startCall() {
+        RtcEngine.leaveChannel();
+        this.setState({
+            peerIds: [],
+            joinSucceed: false,
+        });
+        RtcEngine.registerLocalUserAccount(this.state.uid);
+        setTimeout(() => {
+            RtcEngine.joinChannelWithUserAccount(this.state.roomId, this.state.uid, this.state.roomToken);  //Join Channel
+            RtcEngine.enableAudio();
+            RtcEngine.disableVideo();
+        }, 1000);
+    }
+
+    endCall() {
+        RtcEngine.leaveChannel();
+        this.setState({
+            peerIds: [],
+            joinSucceed: false,
+        });
     }
 
     render() {
         return (
             <SafeAreaView style={{ flex: 1 }}>
-                <View style={{ backgroundColor: '#fff', padding: 16.0, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ backgroundColor: '#fff', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 
-                    <ScrollView>
+                    <ScrollView contentContainerStyle={{ padding: 16.0, paddingTop: 64.0, }} style={{ alignSelf: 'stretch' }}>
                         <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 24.0, margin: 4.0, padding: 4.0 }}>GOD MODE</Text>
-                        <Text style={{ color: '#fff', backgroundColor: '#f00', fontFamily: Fonts.heading, fontSize: 12.0, margin: 4.0, padding: 4.0, borderRadius: 4.0, }}>WARNING: YOU ARE IN GOD MODE! THERE IS LIMITED ERROR CHECKING AND STABILITY. ALL BUTTON PRESSES HAVE CONSEQUENCES. DO NOT VIOLATE THE INTENDED SEQUENCE OF ACTIONS!</Text>
+                    
 
-                        <View style={{ borderColor: Colors.primary, borderWidth: 4.0, padding: 4.0, margin: 4.0 }}>
+                        <View style={{ padding: 4.0, margin: 4.0 }}>
                             <Text>AUTH STUFF</Text>
-                            <Button title="Sign In as User 1" onPress={() => this.onSignInPressed(0)} />
-                            <Button title="Sign In as User 2" onPress={() => this.onSignInPressed(1)} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Sign In as User 1" onPress={() => this.onSignInPressed(0)} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Sign In as User 2" onPress={() => this.onSignInPressed(1)} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Sign In as User 3" onPress={() => this.onSignInPressed(2)} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Sign In as User 4" onPress={() => this.onSignInPressed(3)} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Sign In as User 5" onPress={() => this.onSignInPressed(4)} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Sign In as User 6" onPress={() => this.onSignInPressed(5)} />
                         </View>
 
-                        <View style={{ borderColor: Colors.primary, borderWidth: 4.0, padding: 4.0, margin: 4.0 }}>
+                        <View style={{ padding: 4.0, margin: 4.0 }}>
                             <Text>SOCKET STUFF</Text>
-                            <Button title="Test Socket" onPress={() => this.onTestSocketPressed()} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Connect To Socket" onPress={() => this.onConnectSocketPressed()} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Test Socket" onPress={() => this.onTestSocketPressed()} />
                         </View>
 
-                        <View style={{ borderColor: Colors.primary, borderWidth: 4.0, padding: 4.0, margin: 4.0 }}>
+                        <View style={{ padding: 4.0, margin: 4.0 }}>
                             <Text>QUEUE STUFF</Text>
-                            <Button title="Join Queue" onPress={() => this.joinQueue()} />
-                            <Button title="Leave Queue" onPress={() => this.leaveQueue(1)} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Join Queue" onPress={() => this.onJoinQueuePressed()} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Leave Queue" onPress={() => this.onLeaveQueuePressed(1)} />
                         </View>
 
-                        <View style={{ borderColor: Colors.primary, borderWidth: 4.0, padding: 4.0, margin: 4.0 }}>
+                        <View style={{ padding: 4.0, margin: 4.0 }}>
                             <Text>ROOM STUFF</Text>
-                            <Button title="Join Room" onPress={() => this.startCall()} />
-                            <Button title="Leave Room" onPress={() => this.endCall()} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Join Room" onPress={() => this.startCall()} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Leave Room" onPress={() => this.endCall()} />
+                        </View>
+
+                        <View style={{ padding: 4.0, margin: 4.0 }}>
+                            <Text>PROFILE STUFF</Text>
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Set Profile" onPress={() => this.startCall()} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Leave Room" onPress={() => this.endCall()} />
                         </View>
 
                         <View style={{ borderColor: Colors.primary, borderWidth: 4.0, padding: 4.0, margin: 4.0 }}>
-                            <Text>PROFILE STUFF</Text>
-                            <Button title="Set Profile" onPress={() => this.startCall()} />
-                            <Button title="Leave Room" onPress={() => this.endCall()} />
-                        </View>
-
-                        <View style={{ borderColor: Colors.text, borderWidth: 4.0, padding: 4.0, margin: 4.0 }}>
                             <Text>Selected user: {'\n'} {this.state.userId + 1}</Text>
                             <Text>Logged in user UID: {'\n'} {this.state.uid}</Text>
                             <Text>Logged in user IdToken: {'\n'} {this.state.idToken}</Text>
@@ -194,7 +244,8 @@ class GodMode extends React.Component {
                             <Text>Assigned Room: {'\n'} {this.state.roomId}</Text>
                             <Text>Assigned Room Token: {'\n'} {this.state.roomToken}</Text>
                         </View>
-                        <AgoraView remoteUid={this.state.peerIds[0]} mode={1} key={this.state.peerIds[0]} />
+                        <AgoraView style={{ flex: 1, height: 100, width: 100, }}
+                            remoteUid={this.state.peerIds[0]} mode={1} key={this.state.peerIds[0]} />
                     </ScrollView>
                 </View>
             </SafeAreaView>
@@ -208,11 +259,23 @@ const users = [
         code: "123456"
     },
     {
+        phno: "+16505551234",
+        code: "123456"
+    },
+    {
         phno: "+16505553434",
         code: "123456"
     },
     {
-        phno: "+16505551234",
+        phno: "+16505555656",
+        code: "123456"
+    },
+    {
+        phno: "+16505557878",
+        code: "123456"
+    },
+    {
+        phno: "+1650555678",
         code: "123456"
     }
 ]

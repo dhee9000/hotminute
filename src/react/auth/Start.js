@@ -18,10 +18,6 @@ const BACKGROUND_IMAGE_URI = 'https://static01.nyt.com/images/2020/03/15/fashion
 
 class Start extends React.Component{
 
-    componentDidMount(){
-        alert('THIS IS A DISABLED VERSION OF THE APP!');
-    }
-
     onLoginPressed = () => {
         this.props.navigation.navigate('Main');
     }
