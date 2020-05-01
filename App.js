@@ -15,6 +15,8 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 
+import firebase from 'react-native-firebase';
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink(
