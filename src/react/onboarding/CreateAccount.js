@@ -17,12 +17,12 @@ import auth from '@react-native-firebase/auth';
 // const auth = firebaseAuth();
 const db = firestore();
 
-try{
+try {
     firebase.initializeApp(Firebase);
-   }
-   catch(e){
-     console.log("Firebase Init Error: ", e);
-   }
+}
+catch (e) {
+    console.log("Firebase Init Error: ", e);
+}
 
 class CreateAccount extends React.Component {
 
@@ -73,49 +73,49 @@ class CreateAccount extends React.Component {
 
     render() {
         return (
-            <KeyboardAvoidingView behavior={'height'} style={{flex: 1}}>
-            <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
-                <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Signup</Text>
-                    <Text style={{ color: Colors.text }}>Enter your phone number to begin.</Text>
-                </View>
-                <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
-                    <Input
-                        inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                        inputContainerStyle={{ borderColor: Colors.accent }}
-                        keyboardType={'phone-pad'}
-                        label={'Phone Number'}
-                        labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                        onChangeText={text => this.setState({ phno: text })}
-                        placeholder={'9728836969'}
-                        placeholderTextColor={Colors.textLightGray}
-                        value={this.state.phno}
-                    />
-                    <Text style={{ color: Colors.textLightGray, fontSize: 10, marginLeft: 8.0, marginTop: 16.0 }}>
-                        We will send you a code to confirm your number. Standard text or data rates may apply.
-                    </Text>
-                </View>
-                {this.props.sendingCode ? <ActivityIndicator size={'large'} /> : null}
-                <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button title="Create Account" onPress={this.onCreateAccountPressed} />
-                </View>
-
-                <Modal visible={this.props.codeSent} animated animationType={'slide'}>
-                    <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
-                        <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                            <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Verify Your Number</Text>
-                            <Text style={{ color: Colors.text }}>We texted you a code to make sure your number is right.</Text>
-                        </View>
-                        <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
-                            <CodeInput onChangeText={text => this.setState({ code: text })} value={this.state.code} />
-                        </View>
-                        {this.props.verifyingCode ? <ActivityIndicator size={'large'} /> : null}
-                        <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                            <Button title="Verify Code" onPress={this.onVerifyCodePressed} />
-                        </View>
+            <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }}>
+                <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
+                    <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
+                        <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Signup</Text>
+                        <Text style={{ color: Colors.text }}>Enter your phone number to begin.</Text>
                     </View>
-                </Modal>
-            </View>
+                    <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
+                        <Input
+                            inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                            inputContainerStyle={{ borderColor: Colors.accent }}
+                            keyboardType={'phone-pad'}
+                            label={'Phone Number'}
+                            labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                            onChangeText={text => this.setState({ phno: text })}
+                            placeholder={'9728836969'}
+                            placeholderTextColor={Colors.textLightGray}
+                            value={this.state.phno}
+                        />
+                        <Text style={{ color: Colors.textLightGray, fontSize: 10, marginLeft: 8.0, marginTop: 16.0 }}>
+                            We will send you a code to confirm your number. Standard text or data rates may apply.
+                    </Text>
+                    </View>
+                    {this.props.sendingCode ? <ActivityIndicator size={'large'} /> : null}
+                    <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
+                        <Button title="Create Account" onPress={this.onCreateAccountPressed} />
+                    </View>
+
+                    <Modal visible={this.props.codeSent} animated animationType={'slide'}>
+                        <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
+                            <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
+                                <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Verify Your Number</Text>
+                                <Text style={{ color: Colors.text }}>We texted you a code to make sure your number is right.</Text>
+                            </View>
+                            <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
+                                <CodeInput onChangeText={text => this.setState({ code: text })} value={this.state.code} />
+                            </View>
+                            {this.props.verifyingCode ? <ActivityIndicator size={'large'} /> : null}
+                            <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
+                                <Button title="Verify Code" onPress={this.onVerifyCodePressed} />
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
             </KeyboardAvoidingView>
         )
     }
@@ -133,7 +133,7 @@ const mapDispatchToProps = dispatch => ({
     onCodeSendSuccess: () => dispatch({ type: ActionTypes.SEND_CODE.SUCCESS, }),
     onCodeSendError: e => dispatch({ type: ActionTypes.SEND_CODE.FAILURE, paylod: e }),
     // Verify Code Stuff
-    onVerifyCodeRequested: () => dispatch({type: ActionTypes.VERIFY_CODE.REQUEST, }),
+    onVerifyCodeRequested: () => dispatch({ type: ActionTypes.VERIFY_CODE.REQUEST, }),
     onVerifyCodeSuccess: () => dispatch({ type: ActionTypes.VERIFY_CODE.SUCCESS, }),
     onVerifyCodeError: e => dispatch({ type: ActionTypes.VERIFY_CODE.FAILURE, error: e }),
 });
