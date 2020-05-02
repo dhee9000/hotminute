@@ -6,12 +6,12 @@ import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import { default as firebaseAuth } from '@react-native-firebase/auth';
 
-try{
-    firebase.initializeApp(Firebase);
-   }
-   catch(e){
-     console.log("Firebase Init Error: ", e);
-   }
+// try {
+//     firebase.initializeApp(Firebase);
+// }
+// catch (e) {
+//     console.log("Firebase Init Error: ", e);
+// }
 
 const db = firestore();
 const auth = firebaseAuth();
@@ -24,7 +24,7 @@ import * as States from '../../States';
 //         function* onSendCodeRequested(action) {
 
 //             let phno = action.payload;
-            
+
 //             try {
 //                 if(auth.currentUser){
 //                     console.log("Signing Out Existing User!");
@@ -51,7 +51,7 @@ import * as States from '../../States';
 
 //             const confirmationResult = yield select(state => state.auth.confirmation);
 //             console.log(confirmationResult);
-            
+
 //             try{
 //                 const cred = firebase.auth.PhoneAuthProvider.credential(confirmationResult.verificationId, code);
 //                 let result = yield call([auth, auth.signInWithCredential], cred);

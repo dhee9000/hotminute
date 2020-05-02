@@ -18,6 +18,7 @@
 		2DCD954D1E0B4F2C00145EB5 /* HotMinuteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* HotMinuteTests.m */; };
 		40DB4F4BC5297D0A985ACD17 /* libPods-HotMinute-HotMinuteTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6A0D360F96EE3D86D80406E /* libPods-HotMinute-HotMinuteTests.a */; };
 		64036A1AB05C739ED43D0402 /* libPods-HotMinute-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADA7C86C466BE209EFC4E5DC /* libPods-HotMinute-tvOS.a */; };
+		A27624B4245D6E8E00A0B686 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A27624B3245D6E8E00A0B686 /* GoogleService-Info.plist */; };
 		A84C51D62971E87BC3F4D074 /* libPods-HotMinute-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E0767DC48A4D6DC675B2739C /* libPods-HotMinute-tvOSTests.a */; };
 		EE89E9ECAE71A0F8211FDA81 /* libPods-HotMinute.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C09578D87710A98357E399D9 /* libPods-HotMinute.a */; };
 /* End PBXBuildFile section */
@@ -60,6 +61,8 @@
 		634DBC75848AC29D2E406663 /* Pods-HotMinute-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HotMinute-tvOS.release.xcconfig"; path = "Target Support Files/Pods-HotMinute-tvOS/Pods-HotMinute-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		8D643761EF8C08B5197D5344 /* Pods-HotMinute.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HotMinute.debug.xcconfig"; path = "Target Support Files/Pods-HotMinute/Pods-HotMinute.debug.xcconfig"; sourceTree = "<group>"; };
 		9D6B6F7B544CF5CF13351414 /* Pods-HotMinute-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HotMinute-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-HotMinute-tvOSTests/Pods-HotMinute-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		A27624B2245D6E6F00A0B686 /* HotMinute.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = HotMinute.entitlements; path = HotMinute/HotMinute.entitlements; sourceTree = "<group>"; };
+		A27624B3245D6E8E00A0B686 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "HotMinute/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ADA7C86C466BE209EFC4E5DC /* libPods-HotMinute-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HotMinute-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6A0D360F96EE3D86D80406E /* libPods-HotMinute-HotMinuteTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HotMinute-HotMinuteTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C09578D87710A98357E399D9 /* libPods-HotMinute.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HotMinute.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +128,8 @@
 		13B07FAE1A68108700A75B9A /* HotMinute */ = {
 			isa = PBXGroup;
 			children = (
+				A27624B3245D6E8E00A0B686 /* GoogleService-Info.plist */,
+				A27624B2245D6E6F00A0B686 /* HotMinute.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -343,6 +348,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				A27624B4245D6E8E00A0B686 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -742,6 +748,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = HotMinute/HotMinute.entitlements;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 9W92ZT84SB;
 				ENABLE_BITCODE = NO;
@@ -757,7 +764,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.hotminute;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hotminute;
 				PRODUCT_NAME = HotMinute;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -771,6 +778,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = HotMinute/HotMinute.entitlements;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 9W92ZT84SB;
 				INFOPLIST_FILE = HotMinute/Info.plist;
@@ -781,7 +789,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.hotminute;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hotminute;
 				PRODUCT_NAME = HotMinute;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

@@ -17,12 +17,12 @@ import auth from '@react-native-firebase/auth';
 // const auth = firebaseAuth();
 const db = firestore();
 
-try {
-    firebase.initializeApp(Firebase);
-}
-catch (e) {
-    console.log("Firebase Init Error: ", e);
-}
+// try {
+//     firebase.initializeApp(Firebase);
+// }
+// catch (e) {
+//     console.log("Firebase Init Error: ", e);
+// }
 
 class CreateAccount extends React.Component {
 

@@ -17,12 +17,12 @@ import { HttpLink } from 'apollo-link-http';
 
 import firebase from '@react-native-firebase/app';
 
-try{
- firebase.initializeApp(Firebase);
-}
-catch(e){
-  console.log("Firebase Init Error: ", e);
-}
+// try{
+//  firebase.initializeApp(Firebase);
+// }
+// catch(e){
+//   console.log("Firebase Init Error: ", e);
+// }
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),

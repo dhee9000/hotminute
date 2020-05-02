@@ -23,12 +23,12 @@ const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = A
 
 import * as Permissions from 'expo-permissions';
 
-try{
-    firebase.initializeApp(Firebase);
-   }
-   catch(e){
-     console.log("Firebase Init Error: ", e);
-   }
+// try {
+//     firebase.initializeApp(Firebase);
+// }
+// catch (e) {
+//     console.log("Firebase Init Error: ", e);
+// }
 
 class GodMode extends React.Component {
 
@@ -107,11 +107,11 @@ class GodMode extends React.Component {
             });
         });
         RtcEngine.on('error', (data) => {
-            if(data.errorCode != 11 && data.errorCode != "11" && data.errorCode != 18 && data.errorCode != "18"){
+            if (data.errorCode != 11 && data.errorCode != "11" && data.errorCode != 18 && data.errorCode != "18") {
                 alert("Error Code: " + data.errorCode);
                 console.log(data);
             }
-            if(data.errorCode == 17 || data.errorCode == 110){
+            if (data.errorCode == 17 || data.errorCode == 110) {
                 this.startCall();
             }
         })
@@ -207,7 +207,7 @@ class GodMode extends React.Component {
 
                     <ScrollView contentContainerStyle={{ padding: 16.0, paddingTop: 64.0, }} style={{ alignSelf: 'stretch' }}>
                         <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 24.0, margin: 4.0, padding: 4.0 }}>GOD MODE</Text>
-                    
+
 
                         <View style={{ padding: 4.0, margin: 4.0 }}>
                             <Text>AUTH STUFF</Text>

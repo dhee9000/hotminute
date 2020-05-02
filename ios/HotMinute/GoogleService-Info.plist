@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>350931211842-tpds3kru0narnmjape75efa154ss3b0i.apps.googleusercontent.com</string>
+	<string>350931211842-foq84g2sr903cl2pclibhckhkfjdh0jh.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.350931211842-tpds3kru0narnmjape75efa154ss3b0i</string>
+	<string>com.googleusercontent.apps.350931211842-foq84g2sr903cl2pclibhckhkfjdh0jh</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>350931211842-gm7fbhu6p23crb9emrpo0qncuq5j6bm6.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.hotminute</string>
+	<string>app.hotminute</string>
 	<key>PROJECT_ID</key>
 	<string>hot-minute</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:350931211842:ios:2c30298ea4bb9a16247fdb</string>
+	<string>1:350931211842:ios:41347bb2d741a2a4247fdb</string>
 	<key>DATABASE_URL</key>
 	<string>https://hot-minute.firebaseio.com</string>
 </dict>
