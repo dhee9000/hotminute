@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native';
 
-import { Colors } from './src/config';
+import { Colors, Firebase } from './src/config';
 
 import { RootNavigator } from './src/react/navigation';
 import { createAppContainer } from 'react-navigation';
@@ -15,7 +15,14 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
+
+try{
+ firebase.initializeApp(Firebase);
+}
+catch(e){
+  console.log("Firebase Init Error: ", e);
+}
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
