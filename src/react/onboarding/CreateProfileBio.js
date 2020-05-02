@@ -43,7 +43,7 @@ class CreateProfileBio extends React.Component{
                         inputContainerStyle={{borderColor: Colors.accent}}
                         label={'What do people call you?'}
                         labelStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text}}
-                        keyboardType={'number-pad'}
+                        keyboardType={'default'}
                         placeholder={'First Name'}
                         placeholderTextColor={Colors.textLightGray}
                     />
@@ -53,7 +53,7 @@ class CreateProfileBio extends React.Component{
                         inputContainerStyle={{borderColor: Colors.accent}}
                         label={'Bond, James Bond.'}
                         labelStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text}}
-                        keyboardType={'number-pad'}
+                        keyboardType={'default'}
                         placeholder={'Last Name'}
                         placeholderTextColor={Colors.textLightGray}
                     />
@@ -76,7 +76,7 @@ class CreateProfileBio extends React.Component{
                         inputContainerStyle={{borderColor: Colors.accent}}
                         label={'What do you do?'}
                         labelStyle={{fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text}}
-                        keyboardType={'number-pad'}
+                        keyboardType={'default'}
                         placeholder={'ex. Student, Youtuber, Model'}
                         placeholderTextColor={Colors.textLightGray}
                     />
