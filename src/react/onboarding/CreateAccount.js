@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ActivityIndicator, Modal } from 'react-native';
+import { View, ActivityIndicator, Modal, KeyboardAvoidingView } from 'react-native';
 
 import { Text } from '../common/components';
 import { Fonts, Colors, Firebase } from '../../config';
@@ -66,6 +66,7 @@ class CreateAccount extends React.Component {
 
     render() {
         return (
+            <KeyboardAvoidingView behavior={'height'} style={{flex: 1}}>
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                     <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Signup</Text>
@@ -108,6 +109,7 @@ class CreateAccount extends React.Component {
                     </View>
                 </Modal>
             </View>
+            </KeyboardAvoidingView>
         )
     }
 }
