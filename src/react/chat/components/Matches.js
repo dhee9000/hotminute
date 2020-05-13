@@ -19,7 +19,7 @@ const Matches = props => {
                         </TouchableOpacity>
                     </View>
                 }
-                numColumns={2}
+               horizontal
                 data={data}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (

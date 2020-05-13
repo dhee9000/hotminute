@@ -10,7 +10,7 @@ import * as States from '../../redux/ActionTypes';
 import { Colors, Fonts } from '../../config';
 
 import Matches from './components/Matches';
-
+import ChatList from './components/ChatApp';
 class Chats extends React.Component{
     render(){
         return(
@@ -19,7 +19,10 @@ class Chats extends React.Component{
                     <Text style={{fontFamily: Fonts.heading, fontSize: 32.0}}>Chats</Text>
                 </View>
                 <View>
-                    <Matches />
+                    {/* <Matches /> */}
+                    <ChatList />
+                    <Text>Test</Text>
+                       
                 </View>
             </View>
         )
