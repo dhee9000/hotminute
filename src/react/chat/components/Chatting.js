@@ -26,7 +26,7 @@ export const Chatting = ({selectedId, selectId}) => (
   <View style={{flex: 1}}>
     <Header selectedId={selectedId} selectId={selectId} data={data} />
     <View style={{flex: 1}}>
-      <ImageBackground source={{uri:'https://www.google.com/search?q=white+background+iphone&sxsrf=ALeKk01tSqQiu2Wq2WzvDc3glXxyWt4lzQ:1589271744080&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiJ4YbO8q3pAhVBbKwKHXegAzEQ_AUoAXoECA0QAw#imgrc=fJweOJv6-ssClM'}} resizeMode="cover" style={{flex: 1, width: null}}>
+      <ImageBackground source={{require('../mocks/images/background.jpg')}} style={{flex: 1, width: null}}>
  <ScrollView bounces={false} style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {data[selectedId].messages.map((message, i) => <Message message={message} key={i} />)}
   </ScrollView>

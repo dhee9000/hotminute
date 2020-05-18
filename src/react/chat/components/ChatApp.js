@@ -86,11 +86,11 @@ export default class ChatApp extends Component {
   }
 
   componentWillMount() {
-    this.setState({selectedId: undefined})
+    this.setState({selectedId: undefined});
   }
 
   _selectId(selectedId) {
-    this.setState({selectedId})
+    this.setState({selectedId});
   }
 
   _selectTab(selectedTab) {
