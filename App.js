@@ -9,35 +9,19 @@ import { createAppContainer } from 'react-navigation';
 import { Provider } from 'react-redux';
 import { createReduxStore } from './src/redux';
 
-import { AppRegistry } from 'react-native';
-import { ApolloClient } from 'apollo-client';
+import ApolloClient, { gql } from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-hooks';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
-
-import firebase from '@react-native-firebase/app';
-
-// try{
-//  firebase.initializeApp(Firebase);
-// }
-// catch(e){
-//   console.log("Firebase Init Error: ", e);
-// }
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: new HttpLink(
-    {
-      uri: 'http://your.graphql.url/graphql'
-    })
-  });
+      uri: 'http://192.168.1.18/graphql'
+});
 
-import { ThemeProvider } from 'react-native-elements';
-
-import * as Font from 'expo-font';
 
 const appState = createReduxStore();
 const AppContainer = createAppContainer(RootNavigator);
+
+import { ThemeProvider } from 'react-native-elements';
+import * as Font from 'expo-font';
 
 const theme = {
   colors: {
