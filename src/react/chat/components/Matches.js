@@ -9,17 +9,7 @@ const Matches = props => {
     return (
         <View>
             <FlatList
-                ListHeaderComponent={
-                    <View style={styles.top}>
-                        <Text style={styles.title}>Matches</Text>
-                        <TouchableOpacity>
-                            <Text style={styles.icon}>
-                                <Icon name='optionsV' />
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                }
-                numColumns={2}
+                horizontal
                 data={data}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
