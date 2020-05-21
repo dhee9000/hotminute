@@ -12,8 +12,18 @@ import { createReduxStore } from './src/redux';
 import ApolloClient, { gql } from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-hooks';
 
+import auth from '@react-native-firebase/auth';
+
 const client = new ApolloClient({
-      uri: 'http://192.168.1.18/graphql'
+      uri: 'http://192.168.1.18/graphql',
+      request: (operation) => {
+        const token = auth().currentUser.getIdToken();
+        operation.setContext({
+          headers: {
+            authorization: token ? `Bearer ${token}` : ''
+          }
+        })
+      }
 });
 
 
