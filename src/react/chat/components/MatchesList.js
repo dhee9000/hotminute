@@ -3,6 +3,7 @@ import { Text, View, Image, Dimensions, StyleSheet, TouchableOpacity } from 'rea
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Images } from './Images';
+import gqlQueries from './gql/gqlQueries';
 
 
 const { width, height } = Dimensions.get('window');
@@ -88,8 +89,8 @@ export const MatchesList = ({ selectId, id, name, messages }) => (
                 <View style={styles.messageContainer}>
                     {messages[messages.length - 1].from === 0 &&
                         <Icon style={{ marginRight: 5 }} size={16}
-                            name={messages[messages.length - 1].info === 'SENT' ? "check" : "check-all"}
-                            color={messages[messages.length - 1].info === 'READ' ? "#7dd5df" : "#424242"}
+                            name={this.state.body[this.state.body.length - 1].info === 'SENT' ? "check" : "check-all"}
+                            color={this.state.body[this.state.body.length - 1].info === 'READ' ? "#7dd5df" : "#424242"}
                         />}
                     <Text numberOfLines={1} ellipsizeMode='tail' style={styles.message}>{messages[messages.length - 1].message}</Text>
                 </View>

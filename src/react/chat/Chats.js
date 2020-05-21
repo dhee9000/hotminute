@@ -20,7 +20,7 @@ class Chats extends React.Component{
                 </View>
                 <View>
                      <Matches /> 
-                    <ChatList />
+                    <ChatApp />
                     <Text>Test</Text>
                        
                 </View>

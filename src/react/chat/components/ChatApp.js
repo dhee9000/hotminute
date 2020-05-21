@@ -3,7 +3,6 @@ import{StyleSheet, Text, View, TouchableOpacity, ScrollView, TouchableHighlight,
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {data} from '../mocks/data';
 import {MatchesList, InfoText} from './MatchesList';
 import {Chatting} from './Chatting';
 
@@ -84,6 +83,7 @@ export default class ChatApp extends Component {
     this._selectId = this._selectId.bind(this);
     this._selectTab = this._selectTab.bind(this);
   }
+   
 
   componentWillMount() {
     this.setState({selectedId: undefined});
@@ -94,7 +94,7 @@ export default class ChatApp extends Component {
   }
 
   _selectTab(selectedTab) {
-    this.setState({selectedTab})
+    this.setState({selectedTab});
   }
 
   render() {

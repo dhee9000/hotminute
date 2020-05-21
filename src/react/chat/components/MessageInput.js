@@ -55,7 +55,18 @@ export const MessageInput = () => (
     <View style={styles.textInputContainer}>
         <View style={[styles.shadow, styles.textInput]}>
             <Icon name="emoticon" size={24} color="#999" style={styles.emoticonIcon} />
-            <TextInput style={{flex:1}} />
+            <Input style={{flex:1}} 
+               placeholder="Enter a message"
+               type='text'
+               value={this.props.chat}
+               autoFocus={true}
+               onChange={(e)=> this.props.onTextInput(e.target.value)}
+               onKeyDown={(e)=> {
+                   if(e.keyCode === 13) {
+                       this.props.onSend()
+                       this.props.onResetText()
+                   }
+               }}/>
             <Icon name="camera" size={24} color="#bbb" style={styles.cameraIcon} />
             </View>
             <View style={styles.micContainer}>
