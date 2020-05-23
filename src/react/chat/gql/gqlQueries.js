@@ -19,8 +19,8 @@ const getMessages = gql`
   }
   `   
 
-  const getUserProfiles = gql`
-  query getUserProfiles{
+  const profile = gql`
+  query profile{
       getUserProfiles{
           id
           fname
@@ -29,6 +29,11 @@ const getMessages = gql`
           occupation
           bio
           gender
+          images{
+              order
+              image
+              coverImage
+          }
 
       }
   }`
@@ -49,6 +54,8 @@ mutation addProfile($fname: String!, $lname: String!, $phno: String!, $email: St
         images{
             order
             image
+            coverImage
+            
         }
 
     }
