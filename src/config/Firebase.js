@@ -1,10 +1,10 @@
 export default firebaseConfig = {
-    apiKey: "AIzaSyBox2VcDaBOBgPZ4VMIf52Za18hZ1uhEB4",
-    authDomain: "easyaccess-85814.firebaseapp.com",
-    databaseURL: "https://easyaccess-85814.firebaseio.com",
-    projectId: "easyaccess-85814",
-    storageBucket: "easyaccess-85814.appspot.com",
-    messagingSenderId: "329555706322",
-    appId: "1:329555706322:web:9b394bc5a3313194aa880b",
-    measurementId: "G-48V15XZMW1"
-  };
+  apiKey: "AIzaSyCwZIztMG32Y5A_V3y28VHbOMZzi7MWau0",
+  authDomain: "hot-minute.firebaseapp.com",
+  databaseURL: "https://hot-minute.firebaseio.com",
+  projectId: "hot-minute",
+  storageBucket: "hot-minute.appspot.com",
+  messagingSenderId: "350931211842",
+  appId: "1:350931211842:web:5335ecf8a952c213247fdb",
+  measurementId: "G-3FBWKMC0DJ"
+};
