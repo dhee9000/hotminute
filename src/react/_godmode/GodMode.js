@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView, ScrollView, NativeModules } from 'react-native';
+import { View, SafeAreaView, ScrollView, NativeModules, Modal, ActivityIndicator } from 'react-native';
 
 import { Text } from '../common/components';
 import { Fonts, Colors } from '../../config';
@@ -21,7 +21,58 @@ import { AgoraConfig } from '../../config';
 const { Agora } = NativeModules;
 const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = Agora
 
+import { GiftedChat } from 'react-native-gifted-chat'
+import { gql } from 'apollo-boost';
+import { Query, Mutation } from 'react-apollo';
+
 import * as Permissions from 'expo-permissions';
+
+const MESSAGES_QUERY = gql`
+  query {
+    messagesInChat(id: "test") {
+      timestamp,
+      body,
+      from {
+          fname,
+          lname
+      }
+    }
+  }
+`;
+
+const SEND_MESSAGE_QUERY = gql`
+  mutation SendMessage($body: String!) {
+    sendMessage(input: {
+        body: $body,
+        chatId: "test"
+  })
+  }
+`;
+
+const FETCH_PROFILE_QUERY = gql`
+    query GetProfile($uid: String!) {
+        profile(id: $uid) {
+            fname,
+            lname,
+            dob,
+            occupation,
+            bio,
+        }
+    }
+`
+
+const CREATE_PROFILE_QUERY = gql`
+    mutation CreateProfile($fname: String!, $lname: String!, $bio: String!, $occupation: String!, $dob: Int!) {
+        createProfile(input: {
+            gender: Male,
+            fname: $fname,
+            lname: $lname,
+            bio: $bio,
+            occupation: $occupation,
+            dob: $dob
+        })
+    }
+`
 
 class GodMode extends React.Component {
 
@@ -33,6 +84,8 @@ class GodMode extends React.Component {
         roomId: null,
         roomToken: null,
         joinedRoom: false,
+        chatVisible: false,
+        profileVisible: false,
 
         //
         socket: null,
@@ -232,8 +285,12 @@ class GodMode extends React.Component {
 
                         <View style={{ padding: 4.0, margin: 4.0 }}>
                             <Text>PROFILE STUFF</Text>
-                            <Button containerStyle={{ marginVertical: 2.0 }} title="Set Profile" onPress={() => this.startCall()} />
-                            <Button containerStyle={{ marginVertical: 2.0 }} title="Leave Room" onPress={() => this.endCall()} />
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Show Profile" onPress={() => this.setState({ profileVisible: true })} />
+                        </View>
+
+                        <View style={{ padding: 4.0, margin: 4.0 }}>
+                            <Text>CHAT STUFF</Text>
+                            <Button containerStyle={{ marginVertical: 2.0 }} title="Show Chat" onPress={() => this.setState({ chatVisible: true })} />
                         </View>
 
                         <View style={{ borderColor: Colors.primary, borderWidth: 4.0, padding: 4.0, margin: 4.0 }}>
@@ -246,6 +303,105 @@ class GodMode extends React.Component {
                         </View>
                         <AgoraView style={{ flex: 1, height: 100, width: 100, }}
                             remoteUid={this.state.peerIds[0]} mode={1} key={this.state.peerIds[0]} />
+                        <Modal visible={this.state.chatVisible} animated animationType={'slide'} presentationStyle={'pageSheet'}>
+                            <View style={{ flex: 1, padding: 16.0 }}>
+                                <Button containerStyle={{ marginVertical: 2.0 }} title="Close Chat" onPress={() => this.setState({ chatVisible: false })} />
+                                <Query query={MESSAGES_QUERY}>
+                                    {({ loading, data, error }) => (
+                                        <Mutation mutation={SEND_MESSAGE_QUERY}>
+                                            {(sendMessage, { data }) => (
+                                                <GiftedChat
+                                                    messages={data ? data.map(message => (
+                                                        {
+                                                            _id: message.id,
+                                                            text: message.body,
+                                                            createdAt: message.timestamp,
+                                                            user: {
+                                                                _id: message.from._id,
+                                                                name: `${messages.from.fname} ${messages.from.lname}`
+                                                            }
+                                                        }
+                                                    )) : []}
+                                                    onSend={async (messages = []) => {
+                                                        messages.forEach(message => {
+                                                            sendMessage({ variables: { body: message.text } });
+                                                        });
+                                                    }}
+                                                />
+                                            )}
+                                        </Mutation>
+                                    )}
+                                </Query>
+                            </View>
+                        </Modal>
+                        <Modal visible={this.state.profileVisible} animated animationType={'slide'} presentationStyle={'pageSheet'}>
+                            <View>
+                                <Button containerStyle={{ marginVertical: 2.0 }} title="Close Profile" onPress={() => this.setState({ profileVisible: false })} />
+                                <Text>Current Profile</Text>
+                                <Query query={FETCH_PROFILE_QUERY} variables={{ uid: this.state.uid }}>
+                                    {(loading, data, error) => (
+                                        data ?
+                                            <View>
+                                                <Text>{data.fname}</Text>
+                                                <Text>{data.lname}</Text>
+                                                <Text>{new Date(data.dob)}</Text>
+                                                <Text>{data.occupation}</Text>
+                                                <Text>{data.bio}</Text>
+                                            </View> : loading ? <ActivityIndicator /> : <View />
+                                    )}
+                                </Query>
+                                <Mutation mutation={CREATE_PROFILE_QUERY} variables={{ fname: this.state.fname, lname: this.state.lname, dob: new Date().getTime(), bio: this.state.bio, occupation: this.state.occupation }}>
+                                    {(createProfile, { data }) => (
+                                        <View>
+                                            <Input
+                                                containerStyle={{ marginBottom: 32.0 }}
+                                                inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                                inputContainerStyle={{ borderColor: Colors.accent }}
+                                                label={'What do people call you?'}
+                                                labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                                keyboardType={'default'}
+                                                placeholder={'First Name'}
+                                                placeholderTextColor={Colors.textLightGray}
+                                                onChangeText={text => this.setState({ fname: text })}
+                                            />
+                                            <Input
+                                                containerStyle={{ marginBottom: 32.0 }}
+                                                inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                                inputContainerStyle={{ borderColor: Colors.accent }}
+                                                label={'Bond, James Bond.'}
+                                                labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                                keyboardType={'default'}
+                                                placeholder={'Last Name'}
+                                                placeholderTextColor={Colors.textLightGray}
+                                                onChangeText={text => this.setState({ lname: text })}
+                                            />
+                                            <Input
+                                                containerStyle={{ marginBottom: 32.0 }}
+                                                inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                                inputContainerStyle={{ borderColor: Colors.accent }}
+                                                label={'What do you do?'}
+                                                labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                                keyboardType={'default'}
+                                                placeholder={'ex. Student, Youtuber, Model'}
+                                                placeholderTextColor={Colors.textLightGray}
+                                                onChangeText={text => this.setState({ occupation: text })}
+                                            />
+                                            <Input
+                                                containerStyle={{ marginBottom: 32.0 }}
+                                                inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                                inputContainerStyle={{ borderColor: Colors.accent }}
+                                                label={'Tell us about yourself'}
+                                                labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                                keyboardType={'default'}
+                                                placeholder={'Bio'}
+                                                placeholderTextColor={Colors.textLightGray}
+                                                onChangeText={text => this.setState({ bio: text })}
+                                            />
+                                        </View>
+                                    )}
+                                </Mutation>
+                            </View>
+                        </Modal>
                     </ScrollView>
                 </View>
             </SafeAreaView>

@@ -16,11 +16,11 @@ import auth from '@react-native-firebase/auth';
 
 const client = new ApolloClient({
       uri: 'http://192.168.1.18/graphql',
-      request: (operation) => {
-        const token = auth().currentUser.getIdToken();
+      request: async (operation) => {
+        const token = await auth().currentUser.getIdToken();
         operation.setContext({
           headers: {
-            authorization: token ? `Bearer ${token}` : ''
+            authorization: token ? `${token}` : ''
           }
         })
       }
