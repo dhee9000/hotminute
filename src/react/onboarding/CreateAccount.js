@@ -14,15 +14,8 @@ import { Input, Button } from 'react-native-elements';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-// const auth = firebaseAuth();
-const db = firestore();
 
-// try {
-//     firebase.initializeApp(Firebase);
-// }
-// catch (e) {
-//     console.log("Firebase Init Error: ", e);
-// }
+const db = firestore();
 
 class CreateAccount extends React.Component {
 

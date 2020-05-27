@@ -6,7 +6,7 @@ import { Button, Icon } from 'react-native-elements';
 
 import { Matching } from '../matching';
 import { Profile } from '../profile';
-import { Chat } from '../chat';
+import { Chats } from '../chat';
 import { Colors, Fonts } from '../../config';
 
 const { width, height } = Dimensions.get('screen');
@@ -15,7 +15,7 @@ import Heart from '../../../assets/svg/heart.svg';
 
 const MainNavigator = createMaterialTopTabNavigator(
     {
-        Chat,
+        Chats,
         Matching,
         Profile,
     },

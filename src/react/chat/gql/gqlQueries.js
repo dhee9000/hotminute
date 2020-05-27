@@ -1,9 +1,6 @@
 import {gql} from 'apollo-boost';
 
-
-
-
-const getMessages = gql`
+export const getMessages = gql`
   query getMessages{
       getMessages{
           id
@@ -19,7 +16,7 @@ const getMessages = gql`
   }
   `   
 
-  const profile = gql`
+export const getProfile = gql`
   query profile{
       getUserProfiles{
           id

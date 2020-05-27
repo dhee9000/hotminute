@@ -17,7 +17,7 @@ import * as ActionTypes from '../../redux/ActionTypes';
 import * as States from '../../redux/ActionTypes';
 import { Colors, Fonts } from '../../config';
 
-import { Button, Icon } from 'react-native-elements';
+import { Button, Icon, Slider } from 'react-native-elements';
 import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native'
 
@@ -27,6 +27,7 @@ import { Controls } from './components'
 
 import Heart from '../../../assets/svg/pink heart.svg';
 import Cross from '../../../assets/svg/x.svg';
+import { Modal } from 'react-native';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -37,18 +38,20 @@ class Matching extends React.Component {
 
 	decisionAnimation = new Animated.Value(0);
 
+	state = {
+		peerIds: [],                                //Array for storing connected peers
+		uid: Math.floor(Math.random() * 100),       //Generate a UID for local user
+		appid: AgoraConfig.AppID,                    //Enter the App ID generated from the Agora Website
+		channelName: "TestRoom",        //Channel Name for the current session
+		vidMute: false,                             //State variable for Video Mute
+		audMute: false,                             //State variable for Audio Mute
+		joinSucceed: false,                         //State variable for storing success
+
+		showFilters: false,
+	};
+
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			peerIds: [],                                //Array for storing connected peers
-			uid: Math.floor(Math.random() * 100),       //Generate a UID for local user
-			appid: AgoraConfig.AppID,                    //Enter the App ID generated from the Agora Website
-			channelName: "TestRoom",        //Channel Name for the current session
-			vidMute: false,                             //State variable for Video Mute
-			audMute: false,                             //State variable for Audio Mute
-			joinSucceed: false,                         //State variable for storing success
-		};
 
 		const config = {
 			appid: this.state.appid,                  //App ID
@@ -79,10 +82,12 @@ class Matching extends React.Component {
 			Animated.timing(this.decisionAnimation, {
 				toValue: direction,
 				duration: 500,
+				useNativeDriver: true,
 			}),
 			Animated.timing(this.decisionAnimation, {
 				toValue: 0,
 				duration: 500,
+				useNativeDriver: true,
 			}),
 		]).start();
 	}
@@ -129,6 +134,24 @@ class Matching extends React.Component {
 						<View style={{ alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginVertical: 16.0 }}>
 							<Switch style={{ marginBottom: 16.0 }} />
 							<Text style={{ color: Colors.background }}>Find Matches</Text>
+							<TouchableOpacity onPress={() => this.setState({ showFilters: true })}>
+								<Icon name={'settings'} color={Colors.background} size={32.0} />
+								<Text style={{ color: Colors.textGray }}>Filters</Text>
+							</TouchableOpacity>
+						</View>
+
+						<View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
+							<Animated.View style={{ padding: 16.0, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background, borderRadius: 16.0, elevation: 8.0, transform: [{ translateX: this.decisionAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, 500] }) }, { scale: this.decisionAnimation.interpolate({ inputRange: [-1, 0, 1], outputRange: [0.25, 1, 0.25] }) }] }}>
+								<Text style={{ fontSize: 12.0, color: Colors.textLightGray }}>You're Talking To</Text>
+								<Text style={{ fontFamily: Fonts.heading, fontSize: 24.0 }} numberOfLines={1}>Anjali Patel</Text>
+							</Animated.View>
+						</View>
+
+						<View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
+							<Animated.View style={{ padding: 16.0, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background, borderRadius: 16.0, elevation: 8.0, transform: [{ scale: this.decisionAnimation.interpolate({ inputRange: [-1, 0, 1], outputRange: [0, 1, 0] }) }] }}>
+								<Text style={{ fontFamily: Fonts.heading, fontSize: 48.0, color: Colors.primary }} numberOfLines={1}>1:00</Text>
+								<Text style={{ fontSize: 12.0, color: Colors.textLightGray }}>Time Remaining</Text>
+							</Animated.View>
 						</View>
 
 						{/* Decision Buttons */}
@@ -145,6 +168,24 @@ class Matching extends React.Component {
 						</View>
 					</View>
 				</ImageBackground>
+				<Modal visible={this.state.showFilters} transparent animated animationType={'slide'}>
+					<View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+						<View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+							<Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>Filters</Text>
+							<Text style={{fontFamily: Fonts.heading, marginRight: 16.0, color: Colors.primary, fontSize: 24}} onPress={() => this.setState({showFilters: false})}>X</Text>
+						</View>
+						<View>
+							<Text>Distance</Text>
+							<Slider
+								value={this.state.distanceFilter}
+								onValueChange={value => this.setState({ distanceFilter: value })}
+								minimumValue={0}
+								maximumValue={50}
+								thumbTintColor={Colors.primary}
+							/>
+						</View>
+					</View>
+				</Modal>
 			</LinearGradient>
 		)
 	}
@@ -160,21 +201,22 @@ const mapDispatchToProps = dispatch => ({
 
 export default connect(mapStateToProps, mapDispatchToProps)(Matching);
 
-const TimerButton = props => 
-(<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 8.0 }}>
-	<LottieView style={{ width: 120, height: 120, }} source={require('../../..//assets/animations/stopwatch.json')} autoPlay loop />
-</View>)
+const TimerButton = props =>
+	(<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 8.0 }}>
+		<LottieView style={{ width: 120, height: 120, marginBottom: 2.0 }} source={require('../../..//assets/animations/stopwatch.json')} autoPlay loop />
+		<Text style={{ alignSelf: 'center', color: Colors.textLightGray, fontSize: 12.0, bottom: -2.0, position: 'absolute' }}>Add 30s</Text>
+	</View>)
 
-const NoDecisionButton = props => 
-(<TouchableOpacity onPress={props.onPress}>
-	<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>
-		<Cross height={TOGGLE_SIZE} width={TOGGLE_SIZE} />
-	</View>
-</TouchableOpacity>);
+const NoDecisionButton = props =>
+	(<TouchableOpacity onPress={props.onPress}>
+		<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>
+			<Cross height={TOGGLE_SIZE} width={TOGGLE_SIZE} />
+		</View>
+	</TouchableOpacity>);
 
-const YesDecisionButton = props => 
-(<TouchableOpacity onPress={props.onPress}>
-	<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>
-		<Heart height={TOGGLE_SIZE} width={TOGGLE_SIZE} />
-	</View>
-</TouchableOpacity>);
+const YesDecisionButton = props =>
+	(<TouchableOpacity onPress={props.onPress}>
+		<View style={{ backgroundColor: Colors.background, borderRadius: TOGGLE_SIZE / 2, elevation: 2.0 }}>
+			<Heart height={TOGGLE_SIZE} width={TOGGLE_SIZE} />
+		</View>
+	</TouchableOpacity>);

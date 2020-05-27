@@ -6,13 +6,6 @@ import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import { default as firebaseAuth } from '@react-native-firebase/auth';
 
-// try {
-//     firebase.initializeApp(Firebase);
-// }
-// catch (e) {
-//     console.log("Firebase Init Error: ", e);
-// }
-
 const db = firestore();
 const auth = firebaseAuth();
 

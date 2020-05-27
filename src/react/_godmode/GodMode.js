@@ -23,13 +23,6 @@ const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = A
 
 import * as Permissions from 'expo-permissions';
 
-// try {
-//     firebase.initializeApp(Firebase);
-// }
-// catch (e) {
-//     console.log("Firebase Init Error: ", e);
-// }
-
 class GodMode extends React.Component {
 
     state = {
