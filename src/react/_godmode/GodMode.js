@@ -13,8 +13,6 @@ import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-import { w3cwebsocket as WebSocket } from "websocket";
-
 import { RtcEngine, AgoraView } from 'react-native-agora'
 import { AgoraConfig } from '../../config';
 
