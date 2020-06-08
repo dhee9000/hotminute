@@ -27,7 +27,7 @@ class CreateAccount extends React.Component {
     }
 
     onCreateAccountPressed = async () => {
-        this.setState({sendingCode: true});
+        this.setState({ sendingCode: true });
         try {
             if (auth().currentUser) {
                 console.log("Signing Out Existing User!");
@@ -42,19 +42,19 @@ class CreateAccount extends React.Component {
     }
 
     onVerifyCodePressed = async () => {
-        this.setState({verifyingCode: true});
+        this.setState({ verifyingCode: true });
         try {
             await this.state.confirm.confirm(this.state.code);
-            this.setState({verifyingCode: false, codeVerified: true});
+            this.setState({ verifyingCode: false, codeVerified: true });
         }
         catch (e) {
             console.error("Verify Code Error", e);
-            this.setState({codeSent: false})
+            this.setState({ codeSent: false })
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(prevState.codeVerified != this.state.codeVerified){
+        if (prevState.codeVerified != this.state.codeVerified) {
             // Check if Profile Exists
 
             // ... if it does navigate to main screen
@@ -66,52 +66,56 @@ class CreateAccount extends React.Component {
 
     render() {
         return (
-            <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }}>
-                <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
-                    <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                        <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Get Started</Text>
-                        <Text style={{ color: Colors.text }}>Enter your phone number to begin.</Text>
-                    </View>
-                    <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
-                        <Input
-                            inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                            inputContainerStyle={{ borderColor: Colors.accent }}
-                            keyboardType={'phone-pad'}
-                            label={'Phone Number'}
-                            labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                            onChangeText={text => this.setState({ phno: text })}
-                            placeholder={'9728836969'}
-                            placeholderTextColor={Colors.textLightGray}
-                            value={this.state.phno}
-                        />
-                        <Text style={{ color: Colors.textLightGray, fontSize: 10, marginLeft: 8.0, marginTop: 16.0 }}>
-                            We will send you a code to confirm your number. Standard text or data rates may apply.
-                    </Text>
-                    </View>
-                    {this.state.sendingCode ? <ActivityIndicator size={'large'} /> : null}
-                    <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                        <Button title="Get Started" onPress={this.onCreateAccountPressed} />
-                    </View>
-
-                    <Modal visible={this.state.codeSent} animated animationType={'slide'}>
-                    <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }}>
-                        <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
-                            <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                                <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Verify Your Number</Text>
-                                <Text style={{ color: Colors.text }}>We texted you a code to make sure your number is right.</Text>
-                            </View>
-                            <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
-                                <CodeInput onChangeText={text => this.setState({ code: text })} value={this.state.code} />
-                            </View>
-                            {this.state.verifyingCode ? <ActivityIndicator size={'large'} /> : null}
-                            <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                                <Button title="Verify Code" onPress={this.onVerifyCodePressed} />
-                            </View>
+            <DismissKeyboardView>
+                <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }}>
+                    <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
+                        <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
+                            <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Get Started</Text>
+                            <Text style={{ color: Colors.text }}>Enter your phone number to begin.</Text>
                         </View>
-                        </KeyboardAvoidingView>
-                    </Modal>
-                </View>
-            </KeyboardAvoidingView>
+                        <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
+                            <Input
+                                inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                inputContainerStyle={{ borderColor: Colors.accent }}
+                                keyboardType={'phone-pad'}
+                                label={'Phone Number'}
+                                labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                onChangeText={text => this.setState({ phno: text })}
+                                placeholder={'9728836969'}
+                                placeholderTextColor={Colors.textLightGray}
+                                value={this.state.phno}
+                            />
+                            <Text style={{ color: Colors.textLightGray, fontSize: 10, marginLeft: 8.0, marginTop: 16.0 }}>
+                                We will send you a code to confirm your number. Standard text or data rates may apply.
+                    </Text>
+                        </View>
+                        {this.state.sendingCode ? <ActivityIndicator size={'large'} /> : null}
+                        <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
+                            <Button title="Get Started" onPress={this.onCreateAccountPressed} />
+                        </View>
+
+                        <Modal visible={this.state.codeSent} animated animationType={'slide'}>
+                            <DismissKeyboardView>
+                                <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }}>
+                                    <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
+                                        <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
+                                            <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Verify Your Number</Text>
+                                            <Text style={{ color: Colors.text }}>We texted you a code to make sure your number is right.</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
+                                            <CodeInput onChangeText={text => this.setState({ code: text })} value={this.state.code} />
+                                        </View>
+                                        {this.state.verifyingCode ? <ActivityIndicator size={'large'} /> : null}
+                                        <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
+                                            <Button title="Verify Code" onPress={this.onVerifyCodePressed} />
+                                        </View>
+                                    </View>
+                                </KeyboardAvoidingView>
+                            </DismissKeyboardView>
+                        </Modal>
+                    </View>
+                </KeyboardAvoidingView>
+            </DismissKeyboardView>
         )
     }
 }
