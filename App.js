@@ -15,7 +15,7 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import auth from '@react-native-firebase/auth';
 
 const client = new ApolloClient({
-      uri: 'http://192.168.1.18/graphql',
+      uri: 'https://192.168.1.18/graphql',
       request: async (operation) => {
         const token = await auth().currentUser.getIdToken();
         operation.setContext({
