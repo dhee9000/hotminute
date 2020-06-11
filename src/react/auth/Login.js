@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ActivityIndicator, Modal, KeyboardAvoidingView } from 'react-native';
 
 import { Text } from '../common/components';
-import { Fonts, Colors, Firebase } from '../../config';
+import { Fonts, Colors, ApolloClient } from '../../config';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
@@ -14,10 +14,12 @@ import { Input, Button } from 'react-native-elements';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
+import { gql } from 'apollo-boost';
+
 class CreateAccount extends React.Component {
 
     state = {
-        phno: '',
+        phno: '+16505551234',
         sendingCode: false,
         codeSent: false,
         code: '',
@@ -53,14 +55,26 @@ class CreateAccount extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.codeVerified != this.state.codeVerified) {
+    async componentDidUpdate(prevProps, prevState) {
+        if (prevState.codeVerified != this.state.codeVerified && this.state.codeVerified) {
             // Check if Profile Exists
-
-            // ... if it does navigate to main screen
-            this.props.navigation.navigate('Main');
-
-            // ... if it doesn't navigate to create profile screen
+            const PROFILE_QUERY = gql`
+                query profile($uid: String!) { 
+                    profile(id: $uid)
+                    {
+                        id
+                    }
+                }
+            `
+            let { profile } = (await ApolloClient.query({query: PROFILE_QUERY, variables: {uid: auth().currentUser.uid}})).data
+            if (profile != null) {
+                // ... if it does navigate to main screen
+                this.props.navigation.navigate('Main');
+            }
+            else {
+                // ... if it doesn't navigate to create profile screen
+                this.props.navigation.navigate('CreateProfileBio');
+            }
         }
     }
 
@@ -107,6 +121,7 @@ class CreateAccount extends React.Component {
                                         </View>
                                         {this.state.verifyingCode ? <ActivityIndicator size={'large'} /> : null}
                                         <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
+                                            <Text style={{color: Colors.textLightGray, alignSelf: 'center', marginVertical: 4.0}} onPress={() => this.setState({codeSent: false})}>Cancel</Text>
                                             <Button title="Verify Code" onPress={this.onVerifyCodePressed} />
                                         </View>
                                     </View>
