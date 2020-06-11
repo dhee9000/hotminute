@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Alert } from 'react-native';
 
 import { Colors, Firebase } from './src/config';
 
@@ -9,21 +9,13 @@ import { createAppContainer } from 'react-navigation';
 import { Provider } from 'react-redux';
 import { createReduxStore } from './src/redux';
 
-import ApolloClient, { gql } from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-hooks';
+import {gql} from 'apollo-boost';
+import { ApolloClient } from './src/config';
 
-import auth from '@react-native-firebase/auth';
-
-const client = new ApolloClient({
-      uri: 'https://192.168.1.18/graphql',
-      request: async (operation) => {
-        const token = await auth().currentUser.getIdToken();
-        operation.setContext({
-          headers: {
-            authorization: token ? `${token}` : ''
-          }
-        })
-      }
+ApolloClient.query({query: gql`query{_empty}`}).catch(err => {
+  console.log("GraphQL Test Query Failed", err);
+  Alert.alert("Application Error", "GraphQL client not working! App will not work.");
 });
 
 
@@ -58,7 +50,7 @@ export default function App() {
       <View style={{ flex: 1 }}>
         <StatusBar barStyle={'dark-content'} backgroundColor={'transparent'} translucent />
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primary }}>
-          <ApolloProvider client={client}>
+          <ApolloProvider client={ApolloClient}>
             <Provider store={appState} style={{ flex: 1 }}>
               <ThemeProvider theme={theme} style={{ flex: 1 }}>
                 <AppContainer style={{ flex: 1 }} />
