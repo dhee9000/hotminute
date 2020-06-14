@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, ActivityIndicator, Modal, KeyboardAvoidingView } from 'react-native';
+import { View, ActivityIndicator, Modal, KeyboardAvoidingView, Dimensions, Platform } from 'react-native';
 
 import { Text } from '../common/components';
-import { Fonts, Colors, ApolloClient } from '../../config';
+import { Fonts, Colors } from '../../config';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
@@ -14,7 +14,7 @@ import { Input, Button } from 'react-native-elements';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-import { gql } from 'apollo-boost';
+const { width, height } = Dimensions.get('screen');
 
 class CreateAccount extends React.Component {
 
@@ -22,13 +22,13 @@ class CreateAccount extends React.Component {
         phno: '+16505551234',
         sendingCode: false,
         codeSent: false,
-        code: '',
+        code: '123456',
         verifyingCode: false,
         codeVerified: false,
         confirm: {}
     }
 
-    onCreateAccountPressed = async () => {
+    onLoginPressed = async () => {
         this.setState({ sendingCode: true });
         try {
             if (auth().currentUser) {
@@ -58,17 +58,9 @@ class CreateAccount extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         if (prevState.codeVerified != this.state.codeVerified && this.state.codeVerified) {
             // Check if Profile Exists
-            const PROFILE_QUERY = gql`
-                query profile($uid: String!) { 
-                    profile(id: $uid)
-                    {
-                        id
-                    }
-                }
-            `
-            let { profile } = (await ApolloClient.query({query: PROFILE_QUERY, variables: {uid: auth().currentUser.uid}})).data
-            if (profile != null) {
-                // ... if it does navigate to main screen
+            let profileDoc = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
+            if (profileDoc.exists && profileDoc.data().profileCompleted) {
+                // ... if it does and the setup complete flag has been set navigate to main screen
                 this.props.navigation.navigate('Main');
             }
             else {
@@ -81,7 +73,8 @@ class CreateAccount extends React.Component {
     render() {
         return (
             <DismissKeyboardView>
-                <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }}>
+                <View style={{flex: 1}}>
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'height' : 'none'} style={{flex: 1}}>
                     <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                         <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                             <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Get Started</Text>
@@ -105,12 +98,12 @@ class CreateAccount extends React.Component {
                         </View>
                         {this.state.sendingCode ? <ActivityIndicator size={'large'} /> : null}
                         <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                            <Button title="Get Started" onPress={this.onCreateAccountPressed} />
+                            <Button title="Get Started" onPress={this.onLoginPressed} />
                         </View>
 
                         <Modal visible={this.state.codeSent} animated animationType={'slide'}>
                             <DismissKeyboardView>
-                                <KeyboardAvoidingView behavior={'height'} style={{ flex: 1 }}>
+                            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'height' : 'none'} style={{flex: 1}}>
                                     <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                                         <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                                             <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Verify Your Number</Text>
@@ -130,6 +123,7 @@ class CreateAccount extends React.Component {
                         </Modal>
                     </View>
                 </KeyboardAvoidingView>
+                </View>
             </DismissKeyboardView>
         )
     }

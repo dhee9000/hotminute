@@ -8,23 +8,76 @@ import { ActionTypes } from '../../redux/';
 
 import { Colors, Fonts } from '../../config';
 
-const TEST_PROFILE_IMAGE = 'https://scontent-dfw5-2.xx.fbcdn.net/v/t1.0-9/92129151_1175951836087183_6356546886500876288_n.jpg?_nc_cat=100&_nc_sid=07e735&_nc_ohc=swJ8yNDW6dMAX_y_hUj&_nc_ht=scontent-dfw5-2.xx&oh=9e264f0c1a1fa80e6a00a37eeb4d2fa4&oe=5EB26EF3';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+
+const BLANK_IMAGE_URI = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fsvg-artwork-icon-vector%2F&psig=AOvVaw3ZF6RKqDGx8HUSe1ho4leA&ust=1583049630546000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLDPxMml9ucCFQAAAAAdAAAAABAD';
 const IMG_DIM = 128;
 
 const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Programming", "Comedy"];
 
 class Profile extends React.Component {
+
+    state={
+        fname: '',
+        lname: '',
+        occupation: '',
+        bio: '',
+        dob: new Date(),
+        images: {}
+    }
+
+    async componentDidMount(){
+        let { uid } = auth().currentUser;
+        let profileRef = firestore().collection('profiles').doc(uid);
+        let profileSnapshot = await profileRef.get();
+
+        if(!profileSnapshot.exists){
+            this.props.navigation.navigate('CreateProfileBio');
+        }
+
+        let profileData = profileSnapshot.data();
+
+        let processedImages = {};
+
+        Object.keys(profileData.images).map(async (id) => {
+
+            let image = profileData.images[id];
+            let downloadURL = await storage().ref(image.ref).getDownloadURL();
+
+            processedImages[id] = {
+                ...image,
+                uri: downloadURL,
+            }
+
+            this.setState({images: processedImages});
+        })
+
+        console.log(profileData.images);
+        console.log(processedImages);
+
+        this.setState({
+            fname: profileData.fname,
+            lname: profileData.lname,
+            occupation: profileData.occupation,
+            bio: profileData.bio,
+            dob: profileData.dob.toDate(),
+            images: processedImages,
+        })
+    }
+
     render() {
         return (
             <View style={{ backgroundColor: Colors.background, flex: 1, paddingTop: 64.0, }}>
                 <View style={{ padding: 16.0, flex: 1 }}>
                     <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0 }}>Your Profile</Text>
                     <ScrollView style={{flex: 1, marginTop: 16.0}} contentContainerStyle={{alignItems: 'center'}}>
-                        <Image source={{uri: TEST_PROFILE_IMAGE}} style={{width: IMG_DIM, height: IMG_DIM, borderRadius: IMG_DIM/2, alignSelf: 'center'}} />
-                        <Text style={{fontFamily: Fonts.heading, fontSize: 28.0, marginTop: 16.0,}}>Anjali Patel</Text>
-                        <Text style={{fontSize: 18, color: Colors.textLightGray}}>24</Text>
-                        <Text style={{fontSize: 18, color: Colors.textLightGray}}>Engineer</Text>
-                        <Text style={{fontSize: 18, color: Colors.textLightGray}}>15 mi</Text>
+                        <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM/2, margin: 2.0 }} />
+                        <Text style={{fontFamily: Fonts.heading, fontSize: 28.0, marginTop: 16.0,}}>{this.state.fname} {this.state.lname}</Text>
+                        <Text style={{fontSize: 18, color: Colors.textLightGray}}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
+                        <Text style={{fontSize: 18, color: Colors.textLightGray}}>{this.state.occupation}</Text>
+                        <Text style={{fontSize: 18, color: Colors.textLightGray}}>{this.state.bio}</Text>
                         <Text style={{alignSelf: 'flex-start', fontFamily: Fonts.heading}}>Interests</Text>
                         <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                             {TEST_INTERESTS.map(interest => (
@@ -34,6 +87,11 @@ class Profile extends React.Component {
                             ))}
                         </View>
                         <Text style={{alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0}}>Pictures</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center',}}>
+                            {Object.keys(this.state.images).map(key => (
+                                    <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                            ))}
+                        </View>
                     </ScrollView>
                 </View>
             </View>

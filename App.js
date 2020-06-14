@@ -1,23 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, StatusBar, Alert } from 'react-native';
 
-import { Colors, Firebase } from './src/config';
+import { Colors } from './src/config';
 
 import { RootNavigator } from './src/react/navigation';
 import { createAppContainer } from 'react-navigation';
 
-import { Provider } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { createReduxStore } from './src/redux';
-
-import { ApolloProvider } from '@apollo/react-hooks';
-import {gql} from 'apollo-boost';
-import { ApolloClient } from './src/config';
-
-ApolloClient.query({query: gql`query{_empty}`}).catch(err => {
-  console.log("GraphQL Test Query Failed", err);
-  Alert.alert("Application Error", "GraphQL client not working! App will not work.");
-});
-
 
 const appState = createReduxStore();
 const AppContainer = createAppContainer(RootNavigator);
@@ -50,13 +40,11 @@ export default function App() {
       <View style={{ flex: 1 }}>
         <StatusBar barStyle={'dark-content'} backgroundColor={'transparent'} translucent />
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primary }}>
-          <ApolloProvider client={ApolloClient}>
-            <Provider store={appState} style={{ flex: 1 }}>
+            <ReduxProvider store={appState} style={{ flex: 1 }}>
               <ThemeProvider theme={theme} style={{ flex: 1 }}>
                 <AppContainer style={{ flex: 1 }} />
               </ThemeProvider>
-            </Provider>
-          </ApolloProvider>
+            </ReduxProvider>
           <AlphaWarning />
         </SafeAreaView>
       </View>

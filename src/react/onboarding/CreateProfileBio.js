@@ -7,16 +7,23 @@ import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
 import * as States from '../../redux/ActionTypes';
 
-import { Fonts, Colors, ApolloClient } from '../../config';
+import { Fonts, Colors } from '../../config';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input, Button } from 'react-native-elements';
+
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 class CreateProfileBio extends React.Component {
 
     state = {
         showDatePicker: false,
-        initialDate: new Date(947224443),
+        initialDate: new Date(947224800000),
+        fname: 'Test',
+        lname: 'User',
+        occupation: 'Dumb Shit',
+        bio: 'I am cool guy',
     }
 
     onChangeDate = (event, selectedDate) => {
@@ -30,19 +37,15 @@ class CreateProfileBio extends React.Component {
     }
 
     onDonePressed = async () => {
-        // await ApolloClient.mutate(
-        //     {
-        //         mutation: CREATE_PROFILE,
-        //         variables: {
-        //             fname: this.state.fname,
-        //             lname: this.state.lname,
-        //             occupation: this.state.occupation,
-        //             bio: this.state.bio,
-        //             dob: this.state.dob
-        //         }
-        //     }
-        // );
         alert(`Creating Profile: ${this.state.fname} ${this.state.lname}, ${this.state.dob}, ${this.state.occupation}, ${this.state.bio}.`)
+        await firestore().collection('profiles').doc(auth().currentUser.uid).set({
+            fname: this.state.fname,
+            lname: this.state.lname,
+            dob: this.state.dob,
+            occupation: this.state.occupation,
+            bio: this.state.bio
+        });
+        this.props.navigation.navigate('CreateProfileMedia');
     }
 
     render() {
@@ -63,6 +66,7 @@ class CreateProfileBio extends React.Component {
                         placeholder={'First Name'}
                         placeholderTextColor={Colors.textLightGray}
                         onChangeText={fname => this.setState({ fname })}
+                        value={this.state.fname}
                     />
                     <Input
                         containerStyle={{ marginBottom: 32.0 }}
@@ -74,6 +78,7 @@ class CreateProfileBio extends React.Component {
                         placeholder={'Last Name'}
                         placeholderTextColor={Colors.textLightGray}
                         onChangeText={lname => this.setState({ lname })}
+                        value={this.state.lname}
                     />
                     <View style={{ marginHorizontal: 8.0, marginBottom: 32.0 }}>
                         <Text style={{ color: Colors.text }}>Are you old enough to be dating?</Text>
@@ -98,6 +103,7 @@ class CreateProfileBio extends React.Component {
                         placeholder={'ex. Student, Youtuber, Model'}
                         placeholderTextColor={Colors.textLightGray}
                         onChangeText={occupation => this.setState({ occupation })}
+                        value={this.state.occupation}
                     />
                     <Input
                         containerStyle={{ marginBottom: 32.0 }}
@@ -110,6 +116,7 @@ class CreateProfileBio extends React.Component {
                         placeholder={'A short description of yourself'}
                         placeholderTextColor={Colors.textLightGray}
                         onChangeText={bio => this.setState({ bio })}
+                        value={this.state.bio}
                     />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
