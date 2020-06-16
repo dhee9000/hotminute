@@ -9,32 +9,82 @@ import * as States from '../../redux/ActionTypes';
 
 import { Colors, Fonts } from '../../config';
 
-import { GiftedChat } from 'react-native-gifted-chat';
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
-const TEST_PROFILE_IMAGE = 'https://scontent-dfw5-2.xx.fbcdn.net/v/t1.0-9/92129151_1175951836087183_6356546886500876288_n.jpg?_nc_cat=100&_nc_sid=07e735&_nc_ohc=swJ8yNDW6dMAX_y_hUj&_nc_ht=scontent-dfw5-2.xx&oh=9e264f0c1a1fa80e6a00a37eeb4d2fa4&oe=5EB26EF3';
+const BLANK_IMAGE_URI = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fsvg-artwork-icon-vector%2F&psig=AOvVaw3ZF6RKqDGx8HUSe1ho4leA&ust=1583049630546000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLDPxMml9ucCFQAAAAAdAAAAABAD';
 
 class Chats extends React.Component {
+
+    state = {
+        chats: [],
+        matches: [],
+        matchesToDisplay: [],
+    }
+
+    async componentDidMount() {
+        await this.getChats();
+        await this.getMatches();
+    }
+
+    getChats = async () => {
+        let snapshotA = await firestore().collection('chats').where('uid1', '==', auth().currentUser.uid).get();
+        let snapshotB = await firestore().collection('chats').where('uid2', '==', auth().currentUser.uid).get();
+        
+        let chats = [];
+        snapshotA.docs.forEach(doc => chats.push({...doc.data(), id: doc.id}));
+        snapshotB.docs.forEach(doc => chats.push({...doc.data(), id: doc.id}));
+
+        this.setState({chats});
+    }
+
+    getMatches = async () => {
+        let matchesSnapshotA = await firestore().collection('matches').where('uid1', '==', auth().currentUser.uid).get();
+        let matchesSnapshotB = await firestore().collection('matches').where('uid2', '==', auth().currentUser.uid).get();
+        
+        let matches = [];
+        matchesSnapshotA.docs.forEach(doc => matches.push({...doc.data(), id: doc.id}));
+        matchesSnapshotB.docs.forEach(doc => matches.push({...doc.data(), id: doc.id}));
+
+        this.setState({matches});
+    }
+
+    async componentDidUpdate(prevProps, prevState){
+        if(prevState.matches != this.state.matches){
+            let matchesToDisplay = this.state.matches.filter(match => {
+
+                let uid = auth().currentUser.uid;
+                let otherUid = match.uid1 == uid ? match.uid2 : match.uid1;
+                let uidInChats = chats.find(chat => {
+                    return chat.uid1 == otherUid || chat.uid2 == otherUid;
+                });
+    
+                return uidInChats === -1;
+    
+            });
+            this.setState({matchesToDisplay});
+        }
+    }
+
     render() {
         return (
-            <View style={{ backgroundColor: Colors.background, flex: 1, paddingTop: 64.0, }}>
+            <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ padding: 16.0, }}>
                     <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0 }}>Chats</Text>
                 </View>
                 <View>
                     <FlatList
                         horizontal
+                        data={this.state.matchesToDisplay}
+                        contentContainerStyle={{margin:8.0}}
+                        ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
                     />
                 </View>
                 <View>
                     <FlatList
                         ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
-                        data={[
-                            { id: 'adsfasdg', fname: 'Anjali', lname: 'Patel', displayImageURL: TEST_PROFILE_IMAGE, mostRecentMessage: 'You could end my quarantine ;)' },
-                            { id: 'adsfasdgasgasdg', fname: 'Anjali', lname: 'Patel', displayImageURL: TEST_PROFILE_IMAGE, mostRecentMessage: 'You could end my quarantine ;)' },
-                            { id: 'adsasdgasdgfasdg', fname: 'Anjali', lname: 'Patel', displayImageURL: TEST_PROFILE_IMAGE, mostRecentMessage: 'You could end my quarantine ;)' },
-                            { id: 'argaawrg', fname: 'Anjali', lname: 'Patel', displayImageURL: TEST_PROFILE_IMAGE, mostRecentMessage: 'You could end my quarantine ;)' },
-                            { id: 'awrgwg', fname: 'Anjali', lname: 'Patel', displayImageURL: TEST_PROFILE_IMAGE, mostRecentMessage: 'You could end my quarantine ;)' },
-                        ]}
+                        data={this.state.chats}
                         keyExtractor={item => item.id}
                         renderItem={({ item }) => {
                             return (

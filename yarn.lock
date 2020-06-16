@@ -1192,6 +1192,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/eslint-plugin/-/eslint-plugin-1.1.0.tgz#e42b1bef12d2415411519fd528e64b593b1363dc"
   integrity sha512-W/J0fNYVO01tioHjvYWQ9m6RgndVtbElzYozBq1ZPrHO/iCzlqoySHl4gO/fpCl9QEFjvJfjPgtPMTMlsoq5DQ==
 
+"@react-native-community/masked-view@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.10.tgz#5dda643e19e587793bc2034dd9bf7398ad43d401"
+  integrity sha512-rk4sWFsmtOw8oyx8SD3KSvawwaK7gRBSEIy2TAwURyGt+3TizssXP1r8nx3zY+R7v2vYYHXZ+k2/GULAT/bcaQ==
+
 "@react-native-firebase/analytics@^6.4.0":
   version "6.7.2"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/analytics/-/analytics-6.7.2.tgz#5f5d6cdefbee09e2a45e33e8dbf55cbc3452c64b"
@@ -6370,6 +6375,11 @@ react-native-reanimated@^1.9.0:
   integrity sha512-Aj+spgIHRiVv7ezGADxnSH1EoKrQRD2+XaSiGY0MiB/pvRNNrZPSJ+3NVpvLwWf9lZMOP7dwqqyJIzoZgBDt8w==
   dependencies:
     fbjs "^1.0.0"
+
+react-native-safe-area-context@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-3.0.5.tgz#3dd9bf2fea3b51f894b9849f11108ac303bbefe5"
+  integrity sha512-cLZtHvzm/tdCTCOCgNRUsnl9ma8MozE9vtxHQVftuY6hRt+esCBdXA5jXcuCaCj+yUe4Akw+c5BPFNUF5vOTjQ==
 
 react-native-safe-area-view@^0.14.9:
   version "0.14.9"

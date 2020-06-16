@@ -31,6 +31,14 @@ class CreateProfileMedia extends React.Component {
         numImagesSelected: 0,
     }
 
+    async componentDidMount() {
+        let profileSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
+        let profileData = profileSnapshot.data();
+        if(profileSnapshot.exists && profileData.mediaComplete){
+            this.props.navigation.navigate('SelectPreferences');
+        }
+    }
+
     imageTapped = async (id) => {
 
         // Make sure previous images are filled first
@@ -99,9 +107,9 @@ class CreateProfileMedia extends React.Component {
 
         })
 
-        await profileRef.update({profileCompleted: true});
+        await profileRef.update({ mediaComplete: true });
 
-        this.props.navigation.navigate('Main');
+        this.props.navigation.navigate('SelectPreferences');
     }
 
     ProfileImage = props => {

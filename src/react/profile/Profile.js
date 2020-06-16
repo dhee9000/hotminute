@@ -69,7 +69,7 @@ class Profile extends React.Component {
 
     render() {
         return (
-            <View style={{ backgroundColor: Colors.background, flex: 1, paddingTop: 64.0, }}>
+            <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ padding: 16.0, flex: 1 }}>
                     <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0 }}>Your Profile</Text>
                     <ScrollView style={{flex: 1, marginTop: 16.0}} contentContainerStyle={{alignItems: 'center'}}>
@@ -81,7 +81,7 @@ class Profile extends React.Component {
                         <Text style={{alignSelf: 'flex-start', fontFamily: Fonts.heading}}>Interests</Text>
                         <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                             {TEST_INTERESTS.map(interest => (
-                                <View style={{backgroundColor: Colors.primary, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0}}>
+                                <View key={interest} style={{backgroundColor: Colors.primary, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0}}>
                                     <Text style={{color: Colors.background}}>{interest}</Text>
                                 </View>
                             ))}
@@ -89,7 +89,7 @@ class Profile extends React.Component {
                         <Text style={{alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0}}>Pictures</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center',}}>
                             {Object.keys(this.state.images).map(key => (
-                                    <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                                    <Image key={key} source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
                             ))}
                         </View>
                     </ScrollView>

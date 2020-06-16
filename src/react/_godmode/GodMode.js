@@ -7,7 +7,7 @@ import { Fonts, Colors } from '../../config';
 import { connect } from 'react-redux';
 import { ActionTypes } from '../../redux/';
 
-import { Input, Button, ThemeConsumer } from 'react-native-elements';
+import { Input, Button } from 'react-native-elements';
 
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
