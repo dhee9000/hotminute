@@ -36,8 +36,8 @@ jobs:
       - image: 'circleci/android:api-28-node'
     steps:
       - add_ssh_keys:
-        fingerprints:
-          - "04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96"
+          fingerprints:
+            - "04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96"
       - checkout:
           path: ~/hotminute
       - attach_workspace:
@@ -68,8 +68,8 @@ jobs:
     shell: /bin/bash --login -o pipefail
     steps:
       - add_ssh_keys:
-        fingerprints:
-          - "04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96"
+          fingerprints:
+            - "04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96"
       - checkout
       - run:
           name: Set Ruby Version
