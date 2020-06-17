@@ -1,7 +1,7 @@
 version: 2
 jobs:
   node:
-    working_directory: ~/demo-react-native
+    working_directory: ~/hotminute
     docker:
       - image: 'circleci/node:12'
     steps:
@@ -20,7 +20,7 @@ jobs:
           paths:
             - node_modules
       - persist_to_workspace:
-          root: ~/demo-react-native
+          root: ~/hotminute
           paths:
             - node_modules
       - store_test_results:
@@ -29,11 +29,11 @@ jobs:
           path: test-results
   android:
     working_directory: ~/hotminute/android
-    docker:
-      - image: 'circleci/android:api-28-node'
-    environment:
+    environment: 
       FL_OUTPUT_DIR: output
       FASTLANE_LANE: beta
+    docker:
+      - image: 'circleci/android:api-28-node'
     steps:
       - checkout:
           path: ~/hotminute
@@ -49,15 +49,15 @@ jobs:
           paths:
             - vendor/bundle
       - run:
-        name: Deploy Beta Build
-        command: bundle exec fastlane $FASTLANE_LANE
+          name: Deploy Beta
+          command: fastlane $FASTLANE_LANE
       - store_test_results:
           path: test-results
       - store_artifacts:
           path: test-results
   ios:
     macos:
-      xcode: '11.5.0'
+      xcode: 11.5.0
     working_directory: ~/hotminute
     environment:
       FL_OUTPUT_DIR: output
@@ -105,7 +105,6 @@ jobs:
           path: ios/test-results
       - store_artifacts:
           path: ios/test-results
-
 workflows:
   version: 2
   node-android-ios:
