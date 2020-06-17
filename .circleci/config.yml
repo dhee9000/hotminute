@@ -41,7 +41,8 @@ jobs:
           at: ~/hotminute
       - restore_cache:
           key: 'bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}'
-      - run: Install Gems
+      - run: 
+          name: Install Gems
           command: bundle install
           working_directory: android
       - save_cache:
