@@ -47,7 +47,7 @@ jobs:
   android:
     working_directory: ~/hotminute/android
     docker:
-      - image: circleci/android:api-28-node12-alpha
+      - image: circleci/android:api-28-node
     steps:
       - checkout:
           path: ~/hotminute
