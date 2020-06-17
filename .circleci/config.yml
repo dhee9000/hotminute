@@ -3,7 +3,7 @@ jobs:
   node:
     working_directory: ~/demo-react-native
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:12
     steps:
       - checkout
 
@@ -47,7 +47,7 @@ jobs:
   android:
     working_directory: ~/hotminute/android
     docker:
-      - image: circleci/android:api-28-node8-alpha
+      - image: circleci/android:api-28-node12-alpha
     steps:
       - checkout:
           path: ~/hotminute
