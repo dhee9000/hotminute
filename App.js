@@ -1,37 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Alert, Dimensions } from 'react-native';
 
-import { Colors, Firebase } from './src/config';
+import { Colors } from './src/config';
 
 import { RootNavigator } from './src/react/navigation';
 import { createAppContainer } from 'react-navigation';
 
-import { Provider } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { createReduxStore } from './src/redux';
-
-import ApolloClient, { gql } from 'apollo-boost';
-import { ApolloProvider } from '@apollo/react-hooks';
-
-import auth from '@react-native-firebase/auth';
-
-const client = new ApolloClient({
-      uri: 'http://192.168.1.18/graphql',
-      request: async (operation) => {
-        const token = await auth().currentUser.getIdToken();
-        operation.setContext({
-          headers: {
-            authorization: token ? `${token}` : ''
-          }
-        })
-      }
-});
-
 
 const appState = createReduxStore();
 const AppContainer = createAppContainer(RootNavigator);
 
 import { ThemeProvider } from 'react-native-elements';
 import * as Font from 'expo-font';
+
+const { height, width } = Dimensions.get('screen');
 
 const theme = {
   colors: {
@@ -58,13 +42,11 @@ export default function App() {
       <View style={{ flex: 1 }}>
         <StatusBar barStyle={'dark-content'} backgroundColor={'transparent'} translucent />
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primary }}>
-          <ApolloProvider client={client}>
-            <Provider store={appState} style={{ flex: 1 }}>
-              <ThemeProvider theme={theme} style={{ flex: 1 }}>
-                <AppContainer style={{ flex: 1 }} />
-              </ThemeProvider>
-            </Provider>
-          </ApolloProvider>
+          <ReduxProvider store={appState} style={{ flex: 1 }}>
+            <ThemeProvider theme={theme} style={{ flex: 1 }}>
+              <AppContainer style={{ flex: 1 }} />
+            </ThemeProvider>
+          </ReduxProvider>
           <AlphaWarning />
         </SafeAreaView>
       </View>
@@ -78,9 +60,16 @@ export default function App() {
 }
 
 const AlphaWarning = props => (
-  <View style={{ position: 'absolute', top: 24, left: 0, padding: 2.0, }}>
-    <Text style={{ color: '#555', fontSize: 8.0, }}>ALPHA BUILD v0.0.1</Text>
-    <Text style={{ color: '#555', fontSize: 8.0, }}>NOT FOR PUBLIC RELEASE</Text>
-    <Text style={{ color: '#555', fontSize: 8.0, }}>Hot Minute LLC</Text>
-  </View>
+  <>
+    <View pointerEvents={'none'} style={{ position: 'absolute', top: 24, left: 0, padding: 2.0, }}>
+      <Text style={{ color: '#555', fontSize: 8.0, }}>ALPHA BUILD v0.0.1</Text>
+      <Text style={{ color: '#555', fontSize: 8.0, }}>NOT FOR PUBLIC RELEASE</Text>
+      <Text style={{ color: '#555', fontSize: 8.0, }}>Hot Minute LLC</Text>
+    </View>
+    <View pointerEvents={'none'} style={{ position: 'absolute', bottom: 24, right: 0, padding: 2.0, }}>
+      <Text style={{ color: '#555', fontSize: 8.0, }}>ALPHA BUILD v0.0.1</Text>
+      <Text style={{ color: '#555', fontSize: 8.0, }}>NOT FOR PUBLIC RELEASE</Text>
+      <Text style={{ color: '#555', fontSize: 8.0, }}>Hot Minute LLC</Text>
+    </View>
+  </>
 )

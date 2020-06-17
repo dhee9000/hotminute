@@ -1,4 +1,4 @@
-package com.hotminute;
+package app.hotminute;
 
 import android.app.Application;
 import android.content.Context;
@@ -13,7 +13,7 @@ import java.util.List;
 
 import java.util.Arrays;
 
-import com.hotminute.generated.BasePackageList;
+import app.hotminute.generated.BasePackageList;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
@@ -79,7 +79,7 @@ public class MainApplication extends Application implements ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.hotminute.ReactNativeFlipper");
+        Class<?> aClass = Class.forName("app.hotminute.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);
