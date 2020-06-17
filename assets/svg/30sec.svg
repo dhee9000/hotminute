@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 612 792" style="enable-background:new 0 0 612 792;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);}
+	.st1{fill:#F06597;}
+	.st2{font-family:'ComicSansMS-Bold';}
+	.st3{font-size:150px;}
+	.st4{font-size:120px;}
+	.st5{font-size:36px;}
+	.st6{font-size:24px;}
+	.st7{fill:none;}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="315.3146" y1="490.7303" x2="315.3146" y2="217.6966">
+	<stop  offset="0" style="stop-color:#FFFFFF"/>
+	<stop  offset="0" style="stop-color:#000000"/>
+</linearGradient>
+<circle class="st0" cx="315.31" cy="354.21" r="136.52"/>
+<text transform="matrix(0.7601 0 0 1 215.5375 390.382)"><tspan x="0" y="0" class="st1 st2 st3">+</tspan><tspan x="91.55" y="0" class="st1 st2 st4">30</tspan><tspan x="53.48" y="43.2" class="st1 st2 st5">      </tspan><tspan x="147.13" y="29.2" class="st1 st2 st6">sec</tspan></text>
+<polygon class="st7" points="333.85,409.83 338.35,409.83 338.35,409.83 333.85,409.83 "/>
+</svg>
