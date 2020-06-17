@@ -1,4 +1,4 @@
-package com.hotminute;
+package app.hotminute;
 
 import com.facebook.react.ReactActivity;
 

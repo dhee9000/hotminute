@@ -8,18 +8,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:350931211842:android:d637c97f3b88e086247fdb",
+        "mobilesdk_app_id": "1:350931211842:android:55a64a9b3c5c43d0247fdb",
         "android_client_info": {
-          "package_name": "com.hotminute"
+          "package_name": "app.hotminute"
         }
       },
       "oauth_client": [
         {
-          "client_id": "350931211842-gm7fbhu6p23crb9emrpo0qncuq5j6bm6.apps.googleusercontent.com",
+          "client_id": "350931211842-a1bpea22btah7u692uukvuerv65drknh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.hotminute",
-            "certificate_hash": "d724d84121a6576bf4b827002ebf5435eef9e346"
+            "package_name": "app.hotminute",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {
@@ -40,10 +40,54 @@
               "client_type": 3
             },
             {
-              "client_id": "350931211842-tpds3kru0narnmjape75efa154ss3b0i.apps.googleusercontent.com",
+              "client_id": "350931211842-foq84g2sr903cl2pclibhckhkfjdh0jh.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.hotminute"
+                "bundle_id": "app.hotminute"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350931211842:android:da2e094c72e03c8e247fdb",
+        "android_client_info": {
+          "package_name": "com.hotminute"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350931211842-g7aea4v5bgj922qo6vafftnqqpiipprs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hotminute",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "350931211842-b7pcgku8n0unbmpk9k7cnge5378rr80e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQJYUMrICnXjNZI-_TyfF9v5kWvKoYUEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350931211842-b7pcgku8n0unbmpk9k7cnge5378rr80e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "350931211842-foq84g2sr903cl2pclibhckhkfjdh0jh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.hotminute"
               }
             }
           ]
