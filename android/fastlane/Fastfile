@@ -16,6 +16,9 @@
 default_platform(:android)
 
 platform :android do
+  before_all do
+		setup_circle_ci
+	end
   desc "Runs all the tests"
   lane :test do
     gradle(task: "test")
@@ -23,8 +26,8 @@ platform :android do
 
   desc "Submit a new Beta Build to Play Store"
   lane :beta do
-    store_password = prompt(text: "Signing Store Password: ", secure_text: true)
-    key_password = prompt(text: "Alias Key Password: ", secure_text: true)
+    store_password = "HotMinute123!" # prompt(text: "Signing Store Password: ", secure_text: true)
+    key_password = "HotMinute123!" #prompt(text: "Alias Key Password: ", secure_text: true)
     releaseFilePath = File.join(Dir.pwd, "..", "app/HotMinute.keystore")
     gradle(task: 'clean')
     gradle(

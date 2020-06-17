@@ -31,6 +31,9 @@ jobs:
     working_directory: ~/hotminute/android
     docker:
       - image: 'circleci/android:api-28-node'
+    environment:
+      FL_OUTPUT_DIR: output
+      FASTLANE_LANE: beta
     steps:
       - checkout:
           path: ~/hotminute
@@ -38,11 +41,21 @@ jobs:
           at: ~/hotminute
       - restore_cache:
           key: 'bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}'
-      - run: bundle install
+      - run: Install Gems
       - save_cache:
           key: 'bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}'
           paths:
             - vendor/bundle
+      - run:
+        name: Install Certificates and Profiles
+        command: >-
+          bundle exec fastlane match appstore && bundle exec fastlane match
+          development
+        working_directory: ios
+      - run:
+        name: Deploy Beta Build
+        command: bundle exec fastlane $FASTLANE_LANE
+        working_directory: ios
       - store_test_results:
           path: test-results
       - store_artifacts:
