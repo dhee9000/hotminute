@@ -16,7 +16,9 @@ import auth from '@react-native-firebase/auth';
 
 const { width, height } = Dimensions.get('screen');
 
-class CreateAccount extends React.Component {
+const PHNO_REGEX = /^\+(\d{1,3})(\d{3})(\d{3})(\d{4})$/;
+
+class Login extends React.Component {
 
     state = {
         phno: '+16505551234',
@@ -25,28 +27,41 @@ class CreateAccount extends React.Component {
         code: '123456',
         verifyingCode: false,
         codeVerified: false,
-        confirm: {}
+        confirmation: {}
     }
 
     onLoginPressed = async () => {
         this.setState({ sendingCode: true });
+
+        // Validate Input Phone Number
+        if (!this.state.phno || this.state.phno.length < 10) {
+            alert("Enter your phone number to continue!");
+            return;
+        }
+        if (!(PHNO_REGEX.exec(this.state.phno))) {
+            alert("Phone number must be in the format +16053551234");
+            return;
+        }
+
         try {
             if (auth().currentUser) {
                 console.log("Signing Out Existing User!");
                 await auth().signOut();
             }
             const confirmation = await auth().signInWithPhoneNumber(this.state.phno);
-            this.setState({ confirm: confirmation, sendingCode: false, codeSent: true });
+            this.setState({ confirmation, sendingCode: false, codeSent: true });
         }
         catch (e) {
             console.error("Send Code Error", e);
+            this.setState({sendingCode: false, codeSent: false, confirmation: {}});
+            alert(e);
         }
     }
 
     onVerifyCodePressed = async () => {
         this.setState({ verifyingCode: true });
         try {
-            await this.state.confirm.confirm(this.state.code);
+            await this.state.confirmation.confirm(this.state.code);
             this.setState({ verifyingCode: false, codeVerified: true });
         }
         catch (e) {
@@ -137,4 +152,4 @@ const mapDispatchToProps = dispatch => ({
 
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateAccount);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
