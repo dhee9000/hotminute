@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image } from 'react-native';
+import { View, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert } from 'react-native';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -61,7 +61,7 @@ class Minute extends React.Component {
 
         Permissions.askAsync(Permissions.AUDIO_RECORDING);
         RtcEngine.init(AgoraConfig);
-        RtcEngine.registerLocalUserAccount(auth().currentUser.uid);
+        RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
         RtcEngine.on('userJoined', data => this.setState({ partnerUid: data.uid, partnerOnCall: true })); // When a user joins the call
         RtcEngine.on('userOffline', data => this.setState({ partnerOnCall: false }));
         RtcEngine.on('joinChannelSuccess', data => {    // When user joins channel
@@ -128,7 +128,7 @@ class Minute extends React.Component {
                 this.setState({ roomId: data.roomId, roomToken: data.roomToken, pairedUid: data.pairedUid, pairedProfile, paired: true }, this.joinRoom)
             }
             if (!data.active) {
-                this.setState({enteredPool: false});
+                this.setState({ enteredPool: false });
                 this.state.unsubscribePoolEntry();
             }
         });
@@ -151,11 +151,27 @@ class Minute extends React.Component {
 
     joinRoom = async () => {
         RtcEngine.leaveChannel();
-        this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, });
-        RtcEngine.joinChannelWithUserAccount(this.state.roomId, this.state.uid, this.state.roomToken);  //Join Channel
-        RtcEngine.enableAudio();
-        RtcEngine.disableVideo();
-        this.runTime();
+        Alert.alert('Join Call', `Are you ready to join this call? Your uid is: ${auth().currentUser.uid.toString()}, your partner's name is ${this.state.pairedProfile.fname}.`, [
+            {
+                text: 'Join',
+                onPress: () => {
+                    RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
+                    this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, });
+                    setTimeout(() => {
+                        RtcEngine.joinChannelWithUserAccount(this.state.roomId, auth().currentUser.uid, this.state.roomToken);  //Join Channel
+                        RtcEngine.enableAudio();
+                        RtcEngine.disableVideo();
+                        this.runTime();
+                    }, 1000)
+                }
+            },
+            {
+                text: 'Cancel',
+                onPress: () => {
+                    return;
+                }
+            }
+        ])
     }
 
     runTime = () => {
