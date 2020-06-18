@@ -37,6 +37,7 @@ jobs:
     resource_class: large
     steps:
       - add_ssh_keys:
+          name: Add SSH Keys for GitHub
           fingerprints:
             - "04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96"
       - checkout:
@@ -44,24 +45,22 @@ jobs:
       - attach_workspace:
           at: ~/hotminute
       - restore_cache:
+          name: Restore Gems Cache
           key: 'bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}'
       - run: 
           name: Install Gems
           command: bundle install
       - save_cache:
+          name: Save Gems Cache
           key: 'bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}'
           paths:
             - vendor/bundle
       - run:
           name: Run Jetifier
-          command: npx jetify
+          command: yarn jetifier || npx jetify
       - run:
-          name: Deploy Beta
+          name: 'Fastlane: Deploy Beta'
           command: fastlane $FASTLANE_LANE
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: test-results
       - store_artifacts:
           path: output
   ios:
