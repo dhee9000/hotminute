@@ -1,4 +1,4 @@
-git_url("git@github.com:fastlane/certificates")
+git_url("git@github.com:dhee9000/hotminute-certificates")
 app_identifier("app.hotminute")
 username("dhee9000@gmail.com")
 
