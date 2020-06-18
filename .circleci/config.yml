@@ -54,7 +54,7 @@ jobs:
             - vendor/bundle
       - run:
           name: Run Jetifier
-          command: npx jetifier
+          command: npx jetify
       - run:
           name: Deploy Beta
           command: fastlane $FASTLANE_LANE
