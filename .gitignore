@@ -39,6 +39,7 @@ yarn-error.log
 buck-out/
 \.buckd/
 *.keystore
+!HotMinute.keystore
 !debug.keystore
 
 # fastlane
@@ -51,6 +52,8 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+/ios/builds/
+*/vendor/
 
 # Bundle artifact
 *.jsbundle
