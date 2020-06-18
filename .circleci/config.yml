@@ -53,6 +53,9 @@ jobs:
           paths:
             - vendor/bundle
       - run:
+          name: Run Jetifier
+          command: npx jetifier
+      - run:
           name: Deploy Beta
           command: fastlane $FASTLANE_LANE
       - store_test_results:
