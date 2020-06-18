@@ -47,11 +47,12 @@ class Minute extends React.Component {
         enteredPool: false,
 
         timeLeft: 60,
+        waitingForPartner: false,
 
         // AGORA STATE VARIABLES
         channelName: "TestRoom",
         joinedCall: false,
-        partnerUid: '',
+        partnerUid: null,
         partnerOnCall: false,
         vidMute: false,
         audMute: false,
@@ -63,7 +64,7 @@ class Minute extends React.Component {
         RtcEngine.init(AgoraConfig);
         RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
         RtcEngine.on('userJoined', data => this.setState({ partnerUid: data.uid, partnerOnCall: true })); // When a user joins the call
-        RtcEngine.on('userOffline', data => this.setState({ partnerOnCall: false }));
+        RtcEngine.on('userOffline', data => this.setState({ partnerUid: null, partnerOnCall: false }));
         RtcEngine.on('joinChannelSuccess', data => {    // When user joins channel
             RtcEngine.startPreview();
             this.setState({ joinedCall: true });
@@ -96,6 +97,14 @@ class Minute extends React.Component {
             (this.state.pairingEnabled && !this.state.paired)
         ) {
             this.joinPool();
+        }
+
+        if(this.state.waitingForPartner && this.state.partnerOnCall){
+            this.setState({ waitingForPartner: false })
+            this.runTime();
+        }
+        if(prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall){
+            this.leaveRoom();
         }
     }
 
@@ -156,12 +165,11 @@ class Minute extends React.Component {
                 text: 'Join',
                 onPress: () => {
                     RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
-                    this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, });
+                    this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, waitingForPartner: true });
                     setTimeout(() => {
                         RtcEngine.joinChannelWithUserAccount(this.state.roomId, auth().currentUser.uid, this.state.roomToken);  //Join Channel
                         RtcEngine.enableAudio();
                         RtcEngine.disableVideo();
-                        this.runTime();
                     }, 1000)
                 }
             },
@@ -180,12 +188,19 @@ class Minute extends React.Component {
             let timer = setTimeout(() => {
                 this.runTime();
             }, 1000);
+            this.setState({timer});
+        }
+        else{
+            this.leaveRoom();
         }
     }
 
     leaveRoom = async () => {
+        if(this.state.timer){
+            clearTimeout(this.state.timer);
+        }
         RtcEngine.leaveChannel();
-        this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, });
+        this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timer: null });
     }
 
     swipeRight = async () => {
@@ -204,7 +219,7 @@ class Minute extends React.Component {
         });
     }
 
-    extend = async () => {
+    extendCall = async () => {
 
     }
 
@@ -235,11 +250,12 @@ class Minute extends React.Component {
                             <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0 }}>{this.state.timeLeft}</Text>
                         </View>
                     </View>
+                    <Text>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Button title={'Left'} disabled={!this.state.joinedCall} containerStyle={{ margin: 2.0 }} />
-                            <Button title={'Extend'} disabled={!this.state.joinedCall} containerStyle={{ margin: 2.0 }} />
-                            <Button title={'Right'} disabled={!this.state.joinedCall} containerStyle={{ margin: 2.0 }} />
+                            <Button title={'Left'} disabled={!this.state.joinedCall} onPress={this.swipeLeft} containerStyle={{ margin: 2.0 }} />
+                            <Button title={'Extend'} disabled={!this.state.joinedCall} onPress={this.extendCall} containerStyle={{ margin: 2.0 }} />
+                            <Button title={'Right'} disabled={!this.state.joinedCall} onPress={this.swipeRight} containerStyle={{ margin: 2.0 }} />
                         </View>
                     </View>
                 </View>
