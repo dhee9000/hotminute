@@ -29,7 +29,7 @@ jobs:
           path: test-results
   android-app-sharing:
     working_directory: ~/hotminute/android
-    environment: 
+    environment:
       FL_OUTPUT_DIR: output
       FASTLANE_LANE: internal
     docker:
@@ -39,7 +39,7 @@ jobs:
       - add_ssh_keys:
           name: Add SSH Keys for GitHub
           fingerprints:
-            - "04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96"
+            - '04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96'
       - checkout:
           path: ~/hotminute
       - attach_workspace:
@@ -47,7 +47,7 @@ jobs:
       - restore_cache:
           name: Restore Gems Cache
           key: 'bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}'
-      - run: 
+      - run:
           name: Install Gems
           command: bundle install
       - save_cache:
@@ -65,7 +65,7 @@ jobs:
           path: output
   deploy-android-beta:
     working_directory: ~/hotminute/android
-    environment: 
+    environment:
       FL_OUTPUT_DIR: output
       FASTLANE_LANE: beta
     docker:
@@ -75,7 +75,7 @@ jobs:
       - add_ssh_keys:
           name: Add SSH Keys for GitHub
           fingerprints:
-            - "04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96"
+            - '04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96'
       - checkout:
           path: ~/hotminute
       - attach_workspace:
@@ -83,7 +83,7 @@ jobs:
       - restore_cache:
           name: Restore Gems Cache
           key: 'bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}'
-      - run: 
+      - run:
           name: Install Gems
           command: bundle install
       - save_cache:
@@ -111,7 +111,7 @@ jobs:
       - add_ssh_keys:
           name: Add SSH Keys for GitHub
           fingerprints:
-            - "04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96"
+            - '04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96'
       - checkout
       - run:
           name: Set Ruby Version
@@ -192,8 +192,8 @@ workflows:
                 - /release-.*/
                 - /hotfix-.*/
                 - /circleci-.*/
-              tags:
-                only:
-                  - feature-.*-ready
+            tags:
+              only:
+                - feature-.*-ready
           requires:
             - node
