@@ -44,7 +44,12 @@ platform :android do
         "android.injected.signing.key.password" => key_password,
       }
     )
-    upload_to_play_store_internal_app_sharing
+    internal_url = upload_to_play_store_internal_app_sharing
+    ifttt(
+      api_key: 'dc8D1k4tQ5PN8AxmquBtxP',
+      event_name: 'internal_share_complete',
+      value1: internal_url
+    )
   end
 
   desc "Submit a new Beta Build to Play Store"
