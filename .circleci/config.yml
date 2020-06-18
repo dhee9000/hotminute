@@ -59,7 +59,7 @@ jobs:
       - store_artifacts:
           path: test-results
       - store_artifacts:
-          path: $FL_OUTPUT_DIR
+          path: output
   ios:
     macos:
       xcode: 11.5.0
@@ -116,7 +116,7 @@ jobs:
       - store_artifacts:
           path: ios/test-results
       - store_artifacts:
-          path: $FL_OUTPUT_DIR
+          path: output
 workflows:
   version: 2
   node-android-ios:
