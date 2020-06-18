@@ -89,6 +89,8 @@ jobs:
             - node_modules
       - restore_cache:
           key: 'bundle-v1-{{ checksum "ios/Gemfile.lock" }}-{{ arch }}'
+          paths:
+            - ios/Gemfile.lock
       - run:
           name: Install Gems
           command: bundle install
@@ -98,10 +100,12 @@ jobs:
           paths:
             - vendor/bundle
       - run:
-          name: Install Certificates and Profiles
-          command: >-
-            bundle exec fastlane match appstore && bundle exec fastlane match
-            development
+          name: Install Distribution Certificates and Profiles
+          command: bundle exec fastlane match appstore
+          working_directory: ios
+      - run:
+          name: Install Development Certificates and Profiles
+          command: bundle exec fastlane match development
           working_directory: ios
       - run:
           name: Deploy Beta Build
