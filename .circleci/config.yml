@@ -99,11 +99,11 @@ jobs:
             - vendor/bundle
       - run:
           name: Install Distribution Certificates and Profiles
-          command: bundle exec fastlane match appstore
+          command: bundle exec fastlane match appstore --readonly
           working_directory: ios
       - run:
           name: Install Development Certificates and Profiles
-          command: bundle exec fastlane match development
+          command: bundle exec fastlane match development --readonly
           working_directory: ios
       - run:
           name: Deploy Beta Build
