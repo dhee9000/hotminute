@@ -27,6 +27,12 @@ platform :android do
     key_password = "HotMinute123!" #prompt(text: "Alias Key Password: ", secure_text: true)
     releaseFilePath = File.join(Dir.pwd, "..", "app/HotMinute.keystore")
     gradle(task: 'clean')
+    increment_version_code(
+        gradle_file_path: "app/build.gradle",
+    )
+    # increment_version_name(
+    #     gradle_file_path: "app/build.gradle",
+    # )
     gradle(
       task: 'bundle',
       build_type: 'Release',
