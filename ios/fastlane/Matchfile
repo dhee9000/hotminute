@@ -1,6 +1,7 @@
 git_url("git@github.com:dhee9000/hotminute-certificates")
+# git_url("https://github.com/dhee9000/hotminute-certificates.git")
 app_identifier("app.hotminute")
-username("dhee9000@gmail.com")
+username("hotminute020@gmail.com")
 
 storage_mode("git")
 

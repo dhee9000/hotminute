@@ -71,6 +71,7 @@ jobs:
     shell: /bin/bash --login -o pipefail
     steps:
       - add_ssh_keys:
+          name: Add SSH Keys for GitHub
           fingerprints:
             - "04:7a:ad:d7:39:8d:da:22:2f:8d:d0:02:37:47:00:96"
       - checkout
@@ -78,46 +79,41 @@ jobs:
           name: Set Ruby Version
           command: echo "ruby-2.5" > ~/.ruby-version
       - restore_cache:
+          name: Restore Yarn Cache
           key: 'yarn-v1-{{ checksum "yarn.lock" }}-{{ arch }}'
       - restore_cache:
+          name: Restore node_modules Cache
           key: 'node-v1-{{ checksum "package.json" }}-{{ arch }}'
       - run: yarn install
       - save_cache:
+          name: Save Yarn Cache
           key: 'yarn-v1-{{ checksum "yarn.lock" }}-{{ arch }}'
           paths:
             - ~/.cache/yarn
       - save_cache:
+          name: Save node_modules Cache
           key: 'node-v1-{{ checksum "package.json" }}-{{ arch }}'
           paths:
             - node_modules
       - restore_cache:
+          name: Restore Gem Cache
           key: 'bundle-v1-{{ checksum "ios/Gemfile.lock" }}-{{ arch }}'
       - run:
           name: Install Gems
           command: bundle install
           working_directory: ios
       - save_cache:
+          name: Save Gem Cache
           key: 'bundle-v1-{{ checksum "ios/Gemfile.lock" }}-{{ arch }}'
           paths:
             - vendor/bundle
-      # - run:
-      #     name: Install Distribution Certificates and Profiles
-      #     command: bundle exec fastlane match appstore --readonly
-      #     working_directory: ios
-      # - run:
-      #     name: Install Development Certificates and Profiles
-      #     command: bundle exec fastlane match development --readonly
-      #     working_directory: ios
       - run:
-          name: Deploy Beta Build
+          name: 'Fastlane: Deploy Beta Build'
           command: bundle exec fastlane $FASTLANE_LANE
           working_directory: ios
-      - store_test_results:
-          path: ios/test-results
       - store_artifacts:
-          path: ios/test-results
-      - store_artifacts:
-          path: ios/output
+          name: Save fastlane Logs
+          path: output
 workflows:
   version: 2
   node-android-ios:

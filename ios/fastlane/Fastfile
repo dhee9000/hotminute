@@ -23,13 +23,13 @@ platform :ios do
 	lane :beta do
 		match(type: 'appstore')
 		increment_build_number(xcodeproj: "HotMinute.xcodeproj")
-		get_certificates( # Create or get certificate, and install it
-			output_path: "./builds" # Download certificate in the build folder (you don't need to create the folder)
-		)
-		get_provisioning_profile( # Create or get provisioning profile
-			output_path: "./builds",  # Download provisioning profile in the build folder
-			filename: "provisioning.mobileprovision" # Rename the local provisioning profile
-		)
+		# get_certificates( # Create or get certificate, and install it
+		# 	output_path: "./builds" # Download certificate in the build folder (you don't need to create the folder)
+		# )
+		# get_provisioning_profile( # Create or get provisioning profile
+		# 	output_path: "./builds",  # Download provisioning profile in the build folder
+		# 	filename: "provisioning.mobileprovision" # Rename the local provisioning profile
+		# )
 		update_project_provisioning( # Set the project provisioning profile (related in Xcode to the General > Signing Release section)
 			xcodeproj: "HotMinute.xcodeproj",
 			target_filter: "HotMinute", # Name of your project
