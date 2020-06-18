@@ -117,7 +117,7 @@ jobs:
       - store_artifacts:
           path: ios/test-results
       - store_artifacts:
-          path: output
+          path: ios/output
 workflows:
   version: 2
   node-android-ios:
