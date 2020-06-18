@@ -100,14 +100,14 @@ jobs:
           key: 'bundle-v1-{{ checksum "ios/Gemfile.lock" }}-{{ arch }}'
           paths:
             - vendor/bundle
-      - run:
-          name: Install Distribution Certificates and Profiles
-          command: bundle exec fastlane match appstore --readonly
-          working_directory: ios
-      - run:
-          name: Install Development Certificates and Profiles
-          command: bundle exec fastlane match development --readonly
-          working_directory: ios
+      # - run:
+      #     name: Install Distribution Certificates and Profiles
+      #     command: bundle exec fastlane match appstore --readonly
+      #     working_directory: ios
+      # - run:
+      #     name: Install Development Certificates and Profiles
+      #     command: bundle exec fastlane match development --readonly
+      #     working_directory: ios
       - run:
           name: Deploy Beta Build
           command: bundle exec fastlane $FASTLANE_LANE
