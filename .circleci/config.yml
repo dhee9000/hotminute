@@ -4,7 +4,6 @@ jobs:
     working_directory: ~/hotminute
     docker:
       - image: 'circleci/node:12'
-    resource_class: large
     steps:
       - checkout
       - restore_cache:
@@ -35,6 +34,7 @@ jobs:
       FASTLANE_LANE: beta
     docker:
       - image: 'circleci/android:api-28-node'
+    resource_class: large
     steps:
       - add_ssh_keys:
           fingerprints:
