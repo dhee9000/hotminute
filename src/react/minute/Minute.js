@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert } from 'react-native';
+import { View, Animated, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert } from 'react-native';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { ActionTypes } from '../../redux/';
 
 import firebase from '@react-native-firebase/app';
+import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
@@ -20,6 +21,7 @@ const { Agora } = NativeModules;
 const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = Agora;
 
 import * as Permissions from 'expo-permissions';
+import { Easing } from 'react-native-reanimated';
 
 class Minute extends React.Component {
 
@@ -57,6 +59,8 @@ class Minute extends React.Component {
         vidMute: false,
         audMute: false,
     }
+
+    callStartAnimation = new Animated.Value(0);
 
     async componentDidMount() {
 
@@ -101,6 +105,11 @@ class Minute extends React.Component {
 
         if(this.state.waitingForPartner && this.state.partnerOnCall){
             this.setState({ waitingForPartner: false })
+            Animated.timing(this.callStartAnimation, {
+                toValue: 1,
+                duration: 250,
+                easing: Easing.inOut()
+            }).start();
             this.runTime();
         }
         if(prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall){
@@ -133,6 +142,8 @@ class Minute extends React.Component {
             if (data.paired) {
                 let pairedProfileSnapshot = await firestore().collection('profiles').doc(data.pairedUid).get();
                 let pairedProfile = pairedProfileSnapshot.data();
+                let pairedProfilePictureURL = await storage().ref(pairedProfile.images["1"].ref).getDownloadURL();
+                pairedProfile.pictureURL = pairedProfilePictureURL;
                 alert(`Paired With ${pairedProfile.fname} ${pairedProfile.lname}`);
                 this.setState({ roomId: data.roomId, roomToken: data.roomToken, pairedUid: data.pairedUid, pairedProfile, paired: true }, this.joinRoom)
             }
@@ -160,7 +171,7 @@ class Minute extends React.Component {
 
     joinRoom = async () => {
         RtcEngine.leaveChannel();
-        Alert.alert('Join Call', `Are you ready to join this call? Your uid is: ${auth().currentUser.uid.toString()}, your partner's name is ${this.state.pairedProfile.fname}.`, [
+        Alert.alert('Join Call', `Are you ready to join this call? Your partner's name is ${this.state.pairedProfile.fname} ${this.state.pairedProfile.lname}.`, [
             {
                 text: 'Join',
                 onPress: () => {
@@ -244,10 +255,15 @@ class Minute extends React.Component {
                             <Button title={'Manual Exit'} onPress={this.leavePool} disabled={this.state.pairingEnabled || !this.state.enteredPool} containerStyle={{ margin: 2.0 }} />
                         </View>
                     </View>
-                    <View>
-                        <Icon name={'phone'} color={this.state.joinedCall ? '#00f' : '#dfdfdf'} size={128} />
+                    <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                        {
+                            this.state.pairedProfile.pictureURL ? 
+                            <Animated.Image blurRadius={4.0} source={{uri: this.state.pairedProfile.pictureURL}} style={{height: 196, width: 196, borderRadius: 98.0, borderColor: Colors.primary, borderWidth: 8.0, transform: [{scale: this.callStartAnimation}]}} />
+                            :
+                            <Icon name={'phone'} color={this.state.joinedCall ? Colors.primary : '#dfdfdf'} size={128} />
+                        }
                         <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0 }}>{this.state.timeLeft}</Text>
+                            <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0, color: Colors.primary }}>{this.state.timeLeft}</Text>
                         </View>
                     </View>
                     <Text>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>

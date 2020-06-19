@@ -19,7 +19,7 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth, { firebase } from '@react-native-firebase/auth';
 
-const BLANK_IMAGE_URI = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fsvg-artwork-icon-vector%2F&psig=AOvVaw3ZF6RKqDGx8HUSe1ho4leA&ust=1583049630546000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLDPxMml9ucCFQAAAAAdAAAAABAD';
+const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 
 class CreateProfileMedia extends React.Component {
 
