@@ -25,36 +25,29 @@ class Chats extends React.Component {
     }
 
     componentDidMount() {
-        this.getChats();
-        this.getMatches();
+
+        // Chats Listeners
+        firestore().collection('chats').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
+            this.onChatsUpdated(snapshot.docs.map(doc => ({...doc.data(), id: doc.id})));
+        });
+
+        //  Matches Listeners
+         firestore().collection('matches').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
+             this.onMatchesUpdated(snapshot.docs.map(doc => ({...doc.data(), id: doc.id})));
+         });
     }
 
-    getChats = async () => {
-        let snapshotA = await firestore().collection('chats').where('uid1', '==', auth().currentUser.uid).get();
-        let snapshotB = await firestore().collection('chats').where('uid2', '==', auth().currentUser.uid).get();
-
-        let chats = [];
-        snapshotA.docs.forEach(doc => chats.push({ ...doc.data(), id: doc.id }));
-        snapshotB.docs.forEach(doc => chats.push({ ...doc.data(), id: doc.id }));
-
-        this.setState({ chats });
+    onChatsUpdated = chats => {
+        this.setState({chats});
     }
 
-    getMatches = async () => {
-        // Get Matches
-        let matchesSnapshotA = await firestore().collection('matches').where('uid1', '==', auth().currentUser.uid).get();
-        let matchesSnapshotB = await firestore().collection('matches').where('uid2', '==', auth().currentUser.uid).get();
-
-        let matches = [];
-        matchesSnapshotA.docs.forEach(doc => matches.push({ ...doc.data(), id: doc.id }));
-        matchesSnapshotB.docs.forEach(doc => matches.push({ ...doc.data(), id: doc.id }));
+    onMatchesUpdated = async matchesData => {
 
         // Get Profiles of Matches
-        let matchesFinal = [];
-        let matchesPromises = [];
+        let matches = [];
 
-        await Promise.all(matches.map(match => {
-            let otherUid = match.uid1 == auth().currentUser.uid ? match.uid2 : match.uid1;
+        await Promise.all(matchesData.map(match => {
+            let otherUid = match.uids.filter(uid => uid != auth().currentUser.uid)[0];
 
             let matchData = match;
             let profileData = {};
@@ -67,15 +60,15 @@ class Chats extends React.Component {
                 })
                 .then(async snapshot => {
                     imageUrl = await storage().ref(snapshot.data().images["1"].ref).getDownloadURL();
-                    console.log(imageUrl);
                     return true;
                 })
                 .then(success => {
-                    matchesFinal.push({ ...matchData, ...profileData, imageUrl});
+                    matches.push({ ...matchData, ...profileData, imageUrl});
                 })
         }));
 
-        this.setState({matches: matchesFinal});
+        this.setState({ matches });
+
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -83,9 +76,9 @@ class Chats extends React.Component {
             let matchesToDisplay = this.state.matches.filter(match => {
 
                 let uid = auth().currentUser.uid;
-                let otherUid = match.uid1 == uid ? match.uid2 : match.uid1;
+                let otherUid = match.uids.filter(uid => uid != auth().currentUser.uid)[0];
                 let uidInChats = this.state.chats.find(chat => {
-                    return chat.uid1 == otherUid || chat.uid2 == otherUid;
+                    return chat.uids.includes(otherUid)
                 });
 
                 return uidInChats === undefined;
