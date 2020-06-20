@@ -108,7 +108,8 @@ class Minute extends React.Component {
             Animated.timing(this.callStartAnimation, {
                 toValue: 1,
                 duration: 250,
-                easing: Easing.inOut()
+                easing,
+                useNativeDriver: true,
             }).start();
             this.runTime();
         }
