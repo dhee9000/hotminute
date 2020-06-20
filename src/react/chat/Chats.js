@@ -71,7 +71,7 @@ class Chats extends React.Component {
                     return true;
                 })
                 .then(success => {
-                    matchesFinal.push({ ...matchData, ...profileData, imageUrl});
+                    matchesFinal.push({ ...matchData, ...profileData, imageUrl });
                 })
         }));
 
@@ -95,6 +95,40 @@ class Chats extends React.Component {
         }
     }
 
+    matchClicked = (matchId) => {
+        
+        let relatedMatch = this.state.matchesToDisplay.filter(match => match.id === matchId)[0];
+        let otherUid = relatedMatch.uid1 === auth().currentUser.uid ? relatedMatch.uid2 : relatedMatch.uid1;
+
+        firestore().collection('chats').add({
+            uid1: auth().currentUser.uid,
+            uid2: otherUid,
+            
+        });
+    }
+
+    renderMatch = ({item}) => {
+        return (
+            <TouchableOpacity onPress={() => {this.matchClicked(item.id)}}>
+                <View style={{ alignItems: 'center', justifyContent: 'center', margin: 8.0, marginTop: 0 }}>
+                    <Image source={{ uri: item.imageUrl ? item.imageUrl : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
+                    <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{item.fname}{'\n'}{item.lname}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
+    renderChat = ({item}) => {
+        return (
+            <TouchableOpacity onPress={() => this.chatClicked(item.id)}>
+                <View>
+                    <Image source={{ uri: item.imageUrl ? item.imageUrl : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
+                    <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{item.fname} {item.lname}</Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
     render() {
         return (
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
@@ -105,7 +139,7 @@ class Chats extends React.Component {
                     <FlatList
                         horizontal
                         data={this.state.matchesToDisplay}
-                        renderItem={Match}
+                        renderItem={this.renderMatch}
                         keyExtractor={item => item.id}
                         ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
                     />
@@ -134,16 +168,6 @@ class Chats extends React.Component {
             </View>
         )
     }
-}
-
-const Match = props => {
-    const { item } = props;
-    return (
-        <View style={{ alignItems: 'center', justifyContent: 'center', margin: 8.0, marginTop: 0 }}>
-            <Image source={{ uri: item.imageUrl ? item.imageUrl : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
-            <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{item.fname}{'\n'}{item.lname}</Text>
-        </View>
-    )
 }
 
 const mapStateToProps = state => ({
