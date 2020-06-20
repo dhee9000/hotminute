@@ -52,10 +52,7 @@ class Profile extends React.Component {
             }
 
             this.setState({images: processedImages});
-        })
-
-        console.log(profileData.images);
-        console.log(processedImages);
+        });
 
         this.setState({
             fname: profileData.fname,
