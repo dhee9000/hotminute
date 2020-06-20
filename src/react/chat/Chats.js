@@ -16,6 +16,18 @@ import auth from '@react-native-firebase/auth';
 
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 
+generateCombinedDocId = function (uid1, uid2) {
+    if(uid1 < uid2){
+        return `${uid1}_${uid2}`;
+    }
+    else if(uid2 < uid1){
+        return `${uid1}_${uid2}`;
+    }
+    else{
+        throw(new Error("cannot create combined id for same user"));
+    }
+}
+
 class Chats extends React.Component {
 
     state = {
@@ -38,6 +50,10 @@ class Chats extends React.Component {
     }
 
     onChatsUpdated = chats => {
+        chats = chats.map(chat => {
+            let otherUid = chat.uids.filter(uid != auth().currentUser.uid)[0];
+            return {...chat, ...this.state.matches.filter(match => match.uids.includes(otherUid))[0]}
+        })
         this.setState({chats});
     }
 
@@ -91,12 +107,10 @@ class Chats extends React.Component {
     matchClicked = (matchId) => {
         
         let relatedMatch = this.state.matchesToDisplay.filter(match => match.id === matchId)[0];
-        let otherUid = relatedMatch.uid1 === auth().currentUser.uid ? relatedMatch.uid2 : relatedMatch.uid1;
+        let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
 
-        firestore().collection('chats').add({
-            uid1: auth().currentUser.uid,
-            uid2: otherUid,
-            
+        firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid, otherUid)).set({
+            uids: [auth().currentUser.uid, otherUid],
         });
     }
 
@@ -117,6 +131,7 @@ class Chats extends React.Component {
                 <View>
                     <Image source={{ uri: item.imageUrl ? item.imageUrl : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
                     <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{item.fname} {item.lname}</Text>
+                    <Text>{item.lastMessageBy == auth().currentUser.uid ? 'You' : item.fname}: {item.lastMessage}</Text>
                 </View>
             </TouchableOpacity>
         )
