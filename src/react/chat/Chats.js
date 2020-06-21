@@ -51,7 +51,7 @@ class Chats extends React.Component {
 
     onChatsUpdated = chats => {
         chats = chats.map(chat => {
-            let otherUid = chat.uids.filter(uid != auth().currentUser.uid)[0];
+            let otherUid = chat.uids.filter(uid => uid != auth().currentUser.uid)[0];
             return {...chat, ...this.state.matches.filter(match => match.uids.includes(otherUid))[0]}
         })
         this.setState({chats});
@@ -79,7 +79,7 @@ class Chats extends React.Component {
                     return true;
                 })
                 .then(success => {
-                    matchesFinal.push({ ...matchData, ...profileData, imageUrl });
+                    matches.push({ ...matchData, ...profileData, imageUrl });
                 })
         }));
 
@@ -128,7 +128,7 @@ class Chats extends React.Component {
     renderChat = ({item}) => {
         return (
             <TouchableOpacity onPress={() => this.chatClicked(item.id)}>
-                <View>
+                <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
                     <Image source={{ uri: item.imageUrl ? item.imageUrl : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
                     <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{item.fname} {item.lname}</Text>
                     <Text>{item.lastMessageBy == auth().currentUser.uid ? 'You' : item.fname}: {item.lastMessage}</Text>
