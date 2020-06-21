@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Animated, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert } from 'react-native';
+import { View, Animated, Easing, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert } from 'react-native';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -21,7 +21,6 @@ const { Agora } = NativeModules;
 const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = Agora;
 
 import * as Permissions from 'expo-permissions';
-import { Easing } from 'react-native-reanimated';
 
 class Minute extends React.Component {
 
@@ -107,8 +106,8 @@ class Minute extends React.Component {
             this.setState({ waitingForPartner: false })
             Animated.timing(this.callStartAnimation, {
                 toValue: 1,
-                duration: 250,
-                easing,
+                duration: 1000,
+                easing: Easing.bounce,
                 useNativeDriver: true,
             }).start();
             this.runTime();
