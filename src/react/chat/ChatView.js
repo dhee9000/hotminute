@@ -20,13 +20,23 @@ class ChatView extends React.Component {
 
     componentDidMount() {
         let chatId = this.props.navigation.getParam('chatId', undefined)
+        let userId = this.props.navigation.getParam('userId', '');
         if (!chatId) {
             this.props.navigation.pop();
         }
-        this.setState({ chatId });
+        this.setState({ chatId, userId });
         firestore().collection('chats').doc(chatId).collection('messages').limit(25).orderBy('sentAt', 'desc').onSnapshot(snapshot => {
-            
-            this.setState({ messages: snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) })
+            let messages = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            messages = messages.map(msg => {
+                let senderProfile = this.props.profilesById[msg.sentBy];
+                if(senderProfile){
+                    return {...msg, _id: msg.id, createdAt: msg.sentAt.toDate(), user: {_id: msg.sentBy, name: `${senderProfile.fname} ${senderProfile.lname}`}}
+                }
+                else{
+                    return {...msg, _id: msg.id, createdAt: msg.sentAt.toDate()};
+                }
+            })
+            this.setState({ messages })
         });
     }
 
@@ -43,12 +53,16 @@ class ChatView extends React.Component {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Text onPress={() => this.props.navigation.pop()}>X</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0}}>
+                    <Text style={{fontFamily: Fonts.heading, color: '#f55', fontSize: 32.0}} onPress={() => this.props.navigation.pop()}>X</Text>
+                    <Text style={{fontFamily: Fonts.heading, fontSize: 32, color: Colors.primary}}>{this.state.userId ? this.props.profilesById[this.state.userId].fname + " " + this.props.profilesById[this.state.userId].lname : ''}</Text>
+                </View>
                 <GiftedChat
                     messages={this.state.messages}
                     onSend={this.onSend}
                     user={{
-                        id: auth().currentUser.uid,
+                        _id: auth().currentUser.uid,
+                        name: 'Dheeraj Yalamanchili'
                     }}
                 />
             </View>
@@ -57,11 +71,12 @@ class ChatView extends React.Component {
 }
 
 const mapStateToProps = state => ({
-
+    profileIds: state.profiles.allIds,
+    profilesById: state.profiles.byId,
 });
 
 const mapDispatchToProps = dispatch => ({
-
+    getProfile: uid => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: uid }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatView);

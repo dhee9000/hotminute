@@ -36,6 +36,8 @@ class Chats extends React.Component {
     }
 
     componentDidMount() {
+        // TODO: Remove this line
+        this.props.getProfile(auth().currentUser.uid);
         //  Matches Listeners
         firestore().collection('matches').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
             this.onMatchesUpdated(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
@@ -87,8 +89,8 @@ class Chats extends React.Component {
         });
     }
 
-    chatClicked = (chatId) => {
-        this.props.navigation.navigate('ChatView', {chatId});
+    chatClicked = (chatId, userId) => {
+        this.props.navigation.navigate('ChatView', {chatId, userId});
     }
 
     renderMatch = ({ item }) => {
@@ -115,7 +117,7 @@ class Chats extends React.Component {
         if (this.props.profilesById[item.uid].loaded) {
             let profile = this.props.profilesById[item.uid];
             return (
-                <TouchableOpacity onPress={() => this.chatClicked(item.id)}>
+                <TouchableOpacity onPress={() => this.chatClicked(item.id, item.uid)}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 8.0 }}>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             <Image source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 16, height: 32, width: 32, }} />
