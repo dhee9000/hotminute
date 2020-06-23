@@ -258,7 +258,7 @@ class Minute extends React.Component {
                     <View style={{alignItems: 'center', justifyContent: 'center'}}>
                         {
                             this.state.pairedProfile.pictureURL ? 
-                            <Animated.Image blurRadius={4.0} source={{uri: this.state.pairedProfile.pictureURL}} style={{height: 196, width: 196, borderRadius: 98.0, borderColor: Colors.primary, borderWidth: 8.0, transform: [{scale: this.callStartAnimation}]}} />
+                            <Animated.Image blurRadius={12.0} source={{uri: this.state.pairedProfile.pictureURL}} style={{height: 196, width: 196, borderRadius: 98.0, borderColor: Colors.primary, borderWidth: 8.0, transform: [{scale: this.callStartAnimation}]}} />
                             :
                             <Icon name={'phone'} color={this.state.joinedCall ? Colors.primary : '#dfdfdf'} size={128} />
                         }
