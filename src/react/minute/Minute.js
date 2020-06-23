@@ -269,10 +269,10 @@ class Minute extends React.Component {
                     </View>                    
                     <Text style={{alignSelf: 'center', textAlign: 'center'}}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Button title={'Left'} disabled={!this.state.joinedCall} onPress={this.swipeLeft} containerStyle={{ margin: 2.0 }} />
-                            <Button title={'Extend'} disabled={!this.state.joinedCall} onPress={this.extendCall} containerStyle={{ margin: 2.0 }} />
-                            <Button title={'Right'} disabled={!this.state.joinedCall} onPress={this.swipeRight} containerStyle={{ margin: 2.0 }} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 32.0, marginHorizontal: 8.0 }}>
+                            <Button title={'Left'} disabled={!this.state.joinedCall} onPress={this.swipeLeft} containerStyle={{ margin: 2.0, flex: 1 }} />
+                            <Button title={'Extend'} disabled={!this.state.joinedCall} onPress={this.extendCall} containerStyle={{ margin: 2.0, flex: 2 }} />
+                            <Button title={'Right'} disabled={!this.state.joinedCall} onPress={this.swipeRight} containerStyle={{ margin: 2.0, flex: 1 }} />
                         </View>
                     </View>
                 </View>
