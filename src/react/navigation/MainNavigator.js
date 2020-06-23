@@ -14,21 +14,57 @@ const { width, height } = Dimensions.get('screen');
 import Heart from '../../../assets/svg/heart.svg';
 import { createStackNavigator } from 'react-navigation-stack';
 
+const renderTabBarIcon = ({focused, color, size}, name) => {
+    switch(name){
+        case 'matches': {
+            return (
+                <Icon name={'people'} color={color} size={size} />
+            )
+        }
+        case 'date': {
+            return (
+                <Icon name={'alarm'} color={color} size={size} />
+            )
+        }
+        case 'profile': {
+            return (
+                <Icon name={'person'} color={color} size={size} />
+            )
+        }
+    }
+}
+
 const MainNavigator = createMaterialTopTabNavigator(
     {
-        Chats,
-        Minute,
-        Profile,
+        Matches:{
+            screen: Chats,
+            navigationOptions: {
+                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'message'} color={tintColor} size={size} />),
+            }
+        },
+        Date: {
+            screen: Minute,
+            navigationOptions: {
+                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'favorite'} color={tintColor} size={size} />),
+            }
+        },
+        Profile: {
+            screen: Profile,
+            navigationOptions: {
+                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'person'} color={tintColor} size={size} />),
+            }
+        }
     },
     {
-        initialRouteName: 'Minute',
-        tabBarPosition: 'top',
+        initialRouteName: 'Date',
+        tabBarPosition: 'bottom',
         tabBarOptions: {
-            inactiveTintColor: Colors.primaryDark,
+            activeTintColor: '#fff',
+            inactiveTintColor: Colors.primaryLight,
+            contentContainerStyle: { backgroundColor: Colors.primary, padding: 0},
+            showIcon: true,
+            showLabel: false,
         },
-        style: {
-            backgroundColor: Colors.primary
-        }
         // tabBarComponent: props => {
         //     return(
         //         <View style={{ 
