@@ -15,7 +15,7 @@ import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const {height, width} = Dimensions.get('screen');
+const { height, width } = Dimensions.get('screen');
 
 class ChatView extends React.Component {
 
@@ -88,6 +88,7 @@ class ChatView extends React.Component {
                     borderRadius: 32.0,
                     backgroundColor: '#fff2f6',
                     color: Colors.primary,
+                    fontFamily: Fonts.primary,
                 }}
                 selectionColor={Colors.primaryLight}
                 placeHolderTextColor={Colors.primary}
@@ -100,11 +101,11 @@ class ChatView extends React.Component {
     }
 
     renderSend = props => {
-        const { text, alwaysShowSend} = props;
+        const { text, alwaysShowSend } = props;
         let hasText = text.trim().length > 0;
-        return(
-            <TouchableOpacity disabled={!hasText} onPress={() => props.onSend({text: text.trim()}, true)}>
-                <View style={{ justifyContent: 'center', alignItems: 'center', height: 48.0, width: 48.0, borderRadius: 24.0, backgroundColor: hasText ? Colors.primary : '#fff2f6', borderWidth: 1.0, borderColor: Colors.primary}}>
+        return (
+            <TouchableOpacity disabled={!hasText} onPress={() => props.onSend({ text: text.trim() }, true)}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', height: 48.0, width: 48.0, borderRadius: 24.0, backgroundColor: hasText ? Colors.primary : '#fff2f6', borderWidth: 1.0, borderColor: Colors.primary }}>
                     <Icon name={'arrow-upward'} color={hasText ? Colors.background : Colors.primary} />
                 </View>
             </TouchableOpacity>
@@ -124,6 +125,22 @@ class ChatView extends React.Component {
         )
     }
 
+    renderMessageText = props => {
+        return (
+            <View>
+                <Text style={{color: props.position === 'right' ? Colors.primary : Colors.text, padding: 8.0}}>{props.currentMessage.text}</Text>
+            </View>
+        )
+    }
+
+    renderBubble = props => {
+        return(
+            <View style={{backgroundColor: props.position === 'right' ? '#fff2f6' : '#efefef', borderRadius: 8.0, marginRight: props.position === 'left' ? 60.0 : 0, marginLeft: props.position === 'right' ? 60.0 : 0}}>
+                {this.renderMessageText(props)}
+            </View>
+        )
+    }
+
     render() {
 
         let profile = this.state.userId ? this.props.profilesById[this.state.userId] : {};
@@ -132,12 +149,12 @@ class ChatView extends React.Component {
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
                 <View style={{ paddingTop: 64.0, backgroundColor: '#efefef', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, overflow: 'hidden' }}>
-                    {this.state.userId ? <Image source={{uri: profile.images["1"].url}} blurRadius={8.0} style={{width, height: height/3, position: 'absolute', top: 0, left: 0, right: 0}} /> : null}
-                    <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
-                    <TouchableOpacity onPress={this.props.navigation.pop}>
-                        <Icon name={'chevron-left'} size={32} color={'#f55'} />
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 24.0, color: Colors.background }}>{name}</Text>
+                    {this.state.userId ? <Image source={{ uri: profile.images["1"].url }} blurRadius={8.0} style={{ width, height: height / 3, position: 'absolute', top: 0, left: 0, right: 0 }} /> : null}
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+                        <TouchableOpacity onPress={this.props.navigation.pop}>
+                            <Icon name={'chevron-left'} size={32} color={'#f55'} />
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 24.0, color: Colors.background }}>{name}</Text>
                     </View>
                     <TouchableOpacity onPress={this.props.navigation.pop}>
                         <Icon name={'info'} color={Colors.primary} />
@@ -147,9 +164,11 @@ class ChatView extends React.Component {
                     messages={this.state.messages}
                     onSend={this.onSend}
                     renderInputToolbar={this.renderInputToolbar}
+                    renderMessageText={this.renderMessageText}
+                    renderBubble={this.renderBubble}
                     messagesContainerStyle={{}}
                     minInputToolbarHeight={0}
-                    renderFooter={()=><View style={{height: 90}} />}
+                    renderFooter={() => <View style={{ height: 90 }} />}
                     showUserAvatar
                     user={{
                         _id: auth().currentUser.uid,
