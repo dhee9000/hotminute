@@ -9,6 +9,8 @@ import * as States from '../../redux/ActionTypes';
 
 import { Colors, Fonts } from '../../config';
 
+import { TabView, SceneMap } from 'react-native-tab-view';
+
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
