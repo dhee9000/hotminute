@@ -84,7 +84,7 @@ class Profile extends React.Component {
                             ))}
                         </View>
                         <Text style={{alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0}}>Pictures</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center',}}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap'}}>
                             {Object.keys(this.state.images).map(key => (
                                     <Image key={key} source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
                             ))}
