@@ -18,10 +18,10 @@ import auth from '@react-native-firebase/auth';
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 
 generateCombinedDocId = function (uid1, uid2) {
-    if (uid1 < uid2) {
+    if (uid1.localeCompare(uid2) < 0) {
         return `${uid1}_${uid2}`;
     }
-    else if (uid2 < uid1) {
+    else if (uid2.localeCompare(uid1) > 0) {
         return `${uid1}_${uid2}`;
     }
     else {
