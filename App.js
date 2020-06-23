@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, StatusBar, Alert, Dimensions } from 'react-native';
 
-import { Colors } from './src/config';
+import { Colors, Fonts } from './src/config';
 
 import { RootNavigator } from './src/react/navigation';
 import { createAppContainer } from 'react-navigation';
@@ -20,6 +20,9 @@ const { height, width } = Dimensions.get('screen');
 const theme = {
   colors: {
     primary: Colors.primary,
+  },
+  Button: {
+    titleStyle: { fontFamily: Fonts.primary }
   }
 }
 
@@ -33,6 +36,11 @@ export default function App() {
       await Font.loadAsync('PoppinsBold', require('./assets/fonts/Poppins/Poppins-Bold.ttf'));
       await Font.loadAsync('PoppinsSemiBold', require('./assets/fonts/Poppins/Poppins-SemiBold.ttf'));
       await Font.loadAsync('PoppinsLight', require('./assets/fonts/Poppins/Poppins-Light.ttf'));
+
+      await Font.loadAsync('Jost', require('./assets/fonts/Jost/Jost-Regular.ttf'));
+      await Font.loadAsync('JostBold', require('./assets/fonts/Jost/Jost-Bold.ttf'));
+      await Font.loadAsync('JostSemiBold', require('./assets/fonts/Jost/Jost-SemiBold.ttf'));
+      await Font.loadAsync('JostLight', require('./assets/fonts/Jost/Jost-ExtraLight.ttf'));
     }
     loadFonts().then(() => setFontsLoaded(true));
   }, []);
