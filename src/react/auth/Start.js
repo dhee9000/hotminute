@@ -18,6 +18,7 @@ const BACKGROUND_IMAGE_URI = 'https://m.economictimes.com/thumb/msid-64168358,wi
 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { LinearGradient } from 'expo-linear-gradient';
 
 class Start extends React.Component {
 
@@ -30,13 +31,13 @@ class Start extends React.Component {
 
     async componentDidMount() {
         setTimeout(() =>
-        Animated.timing(this.enterAnimation, {
-            toValue: 1,
-            duration: 1000,
-            easing: Easing.ease,
-            useNativeDriver: true,
-        }).start(), 500);
-        if(auth().currentUser){
+            Animated.timing(this.enterAnimation, {
+                toValue: 1,
+                duration: 1000,
+                easing: Easing.ease,
+                useNativeDriver: true,
+            }).start(), 500);
+        if (auth().currentUser) {
             let profileSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
             let profileData = profileSnapshot.data();
             if (profileSnapshot.exists) {
@@ -47,15 +48,15 @@ class Start extends React.Component {
 
     signOutPressed = async () => {
         await auth().signOut();
-        this.setState({signedIn: false});
+        this.setState({ signedIn: false });
     }
 
     onGetStartedPressed = async () => {
         if (auth().currentUser) {
-            if(this.state.profileComplete){
+            if (this.state.profileComplete) {
                 this.props.navigation.navigate('Main');
             }
-            else{
+            else {
                 this.props.navigation.navigate('CreateProfileBio');
             }
         }
@@ -73,17 +74,20 @@ class Start extends React.Component {
                         <View style={{ position: 'absolute', top: 72, left: 16, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
                             <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0, color: Colors.background }}>Hot{"\n"}Minute</Text>
                         </View>
-                        <Animated.Image source={require('../../../assets/img/logo.png')} style={{ height: 256, width: 256, borderRadius: 16.0, opacity: this.enterAnimation.interpolate({inputRange: [0, 0.5], outputRange: [0, 1], extrapolate: 'clamp'}), transform: [{translateY: this.enterAnimation.interpolate({inputRange: [0, 0.5], outputRange: [100, 0], extrapolate: 'clamp'})}] }} />
-                        <Animated.Text style={{ fontFamily: Fonts.primary, fontSize: 32.0, color: Colors.background, opacity: this.enterAnimation.interpolate({inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp'}), transform: [{scale: this.enterAnimation.interpolate({inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp'})}] }}>BETA</Animated.Text>
+                        <Animated.Image source={require('../../../assets/img/logo.png')} style={{ height: 256, width: 256, borderRadius: 16.0, opacity: this.enterAnimation.interpolate({ inputRange: [0, 0.5], outputRange: [0, 1], extrapolate: 'clamp' }), transform: [{ translateY: this.enterAnimation.interpolate({ inputRange: [0, 0.5], outputRange: [100, 0], extrapolate: 'clamp' }) }] }} />
+                        <Animated.Text style={{ fontFamily: Fonts.primary, fontSize: 32.0, color: Colors.background, opacity: this.enterAnimation.interpolate({ inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp' }), transform: [{ scale: this.enterAnimation.interpolate({ inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp' }) }] }}>BETA</Animated.Text>
                         {/* <View style={{ transform: [{ rotate: '-180deg' }] }}>
                             <WelcomeSVG width={width} height={225} />
                         </View> */}
                         <View style={{ position: 'absolute', width, paddingHorizontal: 16.0, bottom: 16, alignContent: 'stretch', marginBottom: 16.0 }}>
-                            {this.state.signedIn ? <Text style={{ color: Colors.textLightGray, fontSize: 10.0, alignSelf: 'center', marginBottom: 4.0 }}>Signed in as {this.state.profileFetched ? `${this.state.fname} ${this.state.lname}` : auth().currentUser.uid} <Text style={{fontSize: 10.0, color: Colors.textLightGray, textDecorationLine: 'underline'}} onPress={this.signOutPressed}>Sign Out</Text></Text> : null}
+                            {this.state.signedIn ? <Text style={{ color: Colors.textLightGray, fontSize: 10.0, alignSelf: 'center', marginBottom: 4.0 }}>Signed in as {this.state.profileFetched ? `${this.state.fname} ${this.state.lname}` : auth().currentUser.uid} <Text style={{ fontSize: 10.0, color: Colors.textLightGray, textDecorationLine: 'underline' }} onPress={this.signOutPressed}>Sign Out</Text></Text> : null}
                             <TouchableOpacity onPress={this.onGetStartedPressed} onLongPress={() => this.props.navigation.navigate('GodMode')}>
-                                <View style={{ justifyContent: 'center', alignItems: 'center', paddingVertical: 16.0, backgroundColor: Colors.primary, borderRadius: 64.0 }}>
+                                <LinearGradient 
+                                    style={{ flex: 1, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%' }} 
+                                    colors={[Colors.primaryDark, Colors.primary]}                                    
+                                >
                                     <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Get Started</Text>
-                                </View>
+                                </LinearGradient>
                             </TouchableOpacity>
                         </View>
                     </View>
