@@ -22,11 +22,11 @@ class CreateProfileBio extends React.Component {
     state = {
         showDatePicker: false,
         initialDate: new Date(947224800000),
-        fname: 'Test',
-        lname: 'User',
+        fname: '',
+        lname: '',
         gender: 'male',
-        occupation: 'Dumb Shit',
-        bio: 'I am cool guy',
+        occupation: '',
+        bio: '',
     }
 
     async componentDidMount() {

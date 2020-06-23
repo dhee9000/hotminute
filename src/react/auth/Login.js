@@ -21,10 +21,10 @@ const PHNO_REGEX = /^\+(\d{1,3})(\d{3})(\d{3})(\d{4})$/;
 class Login extends React.Component {
 
     state = {
-        phno: '+16505551234',
+        phno: '',
         sendingCode: false,
         codeSent: false,
-        code: '123456',
+        code: '',
         verifyingCode: false,
         codeVerified: false,
         confirmation: {}
