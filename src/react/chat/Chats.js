@@ -88,7 +88,7 @@ class Chats extends React.Component {
     }
 
     chatClicked = (chatId) => {
-        this.props.navigation.navigate('ChatView');
+        this.props.navigation.navigate('ChatView', {chatId});
     }
 
     renderMatch = ({ item }) => {

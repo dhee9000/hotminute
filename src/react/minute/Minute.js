@@ -265,7 +265,8 @@ class Minute extends React.Component {
                         <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0, color: Colors.primary }}>{this.state.timeLeft}</Text>
                         </View>
-                    </View>
+                        <Button title={'End Call'} disabled={!this.state.joinedCall} onPress={this.leaveRoom} containerStyle={{ margin: 2.0 }} />
+                    </View>                    
                     <Text style={{alignSelf: 'center', textAlign: 'center'}}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
