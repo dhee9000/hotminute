@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Animated, Easing, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert } from 'react-native';
+import { View, Animated, Easing, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert, TouchableOpacity } from 'react-native';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -21,6 +21,8 @@ const { Agora } = NativeModules;
 const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = Agora;
 
 import * as Permissions from 'expo-permissions';
+
+import { LinearGradient } from 'expo-linear-gradient';
 
 class Minute extends React.Component {
 
@@ -240,32 +242,50 @@ class Minute extends React.Component {
                 <Image source={{ uri: this.state.backgroundImage }} style={{ height, width }} />
                 <View style={{ position: 'absolute', top: 0, left: 0, height: height - 64, width, }}>
                     <View style={{ flex: 1 }}>
-                        <View style={{ padding: 16.0, }}>
-                            <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0 }}>HotMinute</Text>
+                        <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
                         </View>
                     </View>
                     <View style={{ flex: 3, justifyContent: 'center', alignSelf: 'center' }}>
-                        <Button title={'Edit Filters'} onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool} containerStyle={{ margin: 2.0 }} />
-                        <View style={{ marginVertical: 8.0 }}>
-                            <Button title={'Start Auto Pairing'} onPress={() => this.setState({ pairingEnabled: true })} disabled={this.state.pairingEnabled || this.state.enteredPool} containerStyle={{ margin: 2.0 }} />
-                            <Button title={' Stop Auto Pairing'} onPress={() => this.setState({ pairingEnabled: false })} disabled={!this.state.pairingEnabled} containerStyle={{ margin: 2.0 }} />
-                        </View>
-                        <View style={{ marginVertical: 8.0 }}>
-                            <Button title={'Manual Pair'} onPress={this.joinPool} disabled={this.state.pairingEnabled || this.state.enteredPool} containerStyle={{ margin: 2.0 }} />
-                            <Button title={'Manual Exit'} onPress={this.leavePool} disabled={this.state.pairingEnabled || !this.state.enteredPool} containerStyle={{ margin: 2.0 }} />
+                        <Button title={'Edit Filters'} onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool} containerStyle={{ marginHorizontal: 32.0 }} />
+                        <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
+                            <TouchableOpacity onPress={this.joinPool} disabled={this.state.pairingEnabled || this.state.enteredPool} onLongPress={() => this.props.navigation.navigate('GodMode')}>
+                                <LinearGradient 
+                                    style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%' }} 
+                                    colors={[Colors.primaryDark, Colors.primary]}                                    
+                                >
+                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Find a Match</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.leavePool} disabled={this.state.pairingEnabled || !this.state.enteredPool} onLongPress={() => this.props.navigation.navigate('GodMode')}>
+                                <LinearGradient 
+                                    style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%' }} 
+                                    colors={[Colors.primaryDark, Colors.primary]}                                    
+                                >
+                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Cancel</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
                         </View>
                     </View>
                     <View style={{alignItems: 'center', justifyContent: 'center'}}>
                         {
+                            this.state.pairedUid ? 
                             this.state.pairedProfile.pictureURL ? 
                             <Animated.Image blurRadius={12.0} source={{uri: this.state.pairedProfile.pictureURL}} style={{height: 196, width: 196, borderRadius: 98.0, borderColor: Colors.primary, borderWidth: 8.0, transform: [{scale: this.callStartAnimation}]}} />
                             :
-                            <Icon name={'phone'} color={this.state.joinedCall ? Colors.primary : '#dfdfdf'} size={128} />
+                            <Icon name={'phone'} color={Colors.primary} size={128} /> : this.state.enteredPool ? <ActivityIndicator size={'large'} /> : null
                         }
+                        {
+                            this.state.pairedUid ? 
+                            <>
                         <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0, color: Colors.primary }}>{this.state.timeLeft}</Text>
                         </View>
                         <Button title={'End Call'} disabled={!this.state.joinedCall} onPress={this.leaveRoom} containerStyle={{ margin: 2.0 }} />
+                        </>
+                         : <Image source={require('../../../assets/img/logo.png')} style={{height: 128.0, width: 128.0, borderRadius: 8.0}} />
+                        }
+                        
                     </View>                    
                     <Text style={{alignSelf: 'center', textAlign: 'center'}}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>

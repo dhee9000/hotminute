@@ -19,7 +19,7 @@ const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Pr
 
 class Profile extends React.Component {
 
-    state={
+    state = {
         fname: '',
         lname: '',
         occupation: '',
@@ -28,12 +28,12 @@ class Profile extends React.Component {
         images: {}
     }
 
-    async componentDidMount(){
+    async componentDidMount() {
         let { uid } = auth().currentUser;
         let profileRef = firestore().collection('profiles').doc(uid);
         let profileSnapshot = await profileRef.get();
 
-        if(!profileSnapshot.exists){
+        if (!profileSnapshot.exists) {
             this.props.navigation.navigate('CreateProfileBio');
         }
 
@@ -51,7 +51,7 @@ class Profile extends React.Component {
                 uri: downloadURL,
             }
 
-            this.setState({images: processedImages});
+            this.setState({ images: processedImages });
         });
 
         this.setState({
@@ -68,25 +68,27 @@ class Profile extends React.Component {
         return (
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ padding: 16.0, flex: 1 }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0 }}>Your Profile</Text>
-                    <ScrollView style={{flex: 1, marginTop: 16.0}} contentContainerStyle={{alignItems: 'center'}}>
-                        <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM/2, margin: 2.0 }} />
-                        <Text style={{fontFamily: Fonts.heading, fontSize: 28.0, marginTop: 16.0,}}>{this.state.fname} {this.state.lname}</Text>
-                        <Text style={{fontSize: 18, color: Colors.textLightGray}}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
-                        <Text style={{fontSize: 18, color: Colors.textLightGray}}>{this.state.occupation}</Text>
-                        <Text style={{fontSize: 18, color: Colors.textLightGray}}>{this.state.bio}</Text>
-                        <Text style={{alignSelf: 'flex-start', fontFamily: Fonts.heading}}>Interests</Text>
-                        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                        <View style={{ paddingTop: 16.0, alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>profile</Text>
+                        </View>
+                    <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center' }}>
+                        <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
+                        <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, marginTop: 16.0, }}>{this.state.fname} {this.state.lname}</Text>
+                        <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
+                        <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.occupation}</Text>
+                        <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.bio}</Text>
+                        <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading }}>Interests</Text>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                             {TEST_INTERESTS.map(interest => (
-                                <View key={interest} style={{backgroundColor: Colors.primary, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0}}>
-                                    <Text style={{color: Colors.background}}>{interest}</Text>
+                                <View key={interest} style={{ backgroundColor: Colors.primary, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0 }}>
+                                    <Text style={{ color: Colors.background }}>{interest}</Text>
                                 </View>
                             ))}
                         </View>
-                        <Text style={{alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0}}>Pictures</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap'}}>
+                        <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0 }}>Pictures</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
                             {Object.keys(this.state.images).map(key => (
-                                    <Image key={key} source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                                <Image key={key} source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
                             ))}
                         </View>
                     </ScrollView>
