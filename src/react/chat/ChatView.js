@@ -20,7 +20,9 @@ const { height, width } = Dimensions.get('screen');
 class ChatView extends React.Component {
 
     state = {
-        messages: []
+        messages: [],
+        chatId: undefined,
+        userId: undefined,
     }
 
     componentDidMount() {
@@ -156,7 +158,7 @@ class ChatView extends React.Component {
                         </TouchableOpacity>
                         <Text style={{ fontSize: 24.0, color: Colors.background }}>{name}</Text>
                     </View>
-                    <TouchableOpacity onPress={this.props.navigation.pop}>
+                    <TouchableOpacity onPress={() => this.props.navigation.push('ProfileView', {uid: this.state.userId})}>
                         <Icon name={'info'} color={Colors.primary} />
                     </TouchableOpacity>
                 </View>
