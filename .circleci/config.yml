@@ -32,8 +32,8 @@ jobs:
     working_directory: ~/hotminute/android
     environment:
       FL_OUTPUT_DIR: output
-      FASTLANE_LANE_1: internal
-      FASTLANE_LANE_2: debug
+      FASTLANE_LANE_1: debug
+      FASTLANE_LANE_2: internal
     docker:
       - image: 'circleci/android:api-28-node'
     resource_class: large

@@ -22,7 +22,7 @@ platform :android do
   end
 
   desc "Build Debug APK"
-  lane :internal do
+  lane :debug do
     store_password = "HotMinute123!" # prompt(text: "Signing Store Password: ", secure_text: true)
     key_password = "HotMinute123!" #prompt(text: "Alias Key Password: ", secure_text: true)
     releaseFilePath = File.join(Dir.pwd, "..", "app/HotMinute.keystore")
