@@ -1,7 +1,8 @@
 const Colors = {
     background: '#fff',
     primary: '#E63462',
-    primaryDark: '#e36f39',
+    primaryDark: '#bf1f49',
+    primaryLight: '#ff91ae',
     accent: '#C33C54',
     text: '#333',
     textWhite: '#ffedf3',

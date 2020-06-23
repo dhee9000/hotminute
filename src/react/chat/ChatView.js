@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, TextInput, Image, Dimensions } from 'react-native';
 
 import { Text } from '../common/components';
 import { Fonts, Colors } from '../../config';
@@ -8,9 +8,14 @@ import { connect } from 'react-redux';
 import { ActionTypes } from '../../redux/';
 import { GiftedChat } from 'react-native-gifted-chat';
 
+import { Input, Icon } from 'react-native-elements';
+
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+const {height, width} = Dimensions.get('screen');
 
 class ChatView extends React.Component {
 
@@ -29,11 +34,11 @@ class ChatView extends React.Component {
             let messages = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             messages = messages.map(msg => {
                 let senderProfile = this.props.profilesById[msg.sentBy];
-                if(senderProfile){
-                    return {...msg, _id: msg.id, createdAt: msg.sentAt.toDate(), user: {_id: msg.sentBy, name: `${senderProfile.fname} ${senderProfile.lname}`}}
+                if (senderProfile) {
+                    return { ...msg, _id: msg.id, createdAt: msg.sentAt.toDate(), user: { _id: msg.sentBy, name: `${senderProfile.fname} ${senderProfile.lname}`, avatar: senderProfile.images["1"].url } }
                 }
-                else{
-                    return {...msg, _id: msg.id, createdAt: msg.sentAt.toDate()};
+                else {
+                    return { ...msg, _id: msg.id, createdAt: msg.sentAt.toDate() };
                 }
             })
             this.setState({ messages })
@@ -50,16 +55,102 @@ class ChatView extends React.Component {
         });
     }
 
-    render() {
+    onContentSizeChange = (e) => {
+        const { contentSize } = e.nativeEvent;
+        // Support earlier versions of React Native on Android.
+        if (!contentSize) {
+            return;
+        }
+        if (!this.contentSize ||
+            (this.contentSize &&
+                (this.contentSize.width !== contentSize.width ||
+                    this.contentSize.height !== contentSize.height))) {
+            this.contentSize = contentSize;
+            this.props.onInputSizeChanged(this.contentSize);
+        }
+    };
+    onChangeText = (text) => {
+        this.props.onTextChanged(text);
+    };
+
+    renderComposer = props => {
         return (
-            <View style={{ flex: 1 }}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0}}>
-                    <Text style={{fontFamily: Fonts.heading, color: '#f55', fontSize: 32.0}} onPress={() => this.props.navigation.pop()}>X</Text>
-                    <Text style={{fontFamily: Fonts.heading, fontSize: 32, color: Colors.primary}}>{this.state.userId ? this.props.profilesById[this.state.userId].fname + " " + this.props.profilesById[this.state.userId].lname : ''}</Text>
+            <TextInput
+                accessible accessibilityLabel={props.placeholder}
+                placeholder={'type a message...'}
+                multiline={props.multiline}
+                editable={!props.disableComposer}
+                // onChange={this.onContentSizeChange}
+                // onContentSizeChange={e => props.on}
+                onChangeText={text => props.onTextChanged(text)}
+                style={{
+                    padding: 16.0,
+                    borderRadius: 32.0,
+                    backgroundColor: '#fff2f6',
+                    color: Colors.primary,
+                }}
+                selectionColor={Colors.primaryLight}
+                placeHolderTextColor={Colors.primary}
+                autoFocus={props.textInputAutoFocus}
+                value={props.text}
+                enablesReturnKeyAutomatically
+                underlineColorAndroid='transparent'
+                keyboardAppearance={props.keyboardAppearance}
+                {...props.textInputProps} />);
+    }
+
+    renderSend = props => {
+        const { text, alwaysShowSend} = props;
+        let hasText = text.trim().length > 0;
+        return(
+            <TouchableOpacity disabled={!hasText} onPress={() => props.onSend({text: text.trim()}, true)}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', height: 48.0, width: 48.0, borderRadius: 24.0, backgroundColor: hasText ? Colors.primary : '#fff2f6', borderWidth: 1.0, borderColor: Colors.primary}}>
+                    <Icon name={'arrow-upward'} color={hasText ? Colors.background : Colors.primary} />
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+    renderInputToolbar = props => {
+        return (
+            <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, }}>
+                <View style={{ flex: 5 }}>
+                    {this.renderComposer(props)}
+                </View>
+                <View style={{ flex: 1 }}>
+                    {this.renderSend(props)}
+                </View>
+            </View>
+        )
+    }
+
+    render() {
+
+        let profile = this.state.userId ? this.props.profilesById[this.state.userId] : {};
+        let name = this.state.userId ? profile.fname + " " + profile.lname : '';
+
+        return (
+            <View style={{ flex: 1, backgroundColor: Colors.background }}>
+                <View style={{ paddingTop: 64.0, backgroundColor: '#efefef', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, overflow: 'hidden' }}>
+                    {this.state.userId ? <Image source={{uri: profile.images["1"].url}} blurRadius={8.0} style={{width, height: height/3, position: 'absolute', top: 0, left: 0, right: 0}} /> : null}
+                    <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
+                    <TouchableOpacity onPress={this.props.navigation.pop}>
+                        <Icon name={'chevron-left'} size={32} color={'#f55'} />
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 24.0, color: Colors.background }}>{name}</Text>
+                    </View>
+                    <TouchableOpacity onPress={this.props.navigation.pop}>
+                        <Icon name={'info'} color={Colors.primary} />
+                    </TouchableOpacity>
                 </View>
                 <GiftedChat
                     messages={this.state.messages}
                     onSend={this.onSend}
+                    renderInputToolbar={this.renderInputToolbar}
+                    messagesContainerStyle={{}}
+                    minInputToolbarHeight={0}
+                    renderFooter={()=><View style={{height: 90}} />}
+                    showUserAvatar
                     user={{
                         _id: auth().currentUser.uid,
                         name: 'Dheeraj Yalamanchili'

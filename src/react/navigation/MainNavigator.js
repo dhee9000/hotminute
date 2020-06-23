@@ -14,19 +14,9 @@ const { width, height } = Dimensions.get('screen');
 import Heart from '../../../assets/svg/heart.svg';
 import { createStackNavigator } from 'react-navigation-stack';
 
-const ChatStack = createStackNavigator(
-    {
-        Chats,
-        ChatView,
-    },
-    {
-        headerMode: 'none',
-    }
-)
-
 const MainNavigator = createMaterialTopTabNavigator(
     {
-        ChatStack,
+        Chats,
         Minute,
         Profile,
     },
@@ -55,4 +45,14 @@ const MainNavigator = createMaterialTopTabNavigator(
     }
 )
 
-export default MainNavigator;
+const MainStack = createStackNavigator(
+    {
+        MainNavigator,
+        ChatView,
+    },
+    {
+        headerMode: 'none'
+    }
+)
+
+export default MainStack;
