@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, FlatList, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 
 import { Text } from '../common/components';
 
@@ -9,7 +9,6 @@ import * as States from '../../redux/ActionTypes';
 
 import { Colors, Fonts } from '../../config';
 
-import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
@@ -17,14 +16,14 @@ import auth from '@react-native-firebase/auth';
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 
 generateCombinedDocId = function (uid1, uid2) {
-    if(uid1 < uid2){
+    if (uid1 < uid2) {
         return `${uid1}_${uid2}`;
     }
-    else if(uid2 < uid1){
+    else if (uid2 < uid1) {
         return `${uid1}_${uid2}`;
     }
-    else{
-        throw(new Error("cannot create combined id for same user"));
+    else {
+        throw (new Error("cannot create combined id for same user"));
     }
 }
 
@@ -37,24 +36,25 @@ class Chats extends React.Component {
     }
 
     componentDidMount() {
+        //  Matches Listeners
+        firestore().collection('matches').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
+            this.onMatchesUpdated(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+        });
 
         // Chats Listeners
         firestore().collection('chats').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
-            this.onChatsUpdated(snapshot.docs.map(doc => ({...doc.data(), id: doc.id})));
+            this.onChatsUpdated(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
         });
-
-        //  Matches Listeners
-         firestore().collection('matches').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
-             this.onMatchesUpdated(snapshot.docs.map(doc => ({...doc.data(), id: doc.id})));
-         });
     }
 
     onChatsUpdated = chats => {
         chats = chats.map(chat => {
             let otherUid = chat.uids.filter(uid => uid != auth().currentUser.uid)[0];
-            return {...chat, ...this.state.matches.filter(match => match.uids.includes(otherUid))[0]}
+            return { ...chat, uid: otherUid }
         })
-        this.setState({chats});
+
+        console.log(chats);
+        this.setState({ chats });
     }
 
     onMatchesUpdated = async matchesData => {
@@ -62,51 +62,24 @@ class Chats extends React.Component {
         // Get Profiles of Matches
         let matches = [];
 
-        await Promise.all(matchesData.map(match => {
+        matchesData.map(match => {
+
             let otherUid = match.uids.filter(uid => uid != auth().currentUser.uid)[0];
-
             let matchData = match;
-            let profileData = {};
-            let imageUrl = '';
 
-            return firestore().collection('profiles').doc(otherUid).get()
-                .then(snapshot => {
-                    profileData = snapshot.data();
-                    return snapshot;
-                })
-                .then(async snapshot => {
-                    imageUrl = await storage().ref(snapshot.data().images["1"].ref).getDownloadURL();
-                    return true;
-                })
-                .then(success => {
-                    matches.push({ ...matchData, ...profileData, imageUrl });
-                })
-        }));
+            this.props.getProfile(otherUid);
+
+            matches.push({ ...matchData, uid: otherUid });
+
+        });
 
         this.setState({ matches });
 
     }
 
-    async componentDidUpdate(prevProps, prevState) {
-        if (prevState.matches != this.state.matches) {
-            let matchesToDisplay = this.state.matches.filter(match => {
-
-                let uid = auth().currentUser.uid;
-                let otherUid = match.uids.filter(uid => uid != auth().currentUser.uid)[0];
-                let uidInChats = this.state.chats.find(chat => {
-                    return chat.uids.includes(otherUid)
-                });
-
-                return uidInChats === undefined;
-
-            });
-            this.setState({ matchesToDisplay });
-        }
-    }
-
     matchClicked = (matchId) => {
-        
-        let relatedMatch = this.state.matchesToDisplay.filter(match => match.id === matchId)[0];
+
+        let relatedMatch = this.state.matches.filter(match => match.id === matchId)[0];
         let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
 
         firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid, otherUid)).set({
@@ -114,27 +87,53 @@ class Chats extends React.Component {
         });
     }
 
-    renderMatch = ({item}) => {
-        return (
-            <TouchableOpacity onPress={() => {this.matchClicked(item.id)}}>
-                <View style={{ alignItems: 'center', justifyContent: 'center', margin: 8.0, marginTop: 0 }}>
-                    <Image source={{ uri: item.imageUrl ? item.imageUrl : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
-                    <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{item.fname}{'\n'}{item.lname}</Text>
-                </View>
-            </TouchableOpacity>
-        );
+    chatClicked = (chatId) => {
+        this.props.navigation.navigate('ChatView');
     }
 
-    renderChat = ({item}) => {
-        return (
-            <TouchableOpacity onPress={() => this.chatClicked(item.id)}>
-                <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
-                    <Image source={{ uri: item.imageUrl ? item.imageUrl : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
-                    <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{item.fname} {item.lname}</Text>
-                    <Text>{item.lastMessageBy == auth().currentUser.uid ? 'You' : item.fname}: {item.lastMessage}</Text>
-                </View>
-            </TouchableOpacity>
-        )
+    renderMatch = ({ item }) => {
+
+        if (this.props.profilesById[item.uid].loaded) {
+            let profile = this.props.profilesById[item.uid];
+            return (
+                <TouchableOpacity onPress={() => { this.matchClicked(item.id) }}>
+                    <View style={{ alignItems: 'center', justifyContent: 'center', margin: 8.0, marginTop: 0 }}>
+                        <Image source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
+                        <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{profile.fname}{'\n'}{profile.lname}</Text>
+                    </View>
+                </TouchableOpacity>
+            );
+        }
+        else {
+            return (
+                <ActivityIndicator />
+            )
+        }
+    }
+
+    renderChat = ({ item }) => {
+        if (this.props.profilesById[item.uid].loaded) {
+            let profile = this.props.profilesById[item.uid];
+            return (
+                <TouchableOpacity onPress={() => this.chatClicked(item.id)}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 8.0 }}>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <Image source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 16, height: 32, width: 32, }} />
+                            <View style={{ justifyContent: 'center', alignItems: 'flex-start', padding: 8.0 }}>
+                                <Text numberOfLines={2} style={{ fontSize: 16.0, textAlign: 'center' }}>{profile.fname} {profile.lname}</Text>
+                                <Text style={{ fontSize: 10.0 }}>{item.lastMessageBy == auth().currentUser.uid ? 'You' : profile.fname}: {item.lastMessage}</Text>
+                            </View>
+                        </View>
+                        <Text style={{ fontSize: 16.0, color: Colors.textLightGray,}}>1d</Text>
+                    </View>
+                </TouchableOpacity>
+            )
+        }
+        else {
+            return (
+                <ActivityIndicator />
+            )
+        }
     }
 
     render() {
@@ -146,7 +145,7 @@ class Chats extends React.Component {
                 <View>
                     <FlatList
                         horizontal
-                        data={this.state.matchesToDisplay}
+                        data={this.state.matches.filter(match => this.state.chats.find(chat => chat.uids.includes(match.uids.filter(uid => uid != auth().currentUser.uid)[0])) === undefined)}
                         renderItem={this.renderMatch}
                         keyExtractor={item => item.id}
                         ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
@@ -157,20 +156,7 @@ class Chats extends React.Component {
                         ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
                         data={this.state.chats}
                         keyExtractor={item => item.id}
-                        renderItem={({ item }) => {
-                            return (
-                                <TouchableOpacity>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 8.0, elevation: 2.0 }}>
-                                        <Image source={{ uri: item.displayImageURL }} style={{ height: 48, width: 48, borderRadius: 24, marginRight: 8.0 }} />
-                                        <View style={{ flex: 1 }}>
-                                            <Text style={{ fontFamily: Fonts.heading, fontSize: 18.0 }}>{item.fname} {item.lname}</Text>
-                                            <Text style={{ fontSize: 14.0, color: Colors.textLightGray }} numberOfLines={1}>{item.mostRecentMessage}</Text>
-                                        </View>
-                                        <Text style={{ color: Colors.textLightGray }}>1d</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            )
-                        }}
+                        renderItem={this.renderChat}
                     />
                 </View>
             </View>
@@ -179,11 +165,12 @@ class Chats extends React.Component {
 }
 
 const mapStateToProps = state => ({
-
+    profileIds: state.profiles.allIds,
+    profilesById: state.profiles.byId,
 });
 
 const mapDispatchToProps = dispatch => ({
-
+    getProfile: uid => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: uid }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chats);

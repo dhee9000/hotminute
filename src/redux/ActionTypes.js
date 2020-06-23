@@ -7,5 +7,4 @@ const action = actionName => (
 );
 
 // Auth Actions
-export const SEND_CODE = action('SEND_CODE');
-export const VERIFY_CODE = action('VERIFY_CODE');
+export const FETCH_PROFILE = action('FETCH_PROFILE');

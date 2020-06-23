@@ -1,8 +1,8 @@
 import { all, spawn } from 'redux-saga/effects';
-import { AuthSaga } from './auth/sagas';
+import { ProfileSaga } from './profiles/sagas';
 
 const allWatcherSagas = [
-    AuthSaga,
+    ProfileSaga,
 ];
 
 export default function* rootSaga() {

@@ -14,20 +14,31 @@ const { width, height } = Dimensions.get('screen');
 import Heart from '../../../assets/svg/heart.svg';
 import { createStackNavigator } from 'react-navigation-stack';
 
-const ChatStack = createStackNavigator({
-    Chats,
-    ChatView,
-})
+const ChatStack = createStackNavigator(
+    {
+        Chats,
+        ChatView,
+    },
+    {
+        headerMode: 'none',
+    }
+)
 
 const MainNavigator = createMaterialTopTabNavigator(
     {
-        Chats,
+        ChatStack,
         Minute,
         Profile,
     },
     {
         initialRouteName: 'Minute',
         tabBarPosition: 'top',
+        tabBarOptions: {
+            inactiveTintColor: Colors.primaryDark,
+        },
+        style: {
+            backgroundColor: Colors.primary
+        }
         // tabBarComponent: props => {
         //     return(
         //         <View style={{ 

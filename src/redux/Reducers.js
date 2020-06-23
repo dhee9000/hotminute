@@ -1,9 +1,9 @@
 import { combineReducers } from "redux";
-import { AuthReducer } from "./auth/reducers";
+import { ProfilesReducer } from './profiles/reducers';
 
 const Reducers = combineReducers({
     __default: (state={}, action) => ({}),
-    auth: AuthReducer,
+    profiles: ProfilesReducer,
 })
 
 export default Reducers;
