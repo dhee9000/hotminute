@@ -21,6 +21,31 @@ platform :android do
     gradle(task: "test")
   end
 
+  desc "Build Debug APK"
+  lane :internal do
+    store_password = "HotMinute123!" # prompt(text: "Signing Store Password: ", secure_text: true)
+    key_password = "HotMinute123!" #prompt(text: "Alias Key Password: ", secure_text: true)
+    releaseFilePath = File.join(Dir.pwd, "..", "app/HotMinute.keystore")
+    gradle(task: 'clean')
+    increment_version_code(
+        gradle_file_path: "app/build.gradle",
+    )
+    # increment_version_name(
+    #     gradle_file_path: "app/build.gradle",
+    # )
+    gradle(
+      task: 'assemble',
+      build_type: 'Debug',
+      print_command: false,
+      properties: {
+        "android.injected.signing.store.file" => releaseFilePath,
+        "android.injected.signing.store.password" => store_password,
+        "android.injected.signing.key.alias" => "HotMinute",
+        "android.injected.signing.key.password" => key_password,
+      }
+    )
+  end
+
   desc "Push Build to Internal App Sharing"
   lane :internal do
     store_password = "HotMinute123!" # prompt(text: "Signing Store Password: ", secure_text: true)
