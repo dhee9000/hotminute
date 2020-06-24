@@ -250,6 +250,7 @@ class Minute extends React.Component {
             swipedOn: this.state.pairedUid,
             direction: 'left',
         });
+        this.leaveRoom();
     }
 
     extendCall = async () => {
