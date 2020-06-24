@@ -1,23 +1,37 @@
 import React from 'react';
-import { View, Image, ScrollView } from 'react-native';
+import { View, Image, ScrollView, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { Text } from '../common/components';
 
 import { connect } from 'react-redux';
 import { ActionTypes } from '../../redux/';
+import {Constants} from 'expo';
 
 import { Colors, Fonts } from '../../config';
 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import {createAppContainer, createStackNavigator} from 'react-navigation';
+import EditProfile from './EditProfile';
 
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 const IMG_DIM = 128;
 
 const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Programming", "Comedy"];
 
+const styles = StyleSheet.create({
+    button: {
+        fontFamily: Fonts.heading,
+        color: Colors.primary,
+        fontSize: 24,
+
+    }
+});
+
 class Profile extends React.Component {
+
+
 
     state = {
         fname: '',
@@ -27,6 +41,27 @@ class Profile extends React.Component {
         dob: new Date(),
         images: {}
     }
+
+    handlePress = () => {
+        this.setState({color: 'pink'});
+        this.props.navigation.navigate('Edit', {
+            fname: this.state.fname,
+            lname: this.state.lname,
+            occupation: this.state.occupation,
+            bio: this.state.bio,
+            saveEditProfile: this.saveEditProfile,
+        });
+    };
+
+    saveEditProfile = async (fname, lname, occupation, bio) => {
+        await firestore().collection('profiles').doc(auth().currentUser.uid).set({
+            fname: this.state.fname,
+            lname: this.state.lname,
+            occupation: this.state.occupation,
+            bio: this.state.bio,
+            
+        });
+    };
 
     async componentDidMount() {
         let { uid } = auth().currentUser;
@@ -85,6 +120,13 @@ class Profile extends React.Component {
                                 </View>
                             ))}
                         </View>
+                        <TouchableOpacity onPress={this.handlePress}>
+                            <View style={{
+                                backgroundColor: this.state.color, alignItems: 'center', justifyContent: 'center', borderRadius: 15, borderWidth: 1, borderColor: 'white', margin: 5,
+                            }}>
+                                <Text style={styles.button}>Edit Profile</Text>
+                                </View>
+                                </TouchableOpacity>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0 }}>Pictures</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
                             {Object.keys(this.state.images).map(key => (
