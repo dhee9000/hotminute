@@ -67,6 +67,8 @@ class Minute extends React.Component {
 
         Permissions.askAsync(Permissions.AUDIO_RECORDING);
         RtcEngine.init(AgoraConfig);
+        RtcEngine.setEnableSpeakerphone(true);
+        RtcEngine.setDefaultAudioRouteToSpeakerphone(true);
         RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
         RtcEngine.on('userJoined', data => this.setState({ partnerUid: data.uid, partnerOnCall: true })); // When a user joins the call
         RtcEngine.on('userOffline', data => this.setState({ partnerUid: null, partnerOnCall: false }));
