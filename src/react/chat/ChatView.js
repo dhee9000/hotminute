@@ -38,10 +38,14 @@ class ChatView extends React.Component {
             messages = messages.map(msg => {
                 let senderProfile = this.props.profilesById[msg.sentBy];
                 if (senderProfile) {
-                    return { ...msg, _id: msg.id, createdAt: msg.sentAt.toDate(), user: { _id: msg.sentBy, name: `${senderProfile.fname} ${senderProfile.lname}`, avatar: senderProfile.images["1"].url } }
+                    return { ...msg, _id: msg.id, 
+                        // createdAt: msg.sentAt.toDate(), 
+                        user: { _id: msg.sentBy, name: `${senderProfile.fname} ${senderProfile.lname}`, avatar: senderProfile.images["1"].url } }
                 }
                 else {
-                    return { ...msg, _id: msg.id, createdAt: msg.sentAt.toDate() };
+                    return { ...msg, _id: msg.id, 
+                        // createdAt: msg.sentAt.toDate() 
+                    };
                 }
             })
             this.setState({ messages })
