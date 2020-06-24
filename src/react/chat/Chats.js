@@ -23,7 +23,7 @@ generateCombinedDocId = function (uid1, uid2) {
     if (uid1.localeCompare(uid2) < 0) {
         return `${uid1}_${uid2}`;
     }
-    else if (uid2.localeCompare(uid1) > 0) {
+    else if (uid1.localeCompare(uid2) > 0) {
         return `${uid1}_${uid2}`;
     }
     else {
@@ -41,10 +41,16 @@ class Chats extends React.Component {
         ]
     }
 
-    renderTabScene = SceneMap({
-        matches: ConnectedMatchesView,
-        chats: ConnectedChatsView,
-    })
+    renderTabScene = ({route, focused}) => {
+        switch(route.key){
+            case 'matches': {
+                return (<ConnectedMatchesView navigation={this.props.navigation} />)
+            }
+            case 'chats': {
+                return (<ConnectedChatsView navigation={this.props.navigation} />)
+            }
+        }
+    }
 
     _renderTabBar = props => {
         const inputRange = props.navigationState.routes.map((x, i) => i);

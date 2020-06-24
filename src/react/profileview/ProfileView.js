@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, ScrollView } from 'react-native';
+import { View, Image, ScrollView, TouchableOpacity } from 'react-native';
 
 import { Text } from '../common/components';
 
@@ -17,7 +17,7 @@ const IMG_DIM = 128;
 
 const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Programming", "Comedy"];
 
-class Profile extends React.Component {
+class ProfileView extends React.Component {
 
     state = {
         fname: '',
@@ -29,9 +29,10 @@ class Profile extends React.Component {
     }
 
     async componentDidMount() {
-        let uid = this.props.navigation.getParam(uid, undefined);
+        let uid = this.props.navigation.getParam('uid', undefined);
         if(!uid){
             this.props.navigation.pop();
+            return;
         }
         let profileRef = firestore().collection('profiles').doc(uid);
         let profileSnapshot = await profileRef.get();
@@ -67,6 +68,9 @@ class Profile extends React.Component {
         return (
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ padding: 32.0, flex: 1 }}>
+                    <TouchableOpacity onPress={() => this.props.navigation.pop()}>
+                        <Text style={{color: '#f55', fontSize: 32.0}}>X</Text>
+                    </TouchableOpacity>
                     <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center' }}>
                         <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, marginTop: 16.0, }}>{this.state.fname} {this.state.lname}</Text>
@@ -102,4 +106,4 @@ const mapDispatchToProps = dispatch => ({
 
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Profile);
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileView);

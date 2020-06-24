@@ -27,9 +27,10 @@ class ChatView extends React.Component {
 
     componentDidMount() {
         let chatId = this.props.navigation.getParam('chatId', undefined)
-        let userId = this.props.navigation.getParam('userId', '');
-        if (!chatId) {
+        let userId = this.props.navigation.getParam('userId', undefined);
+        if (!chatId || !userId) {
             this.props.navigation.pop();
+            return;
         }
         this.setState({ chatId, userId });
         firestore().collection('chats').doc(chatId).collection('messages').limit(25).orderBy('sentAt', 'desc').onSnapshot(snapshot => {
