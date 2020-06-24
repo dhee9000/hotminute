@@ -24,7 +24,7 @@ generateCombinedDocId = function (uid1, uid2) {
         return `${uid1}_${uid2}`;
     }
     else if (uid1.localeCompare(uid2) > 0) {
-        return `${uid1}_${uid2}`;
+        return `${uid2}_${uid1}`;
     }
     else {
         throw (new Error("cannot create combined id for same user"));
