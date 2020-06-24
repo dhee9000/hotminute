@@ -207,7 +207,7 @@ class MatchesView extends React.Component {
             <View style={{paddingTop: 16.0}}>
                 <FlatList
                     horizontal
-                    data={this.state.matches.filter(match => this.state.chats.find(chat => chat.uids.includes(match.uids.filter(uid => uid != auth().currentUser.uid)[0])) === undefined)}
+                    data={this.state.matches}
                     renderItem={this.renderMatch}
                     keyExtractor={item => item.id}
                     ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
