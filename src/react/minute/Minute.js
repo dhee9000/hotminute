@@ -117,6 +117,24 @@ class Minute extends React.Component {
         if(prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall){
             this.leaveRoom();
         }
+        if(!prevState.enteredPool && this.state.enteredPool){
+            
+            let animationRunner = Animated.loop(Animated.timing(this.loadingAnimation, {
+                toValue: 1.0,
+                duration: 2000,
+                useNativeDriver: true,
+            }));
+
+            animationRunner.start();
+
+            this.setState({animationRunner});
+
+        }
+        if(prevState.enteredPool && !this.state.enteredPool){
+            
+           this.state.animationRunner.stop();
+
+        }
     }
 
     joinPool = async () => {
@@ -236,6 +254,8 @@ class Minute extends React.Component {
 
     }
 
+    loadingAnimation = new Animated.Value(0);
+
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
@@ -246,34 +266,13 @@ class Minute extends React.Component {
                             <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
                         </View>
                     </View>
-                    <View style={{ flex: 3, justifyContent: 'center', alignSelf: 'center' }}>
-                        <Button title={'Edit Filters'} onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool} containerStyle={{ marginHorizontal: 32.0 }} />
-                        <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
-                            <TouchableOpacity onPress={this.joinPool} disabled={this.state.pairingEnabled || this.state.enteredPool} onLongPress={() => this.props.navigation.navigate('GodMode')}>
-                                <LinearGradient 
-                                    style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%' }} 
-                                    colors={[Colors.primaryDark, Colors.primary]}                                    
-                                >
-                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Find a Match</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={this.leavePool} disabled={this.state.pairingEnabled || !this.state.enteredPool} onLongPress={() => this.props.navigation.navigate('GodMode')}>
-                                <LinearGradient 
-                                    style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%' }} 
-                                    colors={[Colors.primaryDark, Colors.primary]}                                    
-                                >
-                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Cancel</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
                     <View style={{alignItems: 'center', justifyContent: 'center'}}>
                         {
                             this.state.pairedUid ? 
                             this.state.pairedProfile.pictureURL ? 
                             <Animated.Image blurRadius={12.0} source={{uri: this.state.pairedProfile.pictureURL}} style={{height: 196, width: 196, borderRadius: 98.0, borderColor: Colors.primary, borderWidth: 8.0, transform: [{scale: this.callStartAnimation}]}} />
                             :
-                            <Icon name={'phone'} color={Colors.primary} size={128} /> : this.state.enteredPool ? <ActivityIndicator size={'large'} /> : null
+                            <Icon name={'phone'} color={Colors.primary} size={128} /> :  null
                         }
                         {
                             this.state.pairedUid ? 
@@ -283,11 +282,39 @@ class Minute extends React.Component {
                         </View>
                         <Button title={'End Call'} disabled={!this.state.joinedCall} onPress={this.leaveRoom} containerStyle={{ margin: 2.0 }} />
                         </>
-                         : <Image source={require('../../../assets/img/logo.png')} style={{height: 128.0, width: 128.0, borderRadius: 8.0}} />
+                         : 
+                         <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                            <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                <Animated.View style={{ backgroundColor: '#fff2f6', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{scale: this.loadingAnimation.interpolate({inputRange: [0,0.5,1], outputRange: [0, 5, 0]})}] }} />
+                            </View>
+                            <Image source={require('../../../assets/img/logo.png')} style={{height: 128.0, width: 128.0, borderRadius: 8.0}} />
+                         </View>
                         }
                         
                     </View>                    
                     <Text style={{alignSelf: 'center', textAlign: 'center'}}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
+                    <View style={{ flex: 2, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
+                        <Button title={'Edit Filters'} onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool} containerStyle={{ margin: 4.0 }} />
+                        <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
+                            <TouchableOpacity onPress={this.joinPool} disabled={this.state.pairingEnabled || this.state.enteredPool} onLongPress={() => this.props.navigation.navigate('GodMode')}>
+                                <LinearGradient 
+                                    style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%', opacity: !this.state.enteredPool ? 1 : 0.5 }} 
+                                    colors={[Colors.primaryDark, Colors.primary]}                                    
+                                >
+                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Find a Match</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.leavePool} disabled={this.state.pairingEnabled || !this.state.enteredPool} onLongPress={() => this.props.navigation.navigate('GodMode')}>
+                                <LinearGradient 
+                                    style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%', opacity: this.state.enteredPool ? 1 : 0.5 }} 
+                                    colors={[Colors.primaryDark, Colors.primary]}                                    
+                                >
+                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Cancel</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 32.0, marginHorizontal: 8.0 }}>
                             <Button title={'Left'} disabled={!this.state.joinedCall} onPress={this.swipeLeft} containerStyle={{ margin: 2.0, flex: 1 }} />
