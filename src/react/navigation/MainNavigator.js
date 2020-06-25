@@ -37,10 +37,10 @@ const renderTabBarIcon = ({focused, color, size}, name) => {
 
 const MainNavigator = createMaterialTopTabNavigator(
     {
-        Matches:{
-            screen: Chats,
+        Profile: {
+            screen: Profile,
             navigationOptions: {
-                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'message'} color={tintColor} size={size} />),
+                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'person'} color={tintColor} size={size} />),
             }
         },
         Date: {
@@ -49,12 +49,12 @@ const MainNavigator = createMaterialTopTabNavigator(
                 tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'favorite'} color={tintColor} size={size} />),
             }
         },
-        Profile: {
-            screen: Profile,
+        Matches:{
+            screen: Chats,
             navigationOptions: {
-                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'person'} color={tintColor} size={size} />),
+                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'message'} color={tintColor} size={size} />),
             }
-        }
+        },
     },
     {
         initialRouteName: 'Date',
