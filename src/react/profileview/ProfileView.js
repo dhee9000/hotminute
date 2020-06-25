@@ -17,6 +17,21 @@ const IMG_DIM = 128;
 
 const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Programming", "Comedy"];
 
+import { Button } from 'react-native-elements';
+
+generateCombinedDocId = function (uid1, uid2) {
+    if (uid1.localeCompare(uid2) < 0) {
+        return `${uid1}_${uid2}`;
+    }
+    else if (uid1.localeCompare(uid2) > 0) {
+        return `${uid2}_${uid1}`;
+    }
+    else {
+        throw (new Error("cannot create combined id for same user"));
+    }
+}
+
+
 class ProfileView extends React.Component {
 
     state = {
@@ -25,18 +40,21 @@ class ProfileView extends React.Component {
         occupation: '',
         bio: '',
         dob: new Date(),
-        images: {}
+        images: {},
+        chatExists: true,
+        uid: '',
     }
 
     async componentDidMount() {
         let uid = this.props.navigation.getParam('uid', undefined);
-        if(!uid){
+        if (!uid) {
             this.props.navigation.pop();
             return;
         }
+        this.setState({uid});
         let profileRef = firestore().collection('profiles').doc(uid);
         let profileSnapshot = await profileRef.get();
-        
+
         let profileData = profileSnapshot.data();
 
         let processedImages = {};
@@ -54,6 +72,8 @@ class ProfileView extends React.Component {
             this.setState({ images: processedImages });
         });
 
+        let chatDoc = await firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid, uid)).get();
+
         this.setState({
             fname: profileData.fname,
             lname: profileData.lname,
@@ -61,7 +81,15 @@ class ProfileView extends React.Component {
             bio: profileData.bio,
             dob: profileData.dob.toDate(),
             images: processedImages,
+            chatExists: chatDoc.exists,
         })
+    }
+
+    createChatPressed = async () => {
+        await firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid, this.state.uid)).set({
+            uids: [auth().currentUser.uid, this.state.uid],
+        });
+        this.props.navigation.navigate('ChatView', {chatId: generateCombinedDocId(auth().currentUser.uid, this.state.uid), userId: this.state.uid });
     }
 
     render() {
@@ -69,11 +97,12 @@ class ProfileView extends React.Component {
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ padding: 32.0, flex: 1 }}>
                     <TouchableOpacity onPress={() => this.props.navigation.pop()}>
-                        <Text style={{color: '#f55', fontSize: 32.0}}>X</Text>
+                        <Text style={{ color: '#f55', fontSize: 32.0 }}>X</Text>
                     </TouchableOpacity>
                     <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center' }}>
                         <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, marginTop: 16.0, }}>{this.state.fname} {this.state.lname}</Text>
+                        {!this.state.chatExists && <Button title={'Start Chat'} onPress={this.createChatPressed} />}
                         <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
                         <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.occupation}</Text>
                         <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.bio}</Text>

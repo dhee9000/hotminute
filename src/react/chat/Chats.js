@@ -179,13 +179,11 @@ class MatchesView extends React.Component {
     }
 
     matchClicked = (matchId) => {
-
+        
         let relatedMatch = this.state.matches.filter(match => match.id === matchId)[0];
         let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
-
-        firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid, otherUid)).set({
-            uids: [auth().currentUser.uid, otherUid],
-        });
+        
+        this.props.navigation.push('ProfileView', {uid: otherUid});
     }
 
     renderMatch = ({ item }) => {
