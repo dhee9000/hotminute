@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, ScrollView } from 'react-native';
+import { View, Image, ScrollView, TouchableOpacity, Modal, Dimensions } from 'react-native';
 
 import { Text } from '../common/components';
 
@@ -17,6 +17,10 @@ const IMG_DIM = 128;
 
 const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Programming", "Comedy"];
 
+import { Button, Icon } from 'react-native-elements';
+
+const { height, width } = Dimensions.get('screen');
+
 class Profile extends React.Component {
 
     state = {
@@ -25,7 +29,9 @@ class Profile extends React.Component {
         occupation: '',
         bio: '',
         dob: new Date(),
-        images: {}
+        images: {},
+
+        showSettings: false,
     }
 
     async componentDidMount() {
@@ -64,13 +70,25 @@ class Profile extends React.Component {
         })
     }
 
+    showSettingsMenu = () => {
+        this.setState({ showSettings: true });
+    }
+
+    logoutPressed = async () => {
+        await auth().signOut();
+        this.props.navigation.navigate('Start');
+    }
+
     render() {
         return (
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ padding: 16.0, flex: 1 }}>
-                        <View style={{ paddingTop: 16.0, alignItems: 'center', justifyContent: 'center' }}>
-                            <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>profile</Text>
-                        </View>
+                    <View style={{ paddingTop: 16.0, alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>profile</Text>
+                    </View>
+                    <TouchableOpacity onPress={this.showSettingsMenu}>
+                        <Icon name={'settings'} size={32} color={Colors.textLightGray} />
+                    </TouchableOpacity>
                     <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center' }}>
                         <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, marginTop: 16.0, }}>{this.state.fname} {this.state.lname}</Text>
@@ -93,6 +111,17 @@ class Profile extends React.Component {
                         </View>
                     </ScrollView>
                 </View>
+                <Modal visible={this.state.showSettings} transparent animated animationType={'slide'}>
+                    <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0 }}>Settings</Text>
+                            <Text style={{ fontFamily: Fonts.heading, marginRight: 16.0, color: Colors.primary, fontSize: 24 }} onPress={() => this.setState({ showSettings: false })}>X</Text>
+                        </View>
+                        <View>
+                            <Button title={'Log Out'} onPress={this.logoutPressed} />
+                        </View>
+                    </View>
+                </Modal>
             </View>
         )
     }
