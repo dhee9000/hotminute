@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, FlatList, Image, TouchableOpacity, Alert, ActivityIndicator, Modal, Dimensions } from 'react-native';
 
 import { Text } from '../common/components';
 
@@ -13,11 +13,14 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import auth from '@react-native-firebase/auth';
+import auth, { firebase } from '@react-native-firebase/auth';
 
 import Animated from 'react-native-reanimated';
+import { Button } from 'react-native-elements';
 
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+
+const { height, width } = Dimensions.get('screen');
 
 generateCombinedDocId = function (uid1, uid2) {
     if (uid1.localeCompare(uid2) < 0) {
@@ -41,8 +44,8 @@ class Chats extends React.Component {
         ]
     }
 
-    renderTabScene = ({route, focused}) => {
-        switch(route.key){
+    renderTabScene = ({ route, focused }) => {
+        switch (route.key) {
             case 'matches': {
                 return (<ConnectedMatchesView navigation={this.props.navigation} />)
             }
@@ -147,6 +150,8 @@ class MatchesView extends React.Component {
 
     state = {
         matches: [],
+        showMatchMenu: false,
+        matchMenuId: null,
     }
 
     componentDidMount() {
@@ -179,11 +184,29 @@ class MatchesView extends React.Component {
     }
 
     matchClicked = (matchId) => {
+
+        let relatedMatch = this.state.matches.filter(match => match.id === matchId)[0];
+        let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
+
+        this.props.navigation.push('ProfileView', { uid: otherUid });
+    }
+
+    matchLongPressed = (matchId) => {
+        this.setState({showMatchMenu: true, matchMenuId: matchId});
+    }
+
+    closeMatchMenu = () => {
+        this.setState({showMatchMenu: false, matchMenuId: null})
+    }
+
+    unmatchPressed = (matchId) => {
         
         let relatedMatch = this.state.matches.filter(match => match.id === matchId)[0];
         let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
-        
-        this.props.navigation.push('ProfileView', {uid: otherUid});
+
+        firestore().collection('matches').doc(matchId).delete();
+
+        this.closeMatchMenu();
     }
 
     renderMatch = ({ item }) => {
@@ -191,7 +214,7 @@ class MatchesView extends React.Component {
         if (this.props.profilesById[item.uid].loaded) {
             let profile = this.props.profilesById[item.uid];
             return (
-                <TouchableOpacity onPress={() => { this.matchClicked(item.id) }}>
+                <TouchableOpacity onPress={() => { this.matchClicked(item.id) }} onLongPress={() => { this.matchLongPressed(item.id) }}>
                     <View style={{ alignItems: 'center', justifyContent: 'center', margin: 8.0, marginTop: 0 }}>
                         <Image source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
                         <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{profile.fname}{'\n'}{profile.lname}</Text>
@@ -207,8 +230,16 @@ class MatchesView extends React.Component {
     }
 
     render() {
+        let relatedMatch = null;
+        let otherUid = null;
+        let matchMenuProfile = {};
+        if(this.state.showMatchMenu){
+            relatedMatch = this.state.matches.filter(match => match.id === this.state.matchMenuId)[0];
+            otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
+            matchMenuProfile = this.props.profilesById[otherUid];
+        }
         return (
-            <View style={{paddingTop: 16.0}}>
+            <View style={{ paddingTop: 16.0 }}>
                 <FlatList
                     horizontal
                     data={this.state.matches}
@@ -216,6 +247,14 @@ class MatchesView extends React.Component {
                     keyExtractor={item => item.id}
                     ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
                 />
+                <Modal visible={this.state.showMatchMenu} transparent animated animationType={'slide'}>
+                    <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                        <Text style={{alignSelf: 'center'}}>Match with</Text>
+                        <Text style={{alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0}}>{matchMenuProfile.fname} {matchMenuProfile.lname}</Text>
+                        <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{margin: 2.0}} />
+                        <Button title={'Close'} onPress={this.closeMatchMenu} containerStyle={{margin: 2.0}} />
+                    </View>
+                </Modal>
             </View>
         )
     }
@@ -223,38 +262,38 @@ class MatchesView extends React.Component {
 
 class ChatsView extends React.Component {
 
-    state = {
-        chats: [],
-    }
+                    state = {
+                        chats: [],
+                    }
 
     componentDidMount() {
-        // TODO: Remove this line
-        this.props.getProfile(auth().currentUser.uid);
+                    // TODO: Remove this line
+                    this.props.getProfile(auth().currentUser.uid);
 
         // Chats Listeners
         firestore().collection('chats').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
-            this.onChatsUpdated(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+                    this.onChatsUpdated(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
         });
     }
 
     onChatsUpdated = chats => {
-        chats = chats.map(chat => {
-            let otherUid = chat.uids.filter(uid => uid != auth().currentUser.uid)[0];
-            return { ...chat, uid: otherUid }
-        })
+                    chats = chats.map(chat => {
+                        let otherUid = chat.uids.filter(uid => uid != auth().currentUser.uid)[0];
+                        return { ...chat, uid: otherUid }
+                    })
 
         console.log(chats);
-        this.setState({ chats });
+        this.setState({ chats});
     }
 
     chatClicked = (chatId, userId) => {
-        this.props.navigation.navigate('ChatView', { chatId, userId });
+                    this.props.navigation.navigate('ChatView', { chatId, userId });
     }
 
 
-    renderChat = ({ item }) => {
+    renderChat = ({ item}) => {
         if (this.props.profilesById[item.uid].loaded) {
-            let profile = this.props.profilesById[item.uid];
+                    let profile = this.props.profilesById[item.uid];
             return (
                 <TouchableOpacity onPress={() => this.chatClicked(item.id, item.uid)}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 8.0 }}>
@@ -279,25 +318,25 @@ class ChatsView extends React.Component {
 
     render() {
         return (
-            <View style={{paddingTop:16.0}}>
-                <FlatList
-                    ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
-                    data={this.state.chats}
-                    keyExtractor={item => item.id}
-                    renderItem={this.renderChat}
-                />
-            </View>
+                <View style={{ paddingTop: 16.0 }}>
+                    <FlatList
+                        ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
+                        data={this.state.chats}
+                        keyExtractor={item => item.id}
+                        renderItem={this.renderChat}
+                    />
+                </View>
         )
     }
 }
 
 const mapStateToProps = state => ({
-    profileIds: state.profiles.allIds,
+                    profileIds: state.profiles.allIds,
     profilesById: state.profiles.byId,
 });
 
 const mapDispatchToProps = dispatch => ({
-    getProfile: uid => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: uid }),
+                    getProfile: uid => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: uid }),
 });
 
 const ConnectedMatchesView = connect(mapStateToProps, mapDispatchToProps)(MatchesView);
