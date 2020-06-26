@@ -87,10 +87,13 @@ const MainStack = createStackNavigator(
         MainNavigator,
         ChatView,
         ProfileView,
+        EditProfile
     },
     {
         headerMode: 'none'
     }
-)
+    )
+
+   
 
 export default MainStack;

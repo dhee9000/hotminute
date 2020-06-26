@@ -5,14 +5,13 @@ import { Text } from '../common/components';
 
 import { connect } from 'react-redux';
 import { ActionTypes } from '../../redux/';
-import {Constants} from 'expo';
 
 import { Colors, Fonts } from '../../config';
 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import {createAppContainer, createStackNavigator} from 'react-navigation';
+
 import EditProfile from './EditProfile';
 
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
