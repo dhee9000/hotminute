@@ -17,10 +17,10 @@ import { RadioButton } from './components';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-class CreateProfileBio extends React.Component {
+class CreateProfileGender extends React.Component {
 
     state = {
-        bio: '',
+        gender: 'male',
     }
 
     async componentDidMount() {
@@ -28,9 +28,7 @@ class CreateProfileBio extends React.Component {
         let lname = this.props.navigation.getParam('lname', null);
         let dob = this.props.navigation.getParam('dob', null);
         let age = this.props.navigation.getParam('age', null);
-        let gender = this.props.navigation.getParam('gender', null);
-        let occupation = this.props.navigation.getParam('occupation', null);
-        this.setState({ fname, lname, dob, age, gender, occupation });
+        this.setState({ fname, lname, dob, age });
         let profileSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
         let profileData = profileSnapshot.data();
         if (profileSnapshot.exists && profileData.bioComplete) {
@@ -38,9 +36,13 @@ class CreateProfileBio extends React.Component {
         }
     }
 
+    onChangeGender = (key) => {
+        this.setState({ gender: key });
+    }
+
     onDonePressed = () => {
-        alert(`That's a bio that'll stand out!`);
-        this.props.navigation.navigate('CreateProfileInterests', { fname: this.state.fname, lname: this.state.lname, dob: this.state.dob, age: this.state.age, gender: this.state.gender, occupation: this.state.occupation, bio: this.state.bio });
+        alert(`Just to review, you are ${this.state.fname}, a ${this.state.age} year old ${this.state.gender}.`);
+        this.props.navigation.navigate('CreateProfileOccupation', { fname: this.state.fname, lname: this.state.lname, dob: this.state.dob, age: this.state.age, gender: this.state.gender });
     }
 
     render() {
@@ -48,22 +50,10 @@ class CreateProfileBio extends React.Component {
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                     <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
-                    <Text style={{ color: Colors.text }}>Let's get to know you.</Text>
+                    <Text style={{ color: Colors.text }}>Pick your gender</Text>
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
-                    <Input
-                        containerStyle={{ marginBottom: 32.0 }}
-                        inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                        inputContainerStyle={{ borderColor: Colors.accent }}
-                        label={'Who are you?'}
-                        numberOfLines={4}
-                        labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                        keyboardType={'default'}
-                        placeholder={'A short description of yourself'}
-                        placeholderTextColor={Colors.textLightGray}
-                        onChangeText={bio => this.setState({ bio })}
-                        value={this.state.bio}
-                    />
+                    <RadioButton options={[{ key: 'male', text: 'Male' }, { key: 'female', text: 'Female' }, { key: 'other', text: 'Other' }]} onChange={this.onChangeGender} />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
                     <Button title="Looks Good" onPress={this.onDonePressed} />
@@ -81,4 +71,4 @@ const mapDispatchToProps = dispatch => ({
 
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateProfileBio);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateProfileGender);

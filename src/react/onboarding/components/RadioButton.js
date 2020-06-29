@@ -35,7 +35,7 @@ export default class RadioButton extends Component {
                         </View>
                     );
                 })}
-                <Text> Selected: {this.state.value} </Text>
+                <Text> Selected: {options.filter(option => option.key === this.state.value)[0].text} </Text>
             </View>
         );
     }

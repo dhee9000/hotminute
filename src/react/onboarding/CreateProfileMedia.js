@@ -35,7 +35,7 @@ class CreateProfileMedia extends React.Component {
         let profileSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
         let profileData = profileSnapshot.data();
         if(profileSnapshot.exists && profileData.mediaComplete){
-            this.props.navigation.navigate('SelectPreferences');
+            this.props.navigation.navigate('SelectPreferencesDistance');
         }
     }
 
@@ -109,7 +109,7 @@ class CreateProfileMedia extends React.Component {
 
         await profileRef.update({ mediaComplete: true });
 
-        this.props.navigation.navigate('SelectPreferences');
+        this.props.navigation.navigate('SelectPreferencesDistance');
     }
 
     ProfileImage = props => {
