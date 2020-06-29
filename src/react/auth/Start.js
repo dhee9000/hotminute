@@ -57,7 +57,7 @@ class Start extends React.Component {
                 this.props.navigation.navigate('Main');
             }
             else {
-                this.props.navigation.navigate('CreateProfileBio');
+                this.props.navigation.navigate('CreateProfileName');
             }
         }
         else {
