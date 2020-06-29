@@ -52,9 +52,10 @@ class Login extends React.Component {
             this.setState({ confirmation, sendingCode: false, codeSent: true });
         }
         catch (e) {
-            console.error("Send Code Error", e);
-            this.setState({sendingCode: false, codeSent: false, confirmation: {}});
+            console.log("Send Code Error", e);
+            alert("Error sending code!")
             alert(e);
+            this.setState({sendingCode: false, codeSent: false, confirmation: {}});
         }
     }
 
@@ -65,7 +66,9 @@ class Login extends React.Component {
             this.setState({ verifyingCode: false, codeVerified: true });
         }
         catch (e) {
-            console.error("Verify Code Error", e);
+            console.log("Verify Code Error", e);
+            alert("Error verifying code, please try again!");
+            // alert(e);
             this.setState({ codeSent: false })
         }
     }
@@ -80,8 +83,14 @@ class Login extends React.Component {
             }
             else {
                 // ... if it doesn't navigate to create profile screen
-                this.props.navigation.navigate('CreateProfileBio');
+                this.props.navigation.navigate('CreateProfileName');
             }
+        }
+    }
+
+    componentDidMount(){
+        if(auth().currentUser){
+            alert("Already signed in as: " + auth().currentUser.uid);
         }
     }
 
