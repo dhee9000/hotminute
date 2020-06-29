@@ -29,6 +29,7 @@ class Profile extends React.Component {
         occupation: '',
         bio: '',
         dob: new Date(),
+        interests: [],
         images: {},
 
         showSettings: false,
@@ -66,6 +67,7 @@ class Profile extends React.Component {
             occupation: profileData.occupation,
             bio: profileData.bio,
             dob: profileData.dob.toDate(),
+            interests: profileData.interests,
             images: processedImages,
         })
     }
@@ -96,17 +98,19 @@ class Profile extends React.Component {
                         <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.occupation}</Text>
                         <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.bio}</Text>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading }}>Interests</Text>
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                            {TEST_INTERESTS.map(interest => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical: 8.0 }}>
+                            {this.state.interests.map(interest => (
                                 <View key={interest} style={{ backgroundColor: Colors.primary, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0 }}>
                                     <Text style={{ color: Colors.background }}>{interest}</Text>
                                 </View>
                             ))}
                         </View>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0 }}>Pictures</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical:16.0 }}>
                             {Object.keys(this.state.images).map(key => (
-                                <Image key={key} source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', {imageUri: this.state.images[key].uri})}>
+                                    <Image key={key} source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                                </TouchableOpacity>
                             ))}
                         </View>
                     </ScrollView>

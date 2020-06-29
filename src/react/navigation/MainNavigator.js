@@ -6,7 +6,7 @@ import { Button, Icon } from 'react-native-elements';
 
 import { Minute } from '../minute';
 import { Profile } from '../profile';
-import { ProfileView } from '../profileview';
+import { ProfileView, ViewImage } from '../profileview';
 import { Chats, ChatView } from '../chat';
 import { Colors, Fonts } from '../../config';
 
@@ -87,6 +87,7 @@ const MainStack = createStackNavigator(
         MainNavigator,
         ChatView,
         ProfileView,
+        ViewImage,
     },
     {
         headerMode: 'none'
