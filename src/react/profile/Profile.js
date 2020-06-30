@@ -12,8 +12,6 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 
-import EditProfile from './EditProfile';
-
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 const IMG_DIM = 128;
 
@@ -42,8 +40,8 @@ class Profile extends React.Component {
     }
 
     handlePress = () => {
-        this.setState({color: 'pink'});
-        this.props.navigation.navigate('Edit', {
+        this.setState({ color: 'pink' });
+        this.props.navigation.navigate('EditProfile', {
             fname: this.state.fname,
             lname: this.state.lname,
             occupation: this.state.occupation,
@@ -58,7 +56,7 @@ class Profile extends React.Component {
             lname: this.state.lname,
             occupation: this.state.occupation,
             bio: this.state.bio,
-            
+
         });
     };
 
@@ -102,9 +100,9 @@ class Profile extends React.Component {
         return (
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ padding: 16.0, flex: 1 }}>
-                        <View style={{ paddingTop: 16.0, alignItems: 'center', justifyContent: 'center' }}>
-                            <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>profile</Text>
-                        </View>
+                    <View style={{ paddingTop: 16.0, alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>profile</Text>
+                    </View>
                     <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center' }}>
                         <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, marginTop: 16.0, }}>{this.state.fname} {this.state.lname}</Text>
@@ -124,8 +122,8 @@ class Profile extends React.Component {
                                 backgroundColor: this.state.color, alignItems: 'center', justifyContent: 'center', borderRadius: 15, borderWidth: 1, borderColor: 'white', margin: 5,
                             }}>
                                 <Text style={styles.button}>Edit Profile</Text>
-                                </View>
-                                </TouchableOpacity>
+                            </View>
+                        </TouchableOpacity>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0 }}>Pictures</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
                             {Object.keys(this.state.images).map(key => (

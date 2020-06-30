@@ -5,7 +5,7 @@ import { View, Text, Dimensions, StatusBar } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 
 import { Minute } from '../minute';
-import { Profile } from '../profile';
+import { Profile, EditProfile } from '../profile';
 import { ProfileView } from '../profileview';
 import { Chats, ChatView } from '../chat';
 import { Colors, Fonts } from '../../config';

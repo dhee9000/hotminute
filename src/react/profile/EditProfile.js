@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import {View, StyleSheet, TextInput, ScrollView} from 'react-native';
+import { View, StyleSheet, TextInput, ScrollView } from 'react-native';
 
-import {Text} from '../common/components';
+import { Text } from '../common/components';
 
 import { connect } from 'react-redux';
 import { ActionTypes } from '../../redux/';
@@ -30,79 +30,81 @@ const styles = StyleSheet.create({
     },
 });
 
-class EditProfile extends React.Component{
+class EditProfile extends React.Component {
 
-state: {
-    fname: '',
-    lname: '',
-    occupation: '',
-    bio: '',
-};
+    state: {
+        fname: '',
+        lname: '',
+        occupation: '',
+        bio: '',
+    };
 
-saveProfile = () => {
-    this.props.navigation.state.params.saveEditProfile(
-        this.state.fname,
-        this.state.lname,
-        this.state.occupation,
-        this.state.bio
-    );
-    this.props.navigation.navigate('Profile');
-    alert('Profile Updated');
-};
+    saveProfile = () => {
+        this.props.navigation.state.params.saveEditProfile(
+            this.state.fname,
+            this.state.lname,
+            this.state.occupation,
+            this.state.bio
+        );
+        this.props.navigation.navigate('Profile');
+        alert('Profile Updated');
+    };
 
-componentWillMount(){
-    this.setState({
-        fname: this.props.navigation.params('fname'),
-        lname: this.props.navigation.params('lname'),
-        occupation: this.props.navigation.params('occupation'),
-        bio: this.props.navigation.params('bio')
+    componentWillMount() {
+        this.setState({
+            fname: this.props.navigation.getParam('fname', undefined),
+            lname: this.props.navigation.getParam('lname', undefined),
+            occupation: this.props.navigation.getParam('occupation', undefined),
+            bio: this.props.navigation.getParam('bio', undefined),
 
-    });
-    this.props.navigation.setParams({saveEditProfile: this.saveProfile});
-}
+        });
+        this.props.navigation.setParams({ saveEditProfile: this.saveProfile });
+    }
 
-    render(){
-        return(
-            <View style={{alignItems: 'center', paddingTop: 50}}>
+    render() {
+        return (
+            <View style={{ alignItems: 'center', paddingTop: 50 }}>
                 <TextInput
-                style={styles.name}
-                placeholder="Enter your first name"
-                multiline={false}
-                onChangeText={
-                    (text) =>
-                    this.setState({fname:text})
-                }
-                value={this.state.fname}
+                    style={styles.name}
+                    placeholder="Enter your first name"
+                    multiline={false}
+                    onChangeText={
+                        (text) =>
+                            this.setState({ fname: text })
+                    }
+                    value={this.state.fname}
                 />
                 <TextInput
-                style={styles.name}
-                placeholder="Enter your last name"
-                multiline={false}
-                onChangeText={
-                    (text) =>
-                    this.setState({lname:text})
-                }
-                value={this.state.lname}
+                    style={styles.name}
+                    placeholder="Enter your last name"
+                    multiline={false}
+                    onChangeText={
+                        (text) =>
+                            this.setState({ lname: text })
+                    }
+                    value={this.state.lname}
                 />
                 <TextInput
-                style={styles.sub}
-                placeholder="Enter your occupation"
-                multiline={true}
-                onChangeText={
-                    text=> this.setState({occupation:text})
-                }
-                value={this.state.occupation}
+                    style={styles.sub}
+                    placeholder="Enter your occupation"
+                    multiline={true}
+                    onChangeText={
+                        text => this.setState({ occupation: text })
+                    }
+                    value={this.state.occupation}
                 />
                 <TextInput
-                style={styles.sub}
-                placeholder="Enter your bio"
-                multiline={true}
-                onChangeText={
-                    text=> this.setState({bio:text})
-                }
-                value={this.state.bio}
+                    style={styles.sub}
+                    placeholder="Enter your bio"
+                    multiline={true}
+                    onChangeText={
+                        text => this.setState({ bio: text })
+                    }
+                    value={this.state.bio}
                 />
-                </View>
+            </View>
         );
     }
 }
+
+export default EditProfile;
