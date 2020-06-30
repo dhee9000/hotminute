@@ -106,21 +106,21 @@ class Profile extends React.Component {
                             ))}
                         </View>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0 }}>Pictures</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical:16.0 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical: 16.0 }}>
                             {Object.keys(this.state.images).map(key => (
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', {imageUri: this.state.images[key].uri})}>
-                                    <Image key={key} source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', { imageUri: this.state.images[key].uri })} key={key}>
+                                    <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
                                 </TouchableOpacity>
                             ))}
                         </View>
                     </ScrollView>
                 </View>
                 <Modal visible={this.state.showSettings} transparent animated animationType={'slide'}>
-                    <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0 }}>Settings</Text>
-                            <Text style={{ fontFamily: Fonts.heading, marginRight: 16.0, color: Colors.primary, fontSize: 24 }} onPress={() => this.setState({ showSettings: false })}>X</Text>
-                        </View>
+                    <View style={{ justifyContent: 'flex-start', marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                        <TouchableOpacity onPress={() => this.setState({ showSettings: false })}>
+                            <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
+                        </TouchableOpacity>
+                        <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>Settings</Text>
                         <View>
                             <Button title={'Log Out'} onPress={this.logoutPressed} />
                         </View>
