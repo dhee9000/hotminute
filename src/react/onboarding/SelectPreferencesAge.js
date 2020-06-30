@@ -65,6 +65,7 @@ class SelectPreferencesAge extends React.Component {
                         value={this.state.minAge}
                         step={1}
                         thumbTintColor={Colors.primary}
+                        minimumTrackTintColor={Colors.primary}
                     />
                     <Text>{this.state.minAge} years old</Text>
                     <Text style={{ fontFamily: Fonts.heading }}>Max Age</Text>
@@ -75,6 +76,7 @@ class SelectPreferencesAge extends React.Component {
                         value={this.state.maxAge}
                         step={1}
                         thumbTintColor={Colors.primary}
+                        minimumTrackTintColor={Colors.primary}
                     />
                     <Text>{this.state.maxAge} years old</Text>
                 </View>

@@ -47,7 +47,9 @@ class SelectPreferencesDistance extends React.Component {
                         minimumValue={0}
                         maximumValue={100}
                         value={this.state.maxDistance}
+                        step={1}
                         thumbTintColor={Colors.primary}
+                        minimumTrackTintColor={Colors.primary}
                     />
                     <Text>{this.state.maxDistance} mi</Text>
                 </View>
