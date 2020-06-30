@@ -8,3 +8,6 @@ const action = actionName => (
 
 // Auth Actions
 export const FETCH_PROFILE = action('FETCH_PROFILE');
+export const FETCH_MATCH = action('FETCH_MATCH');
+
+export const UPDATE_FILTER = action('UPDATE_FILTER');
