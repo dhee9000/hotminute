@@ -192,21 +192,43 @@ class MatchesView extends React.Component {
     }
 
     matchLongPressed = (matchId) => {
-        this.setState({showMatchMenu: true, matchMenuId: matchId});
+        this.setState({ showMatchMenu: true, matchMenuId: matchId });
     }
 
     closeMatchMenu = () => {
-        this.setState({showMatchMenu: false, matchMenuId: null})
+        this.setState({ showMatchMenu: false, matchMenuId: null })
     }
 
     unmatchPressed = (matchId) => {
-        
+
         let relatedMatch = this.state.matches.filter(match => match.id === matchId)[0];
         let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
 
         firestore().collection('matches').doc(matchId).delete();
 
         this.closeMatchMenu();
+    }
+
+    reportMatchPressed = (matchId) => {
+
+        let relatedMatch = this.state.matches.filter(match => match.id === matchId)[0];
+        let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
+
+        Alert.prompt(
+            'Why are you reporting this user?',
+            'Give us a brief description so that we investigate this report. If you don\'t want to report and instead want to block this user, use the block option!',
+            text => {
+                firestore().collection('reports').add({
+                    reportedBy: auth().currentUser.uid,
+                    reportedUser: otherUid,
+                    reportReason: text,
+                    reportedOn: firestore.FieldValue.serverTimestamp(),
+                });
+            }
+        );
+
+        this.unmatchPressed(matchId);
+
     }
 
     renderMatch = ({ item }) => {
@@ -233,7 +255,7 @@ class MatchesView extends React.Component {
         let relatedMatch = null;
         let otherUid = null;
         let matchMenuProfile = {};
-        if(this.state.showMatchMenu){
+        if (this.state.showMatchMenu) {
             relatedMatch = this.state.matches.filter(match => match.id === this.state.matchMenuId)[0];
             otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
             matchMenuProfile = this.props.profilesById[otherUid];
@@ -249,10 +271,11 @@ class MatchesView extends React.Component {
                 />
                 <Modal visible={this.state.showMatchMenu} transparent animated animationType={'slide'}>
                     <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
-                        <Text style={{alignSelf: 'center'}}>Match with</Text>
-                        <Text style={{alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0}}>{matchMenuProfile.fname} {matchMenuProfile.lname}</Text>
-                        <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{margin: 2.0}} />
-                        <Button title={'Close'} onPress={this.closeMatchMenu} containerStyle={{margin: 2.0}} />
+                        <Text style={{ alignSelf: 'center' }}>Match with</Text>
+                        <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0 }}>{matchMenuProfile.fname} {matchMenuProfile.lname}</Text>
+                        <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
+                        <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
+                        <Button title={'Close'} onPress={this.closeMatchMenu} containerStyle={{ margin: 2.0 }} />
                     </View>
                 </Modal>
             </View>
@@ -262,38 +285,38 @@ class MatchesView extends React.Component {
 
 class ChatsView extends React.Component {
 
-                    state = {
-                        chats: [],
-                    }
+    state = {
+        chats: [],
+    }
 
     componentDidMount() {
-                    // TODO: Remove this line
-                    this.props.getProfile(auth().currentUser.uid);
+        // TODO: Remove this line
+        this.props.getProfile(auth().currentUser.uid);
 
         // Chats Listeners
         firestore().collection('chats').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
-                    this.onChatsUpdated(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+            this.onChatsUpdated(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
         });
     }
 
     onChatsUpdated = chats => {
-                    chats = chats.map(chat => {
-                        let otherUid = chat.uids.filter(uid => uid != auth().currentUser.uid)[0];
-                        return { ...chat, uid: otherUid }
-                    })
+        chats = chats.map(chat => {
+            let otherUid = chat.uids.filter(uid => uid != auth().currentUser.uid)[0];
+            return { ...chat, uid: otherUid }
+        })
 
         console.log(chats);
-        this.setState({ chats});
+        this.setState({ chats });
     }
 
     chatClicked = (chatId, userId) => {
-                    this.props.navigation.navigate('ChatView', { chatId, userId });
+        this.props.navigation.navigate('ChatView', { chatId, userId });
     }
 
 
-    renderChat = ({ item}) => {
+    renderChat = ({ item }) => {
         if (this.props.profilesById[item.uid].loaded) {
-                    let profile = this.props.profilesById[item.uid];
+            let profile = this.props.profilesById[item.uid];
             return (
                 <TouchableOpacity onPress={() => this.chatClicked(item.id, item.uid)}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 8.0 }}>
@@ -318,25 +341,25 @@ class ChatsView extends React.Component {
 
     render() {
         return (
-                <View style={{ paddingTop: 16.0 }}>
-                    <FlatList
-                        ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
-                        data={this.state.chats}
-                        keyExtractor={item => item.id}
-                        renderItem={this.renderChat}
-                    />
-                </View>
+            <View style={{ paddingTop: 16.0 }}>
+                <FlatList
+                    ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
+                    data={this.state.chats}
+                    keyExtractor={item => item.id}
+                    renderItem={this.renderChat}
+                />
+            </View>
         )
     }
 }
 
 const mapStateToProps = state => ({
-                    profileIds: state.profiles.allIds,
+    profileIds: state.profiles.allIds,
     profilesById: state.profiles.byId,
 });
 
 const mapDispatchToProps = dispatch => ({
-                    getProfile: uid => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: uid }),
+    getProfile: uid => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: uid }),
 });
 
 const ConnectedMatchesView = connect(mapStateToProps, mapDispatchToProps)(MatchesView);
