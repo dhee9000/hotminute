@@ -92,36 +92,50 @@ class Profile extends React.Component {
 
             // IF ENTERED EDIT MODE
 
-            let animRunner = Animated.loop(
-                Animated.sequence([
-                    Animated.timing(this.editingWiggle, {
-                        toValue: 1,
-                        duration: 250,
-                        useNativeDriver: true
-                    }),
-                    Animated.timing(this.editingWiggle, {
-                        toValue: -1,
-                        duration: 500,
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(this.editingWiggle, {
-                        toValue: 0,
-                        duration: 250,
-                        useNativeDriver: true,
-                    }),
-                ]),
-                {
-                    useNativeDriver: true,
-                }
-            );
+            let animRunner =
+                Animated.parallel([
+                    Animated.loop(
+                        Animated.sequence([
+                            Animated.timing(this.editingWiggle, {
+                                toValue: 1,
+                                duration: 500,
+                                useNativeDriver: true
+                            }),
+                            Animated.timing(this.editingWiggle, {
+                                toValue: -1,
+                                duration: 500,
+                                useNativeDriver: true,
+                            }),
+                        ])
+                    ),
+                    Animated.loop(
+                        Animated.sequence([
+                            Animated.timing(this.editingJitter, {
+                                toValue: 1,
+                                duration: 100,
+                                useNativeDriver: true
+                            }),
+                            Animated.timing(this.editingJitter, {
+                                toValue: -1,
+                                duration: 100,
+                                useNativeDriver: true,
+                            }),
+                        ])
+                    )
+                ]);
             animRunner.start();
             this.setState({ editingAnimRunner: animRunner });
         }
         if (prevState.editingProfile && !this.state.editingProfile) {
 
-            // COMMIT CHANGES ON EXIT EDIT MODE
+            // TODO: COMMIT CHANGES ON EXIT EDIT MODE
             this.state.editingAnimRunner.stop();
             Animated.timing(this.editingWiggle, {
+                toValue: 0,
+                duration: 100,
+                useNativeDriver: true,
+            }).start();
+            Animated.timing(this.editingJitter, {
                 toValue: 0,
                 duration: 100,
                 useNativeDriver: true,
@@ -213,6 +227,7 @@ class Profile extends React.Component {
     }
 
     editingWiggle = new Animated.Value(0);
+    editingJitter = new Animated.Value(0);
 
     render() {
         return (
@@ -239,18 +254,26 @@ class Profile extends React.Component {
                         <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
                         <View style={{ flexDirection: 'row', marginTop: 16.0 }}>
                             <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editFname} >
-                                <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>{this.state.fname} </Text>
+                                <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>{this.state.fname} </Text>
+                                </Animated.View>
                             </TouchableOpacity>
                             <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editLname}>
+                            <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
                                 <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>{this.state.lname}</Text>
+                                </Animated.View>
                             </TouchableOpacity>
                         </View>
                         <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editOccupation}>
+                        <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
                             <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.occupation}</Text>
+                            </Animated.View>
                         </TouchableOpacity>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editBio}>
+                        <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
                             <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.bio}</Text>
+                            </Animated.View>
                         </TouchableOpacity>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading }}>Interests</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical: 8.0 }}>
