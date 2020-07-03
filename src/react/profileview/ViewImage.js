@@ -22,7 +22,7 @@ class ViewImage extends React.Component {
     render() {
         return (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                { this.state.imageUri ? <Image source={{uri: this.state.imageUri}} style={{height, width}} /> : <Text>No Image Found</Text>}
+                { this.state.imageUri ? <Image resizeMode={'contain'} source={{uri: this.state.imageUri}} style={{height, width}} /> : <Text>No Image Found</Text>}
                 <TouchableOpacity onPress={() => this.props.navigation.pop()} style={{position: 'absolute', top: 32.0, left: 16.0, backgroundColor: Colors.primary, borderRadius: 20.0}}>
                     <Icon name={'close'} size={38} color={Colors.text} />
                 </TouchableOpacity>
