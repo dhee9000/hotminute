@@ -5,10 +5,28 @@ const allIds = (state = [], action = {}) => {
     switch (action.type) {
         case ActionTypes.FETCH_MATCH.REQUEST: {
 
+            let newState = [...state];
+
             let id = action.payload;
-            if (!state.includes(id)) {
-                state.push(id);
+            if (!newState.includes(id)) {
+                newState.push(id);
             }
+
+            return newState;
+
+        }
+        case ActionTypes.FETCH_MATCHES.SUCCESS: {
+
+            let newState = [...state];
+
+            let docs = action.payload;
+            docs.forEach(doc => {
+                if(!newState.includes(doc.id)){
+                    newState.push(doc.id);
+                }
+            });
+            
+            return newState;
 
         }
         default: {
@@ -50,12 +68,30 @@ const byId = (state = {}, action = {}) => {
             }
         }
 
+        case ActionTypes.FETCH_MATCHES.SUCCESS: {
+
+            let newState = {...state};
+
+            let docs = action.payload;
+            docs.forEach(doc => {
+                newState[doc.id] = {
+                    loaded: true,
+                    loading: false,
+                    error: false,
+                    ...doc,
+                }
+            });
+            
+            return newState;
+
+        }
+
         default: {
             return state;
         }
     }
 }
 
-const ProfilesReducer = combineReducers({allIds, byId});
+const MatchesReducer = combineReducers({allIds, byId});
 
-export default ProfilesReducer;
+export default MatchesReducer;

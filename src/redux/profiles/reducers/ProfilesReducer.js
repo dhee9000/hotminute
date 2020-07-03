@@ -5,10 +5,14 @@ const allIds = (state = [], action = {}) => {
     switch (action.type) {
         case ActionTypes.FETCH_PROFILE.REQUEST: {
 
+            let newState = [...state];
+
             let uid = action.payload;
-            if (!state.includes(uid)) {
-                state.push(uid);
+            if (!newState.includes(uid)) {
+                newState.push(uid);
             }
+            
+            return newState;
 
         }
         default: {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, Image, TouchableOpacity, Alert, ActivityIndicator, Modal, Dimensions } from 'react-native';
 
-import { Text } from '../common/components';
+import { Text, TabBar } from '../common/components';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
@@ -18,8 +18,9 @@ import auth, { firebase } from '@react-native-firebase/auth';
 import Animated from 'react-native-reanimated';
 import { Button } from 'react-native-elements';
 
-const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+import {MatchesView, ChatsView} from './components';
 
+const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 const { height, width } = Dimensions.get('screen');
 
 generateCombinedDocId = function (uid1, uid2) {
@@ -47,87 +48,13 @@ class Chats extends React.Component {
     renderTabScene = ({ route, focused }) => {
         switch (route.key) {
             case 'matches': {
-                return (<ConnectedMatchesView navigation={this.props.navigation} />)
+                return (<MatchesView navigation={this.props.navigation} />)
             }
             case 'chats': {
-                return (<ConnectedChatsView navigation={this.props.navigation} />)
+                return (<ChatsView navigation={this.props.navigation} />)
             }
         }
     }
-
-    _renderTabBar = props => {
-        const inputRange = props.navigationState.routes.map((x, i) => i);
-
-        return (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                {props.navigationState.routes.map((route, i) => {
-                    const color = Animated.color(
-                        Animated.round(
-                            Animated.interpolate(props.position, {
-                                inputRange,
-                                outputRange: inputRange.map(inputIndex =>
-                                    inputIndex === i ? 255 : 230
-                                ),
-                            })
-                        ),
-                        Animated.round(
-                            Animated.interpolate(props.position, {
-                                inputRange,
-                                outputRange: inputRange.map(inputIndex =>
-                                    inputIndex === i ? 255 : 52
-                                ),
-                            })
-                        ),
-                        Animated.round(
-                            Animated.interpolate(props.position, {
-                                inputRange,
-                                outputRange: inputRange.map(inputIndex =>
-                                    inputIndex === i ? 255 : 98
-                                ),
-                            })
-                        )
-                    );
-
-                    const backgroundColor = Animated.color(
-                        Animated.round(
-                            Animated.interpolate(props.position, {
-                                inputRange,
-                                outputRange: inputRange.map(inputIndex =>
-                                    inputIndex === i ? 230 : 255
-                                ),
-                            })
-                        ),
-                        Animated.round(
-                            Animated.interpolate(props.position, {
-                                inputRange,
-                                outputRange: inputRange.map(inputIndex =>
-                                    inputIndex === i ? 52 : 255
-                                ),
-                            })
-                        ),
-                        Animated.round(
-                            Animated.interpolate(props.position, {
-                                inputRange,
-                                outputRange: inputRange.map(inputIndex =>
-                                    inputIndex === i ? 98 : 255
-                                ),
-                            })
-                        )
-                    );
-
-                    return (
-                        <TouchableOpacity
-                            key={route.key}
-                            onPress={() => this.setState({ tabIdx: i })}>
-                            <Animated.View style={{ backgroundColor, paddingVertical: 4.0, paddingHorizontal: 8.0, borderRadius: 24.0 }}>
-                                <Animated.Text style={{ color, fontSize: 16.0, fontFamily: Fonts.heading }}>{route.title}</Animated.Text>
-                            </Animated.View>
-                        </TouchableOpacity>
-                    );
-                })}
-            </View>
-        );
-    };
 
 
 
@@ -137,216 +64,9 @@ class Chats extends React.Component {
                 <TabView
                     navigationState={{ index: this.state.tabIdx, routes: this.state.routes }}
                     renderScene={this.renderTabScene}
-                    renderTabBar={this._renderTabBar}
+                    renderTabBar={props => <TabBar {...props} onChangeTab={i => this.setState({ tabIdx: i })} />}
                     onIndexChange={idx => this.setState({ tabIdx: idx })}
                     swipeEnabled={false}
-                />
-            </View>
-        )
-    }
-}
-
-class MatchesView extends React.Component {
-
-    state = {
-        matches: [],
-        showMatchMenu: false,
-        matchMenuId: null,
-    }
-
-    componentDidMount() {
-        // TODO: Remove this line
-        this.props.getProfile(auth().currentUser.uid);
-        //  Matches Listeners
-        firestore().collection('matches').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
-            this.onMatchesUpdated(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
-        });
-    }
-
-    onMatchesUpdated = async matchesData => {
-
-        // Get Profiles of Matches
-        let matches = [];
-
-        matchesData.map(match => {
-
-            let otherUid = match.uids.filter(uid => uid != auth().currentUser.uid)[0];
-            let matchData = match;
-
-            this.props.getProfile(otherUid);
-
-            matches.push({ ...matchData, uid: otherUid });
-
-        });
-
-        this.setState({ matches });
-
-    }
-
-    matchClicked = (matchId) => {
-
-        let relatedMatch = this.state.matches.filter(match => match.id === matchId)[0];
-        let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
-
-        this.props.navigation.push('ProfileView', { uid: otherUid });
-    }
-
-    matchLongPressed = (matchId) => {
-        this.setState({ showMatchMenu: true, matchMenuId: matchId });
-    }
-
-    closeMatchMenu = () => {
-        this.setState({ showMatchMenu: false, matchMenuId: null })
-    }
-
-    unmatchPressed = (matchId) => {
-
-        let relatedMatch = this.state.matches.filter(match => match.id === matchId)[0];
-        let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
-
-        firestore().collection('matches').doc(matchId).delete();
-
-        this.closeMatchMenu();
-    }
-
-    reportMatchPressed = (matchId) => {
-
-        let relatedMatch = this.state.matches.filter(match => match.id === matchId)[0];
-        let otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
-
-        Alert.prompt(
-            'Why are you reporting this user?',
-            'Give us a brief description so that we investigate this report. If you don\'t want to report and instead want to block this user, use the block option!',
-            text => {
-                firestore().collection('reports').add({
-                    reportedBy: auth().currentUser.uid,
-                    reportedUser: otherUid,
-                    reportReason: text,
-                    reportedOn: firestore.FieldValue.serverTimestamp(),
-                });
-            }
-        );
-
-        this.unmatchPressed(matchId);
-
-    }
-
-    renderMatch = ({ item }) => {
-
-        if (this.props.profilesById[item.uid].loaded) {
-            let profile = this.props.profilesById[item.uid];
-            return (
-                <TouchableOpacity onPress={() => { this.matchClicked(item.id) }} onLongPress={() => { this.matchLongPressed(item.id) }}>
-                    <View style={{ alignItems: 'center', justifyContent: 'center', margin: 8.0, marginTop: 0 }}>
-                        <Image source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 32, height: 64, width: 64, borderWidth: 2.0, borderColor: Colors.primary }} />
-                        <Text numberOfLines={2} style={{ maxWidth: 64.0, fontSize: 12.0, textAlign: 'center' }}>{profile.fname}{'\n'}{profile.lname}</Text>
-                    </View>
-                </TouchableOpacity>
-            );
-        }
-        else {
-            return (
-                <ActivityIndicator />
-            )
-        }
-    }
-
-    render() {
-        let relatedMatch = null;
-        let otherUid = null;
-        let matchMenuProfile = {};
-        if (this.state.showMatchMenu) {
-            relatedMatch = this.state.matches.filter(match => match.id === this.state.matchMenuId)[0];
-            otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
-            matchMenuProfile = this.props.profilesById[otherUid];
-        }
-        return (
-            <View style={{ paddingTop: 16.0 }}>
-                <FlatList
-                    horizontal
-                    data={this.state.matches}
-                    renderItem={this.renderMatch}
-                    keyExtractor={item => item.id}
-                    ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
-                />
-                <Modal visible={this.state.showMatchMenu} transparent animated animationType={'slide'}>
-                    <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
-                        <Text style={{ alignSelf: 'center' }}>Match with</Text>
-                        <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0 }}>{matchMenuProfile.fname} {matchMenuProfile.lname}</Text>
-                        <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
-                        <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
-                        <Button title={'Close'} onPress={this.closeMatchMenu} containerStyle={{ margin: 2.0 }} />
-                    </View>
-                </Modal>
-            </View>
-        )
-    }
-}
-
-class ChatsView extends React.Component {
-
-    state = {
-        chats: [],
-    }
-
-    componentDidMount() {
-        // TODO: Remove this line
-        this.props.getProfile(auth().currentUser.uid);
-
-        // Chats Listeners
-        firestore().collection('chats').where('uids', 'array-contains', auth().currentUser.uid).onSnapshot(snapshot => {
-            this.onChatsUpdated(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
-        });
-    }
-
-    onChatsUpdated = chats => {
-        chats = chats.map(chat => {
-            let otherUid = chat.uids.filter(uid => uid != auth().currentUser.uid)[0];
-            return { ...chat, uid: otherUid }
-        })
-
-        console.log(chats);
-        this.setState({ chats });
-    }
-
-    chatClicked = (chatId, userId) => {
-        this.props.navigation.navigate('ChatView', { chatId, userId });
-    }
-
-
-    renderChat = ({ item }) => {
-        if (this.props.profilesById[item.uid].loaded) {
-            let profile = this.props.profilesById[item.uid];
-            return (
-                <TouchableOpacity onPress={() => this.chatClicked(item.id, item.uid)}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 8.0 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Image source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 16, height: 32, width: 32, }} />
-                            <View style={{ justifyContent: 'center', alignItems: 'flex-start', padding: 8.0 }}>
-                                <Text numberOfLines={2} style={{ fontSize: 16.0, textAlign: 'center' }}>{profile.fname} {profile.lname}</Text>
-                                <Text style={{ fontSize: 10.0 }}>{item.lastMessageBy == auth().currentUser.uid ? 'You' : profile.fname}: {item.lastMessage}</Text>
-                            </View>
-                        </View>
-                        <Text style={{ fontSize: 16.0, color: Colors.textLightGray, }}>1d</Text>
-                    </View>
-                </TouchableOpacity>
-            )
-        }
-        else {
-            return (
-                <ActivityIndicator />
-            )
-        }
-    }
-
-    render() {
-        return (
-            <View style={{ paddingTop: 16.0 }}>
-                <FlatList
-                    ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
-                    data={this.state.chats}
-                    keyExtractor={item => item.id}
-                    renderItem={this.renderChat}
                 />
             </View>
         )
@@ -356,13 +76,18 @@ class ChatsView extends React.Component {
 const mapStateToProps = state => ({
     profileIds: state.profiles.allIds,
     profilesById: state.profiles.byId,
+
+    matchesIds: state.matches.allIds,
+    matchesById: state.matches.byId,
+
+    chatsIds: state.chats.allIds,
+    chatsById: state.chats.byId,
 });
 
 const mapDispatchToProps = dispatch => ({
     getProfile: uid => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: uid }),
+    listenMatches: () => dispatch({ type: ActionTypes.LISTEN_MATCHES.REQUEST }),
+    listenChats: () => dispatch({ type: ActionTypes.LISTEN_CHATS.REQUEST }),
 });
-
-const ConnectedMatchesView = connect(mapStateToProps, mapDispatchToProps)(MatchesView);
-const ConnectedChatsView = connect(mapStateToProps, mapDispatchToProps)(ChatsView);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chats);

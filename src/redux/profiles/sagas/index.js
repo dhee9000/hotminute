@@ -1,1 +1,1 @@
-export { default as ProfileSaga } from './ProfileSaga';
+export { default as ProfileSaga } from './ProfilesSaga';

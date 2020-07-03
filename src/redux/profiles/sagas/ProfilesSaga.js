@@ -11,8 +11,11 @@ function* watchProfileRequested() {
 
             let uid = action.payload;
 
+            console.log("REQUEST: Requested Profile with UID: " + uid);
+
             let profile = yield select(state => state.profiles[uid]);
-            if (profile && profile.loaded) {
+            if (profile && (profile.loaded || profile.loading)) {
+                console.log("CACHE: Profile with UID already loaded: " + uid);
                 return;
             }
 
@@ -22,7 +25,7 @@ function* watchProfileRequested() {
                 let profileSnapshot = yield call([profileRef, profileRef.get]);
 
                 if (profileSnapshot.exists) {
-                    console.log("Fetching Profile with UID: " + uid);
+                    console.log("FETCH: Fetching Profile with UID: " + uid);
                     let profileData = profileSnapshot.data();
                     yield call([Promise, Promise.all], Object.keys(profileData.images).map((key) => {
                         let pictureRef = storage().ref(profileData.images[key].ref);
