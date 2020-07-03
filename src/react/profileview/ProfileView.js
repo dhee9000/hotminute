@@ -87,11 +87,21 @@ class ProfileView extends React.Component {
         });
     }
 
-    createChatPressed = async () => {
-        await firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid, this.state.uid)).set({
-            uids: [auth().currentUser.uid, this.state.uid],
-        });
-        this.props.navigation.navigate('ChatView', { chatId: generateCombinedDocId(auth().currentUser.uid, this.state.uid), userId: this.state.uid });
+    chatPressed = async () => {
+        if (!this.state.chatExists) {
+            await firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid, this.state.uid)).set({
+                uids: [auth().currentUser.uid, this.state.uid],
+            });
+            this.props.navigation.navigate('ChatView', { chatId: generateCombinedDocId(auth().currentUser.uid, this.state.uid), userId: this.state.uid });
+        }
+        else{
+            this.props.navigation.pop();
+            this.props.navigation.navigate('ChatView', { chatId: generateCombinedDocId(auth().currentUser.uid, this.state.uid), userId: this.state.uid });
+        }
+    }
+
+    morePressed = async () => {
+        
     }
 
     render() {
@@ -114,9 +124,8 @@ class ProfileView extends React.Component {
                         <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0, marginTop: 16.0, textAlign: 'center' }}>{this.state.fname}{'\n'}{this.state.lname}</Text>
                         <View style={{ flexDirection: 'row' }}>
-                            {!this.state.chatExists && <Button title={'Start Chat'} onPress={this.createChatPressed} />}
-                            <Button icon={<Icon name={'message'} color={Colors.background} />} containerStyle={{ margin: 4.0 }} />
-                            <Button icon={<Icon name={'more-horiz'} color={Colors.primary} />} type={'outline'} containerStyle={{ margin: 4.0 }} />
+                            <Button onPress={this.chatPressed} icon={<Icon name={'message'} color={Colors.background} />} containerStyle={{ margin: 4.0 }} />
+                            <Button onPress={this.morePressed} icon={<Icon name={'more-horiz'} color={Colors.primary} />} type={'outline'} containerStyle={{ margin: 4.0 }} />
                         </View>
                         <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
                         <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.occupation}</Text>
@@ -132,7 +141,7 @@ class ProfileView extends React.Component {
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0 }}>Pictures</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
                             {Object.keys(this.state.images).map(key => (
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', {imageUri: this.state.images[key].uri})}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', { imageUri: this.state.images[key].uri })}>
                                     <Image key={key} source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
                                 </TouchableOpacity>
                             ))}
