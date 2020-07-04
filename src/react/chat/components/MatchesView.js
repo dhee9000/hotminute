@@ -22,8 +22,6 @@ class MatchesView extends React.Component {
 
     state = {
         matches: [],
-        showMatchMenu: false,
-        matchMenuId: null,
     }
 
     componentDidMount() {
@@ -38,20 +36,9 @@ class MatchesView extends React.Component {
 
     }
 
-    matchLongPressed = (matchId) => {
-        this.setState({ showMatchMenu: true, matchMenuId: matchId });
-    }
-
-    closeMatchMenu = () => {
-        this.setState({ showMatchMenu: false, matchMenuId: null })
-    }
-
     unmatchPressed = (matchId) => {
-
         let otherUid = this.props.matchesById[matchId].uids.filter(uid => uid != auth().currentUser.uid)[0];
-
         firestore().collection('matches').doc(matchId).delete();
-
         this.closeMatchMenu();
     }
 
@@ -119,15 +106,6 @@ class MatchesView extends React.Component {
                     keyExtractor={item => item.id}
                     ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
                 />
-                <Modal visible={this.state.showMatchMenu} transparent animated animationType={'slide'}>
-                    <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
-                        <Text style={{ alignSelf: 'center' }}>Match with</Text>
-                        <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0 }}>{matchMenuProfile.fname} {matchMenuProfile.lname}</Text>
-                        <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
-                        <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
-                        <Button title={'Close'} onPress={this.closeMatchMenu} containerStyle={{ margin: 2.0 }} />
-                    </View>
-                </Modal>
             </View>
         )
     }

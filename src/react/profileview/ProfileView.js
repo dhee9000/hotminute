@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Image, ScrollView, TouchableOpacity, Modal, Dimensions, Alert } from 'react-native';
 
 import { Text } from '../common/components';
 
@@ -11,6 +11,8 @@ import { Colors, Fonts } from '../../config';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+
+const { height, width } = Dimensions.get('screen');
 
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 const IMG_DIM = 128;
@@ -44,6 +46,8 @@ class ProfileView extends React.Component {
         images: {},
         chatExists: true,
         uid: '',
+
+        showMenu: false,
     }
 
     async componentDidMount() {
@@ -94,14 +98,43 @@ class ProfileView extends React.Component {
             });
             this.props.navigation.navigate('ChatView', { chatId: generateCombinedDocId(auth().currentUser.uid, this.state.uid), userId: this.state.uid });
         }
-        else{
+        else {
             this.props.navigation.pop();
             this.props.navigation.navigate('ChatView', { chatId: generateCombinedDocId(auth().currentUser.uid, this.state.uid), userId: this.state.uid });
         }
     }
 
     morePressed = async () => {
-        
+        this.setState({ showMenu: !this.state.showMenu });
+    }
+
+    unmatchPressed = () => {
+        let matchId = this.props.matchesIds.filter(matchId => {
+            return this.props.matchesById[matchId].uids.includes(this.state.uid);
+        })[0];
+        firestore().collection('matches').doc(matchId).delete();
+        this.props.navigation.pop();
+    }
+
+    reportMatchPressed = () => {
+
+        let otherUid = this.props.matchesById[this.state.uid].uids.filter(uid => uid != auth().currentUser.uid)[0];
+
+        Alert.prompt(
+            'Why are you reporting this user?',
+            'Give us a brief description so that we investigate this report. If you don\'t want to report and instead want to block this user, use the block option!',
+            text => {
+                firestore().collection('reports').add({
+                    reportedBy: auth().currentUser.uid,
+                    reportedUser: otherUid,
+                    reportReason: text,
+                    reportedOn: firestore.FieldValue.serverTimestamp(),
+                });
+            }
+        );
+
+        this.unmatchPressed(matchId);
+
     }
 
     render() {
@@ -148,13 +181,25 @@ class ProfileView extends React.Component {
                         </View>
                     </ScrollView>
                 </View>
+                <Modal visible={this.state.showMenu} transparent animated animationType={'slide'}>
+                    <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                        <Text style={{ alignSelf: 'center' }}>match with</Text>
+                        <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0 }}>{this.state.fname} {this.state.lname}</Text>
+                        <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
+                        <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
+                        <Button title={'Close'} onPress={this.morePressed} containerStyle={{ margin: 2.0 }} />
+                    </View>
+                </Modal>
             </View>
         )
     }
 }
 
 const mapStateToProps = state => ({
-
+    profileIds: state.profiles.allIds,
+    profilesById: state.profiles.byId,
+    matchesById: state.matches.byId,
+    matchesIds: state.matches.allIds,
 });
 
 const mapDispatchToProps = dispatch => ({
