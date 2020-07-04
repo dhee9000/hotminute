@@ -1,4 +1,4 @@
-import { all, apply, call, put, takeEvery, fork, select } from 'redux-saga/effects';
+import { all, apply, call, put, takeEvery, fork, select, takeLatest } from 'redux-saga/effects';
 import * as ActionTypes from '../../ActionTypes';
 
 import firestore from '@react-native-firebase/firestore';
@@ -47,8 +47,32 @@ function* watchProfileRequested() {
     );
 }
 
+function* watchUpdateProfileRequested() {
+    yield takeLatest(ActionTypes.UPDATE_PROFILE.REQUEST,
+        function* onUpdateProfileRequested(action) {
+            let profileDocRef = firestore().collection('profiles').doc(auth().currentUser.uid);
+            let newProfileData = {
+                fname: action.payload.fname,
+                lname: action.payload.lname,
+                occupation: action.payload.occupation,
+                bio: action.payload.bio,
+                interests: action.payload.interests,
+            }
+            try {
+                yield call([profileDocRef, profileDocRef.update], newProfileData);
+                yield put({ type: ActionTypes.UPDATE_PROFILE, payload: action.payload.updateId });
+            }
+            catch(e){
+                console.log("Profile Update Error: ", e);
+                yield put({type: ActionTypes.UPDATE_PROFILE.FAILURE, payload: e});
+            }
+        }
+    );
+}
+
 const profileWatchers = [
     watchProfileRequested,
+    watchUpdateProfileRequested,
 ];
 
 export default function* watchProfileActions() {

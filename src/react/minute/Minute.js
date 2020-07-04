@@ -13,7 +13,7 @@ import { Text, TabBar } from '../common/components';
 import { Fonts, Colors, AgoraConfig } from '../../config';
 
 import { connect } from 'react-redux';
-import { ActionTypes } from '../../redux/';
+import * as ActionTypes from '../../redux/ActionTypes';
 
 import firebase from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
@@ -38,17 +38,6 @@ class Minute extends React.Component {
     state = {
 
         userProfile: {},
-
-        filters: {
-            maxDistance: 100,
-            genders: {
-                male: false,
-                female: true,
-                other: false,
-            },
-            minAge: '18',
-            maxAge: '24',
-        },
         filterTabIdx: 0,
 
         pairingEnabled: false,
@@ -74,6 +63,9 @@ class Minute extends React.Component {
     callStartAnimation = new Animated.Value(0);
 
     async componentDidMount() {
+
+        this.props.getUserProfile();
+        this.props.getFilters();
 
         Permissions.askAsync(Permissions.AUDIO_RECORDING);
         RtcEngine.init(AgoraConfig);
@@ -148,6 +140,13 @@ class Minute extends React.Component {
             this.state.animationRunner.stop();
             this.loadingAnimation.setValue(0);
 
+        }
+        if(prevProps.filters.loaded != this.props.filters.loaded){
+            this.setState({
+                filters: {
+                    ...this.props.filters
+                }
+            });
         }
     }
 
@@ -367,11 +366,13 @@ class Minute extends React.Component {
 }
 
 const mapStateToProps = state => ({
-
+    filters: state.filters,
+    userProfile: state.profiles.byId[auth().currentUser.uid],
 });
 
 const mapDispatchToProps = dispatch => ({
-
+    getUserProfile: () => dispatch({type: ActionTypes.FETCH_PROFILE.REQUEST, payload: auth().currentUser.uid}),
+    getFilters: () => dispatch({type: ActionTypes.FETCH_FILTERS.REQUEST}),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Minute);

@@ -10,7 +10,7 @@ if (Platform.OS === 'android') {
 import { Text } from '../common/components';
 
 import { connect } from 'react-redux';
-import { ActionTypes } from '../../redux/';
+import * as ActionTypes from '../../redux/ActionTypes';
 
 import { Colors, Fonts } from '../../config';
 
@@ -128,7 +128,13 @@ class Profile extends React.Component {
         }
         if (prevState.editingProfile && !this.state.editingProfile) {
 
-            // TODO: COMMIT CHANGES ON EXIT EDIT MODE
+            this.props.updateProfile({
+                fname: this.state.fname,
+                lname: this.state.lname,
+                occupation: this.state.occupation,
+                bio: this.state.bio,
+                interests: this.state.interests,
+            })
             this.state.editingAnimRunner.stop();
             Animated.timing(this.editingWiggle, {
                 toValue: 0,
@@ -368,7 +374,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-
+    updateProfile: newProfile => dispatch({type: ActionTypes.UPDATE_PROFILE.REQUEST, payload: {...newProfile, updateId: new Date().getTime().toString()}})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
