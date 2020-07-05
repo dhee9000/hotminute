@@ -141,7 +141,7 @@ class Minute extends React.Component {
             this.loadingAnimation.setValue(0);
 
         }
-        if(prevProps.filters.loaded != this.props.filters.loaded){
+        if (prevProps.filters.loaded != this.props.filters.loaded) {
             this.setState({
                 filters: {
                     ...this.props.filters
@@ -172,7 +172,7 @@ class Minute extends React.Component {
         // Listen for changes to entry
         let unsubscribePoolEntry = firestore().collection('pairingPool').doc(poolEntrySnapshot.id).onSnapshot(async docSnapshot => {
             let data = docSnapshot.data();
-            if (data.paired) {
+            if (data.paired && !data.matched) {
                 let pairedProfileSnapshot = await firestore().collection('profiles').doc(data.pairedUid).get();
                 let pairedProfile = pairedProfileSnapshot.data();
                 let pairedProfilePictureURL = await storage().ref(pairedProfile.images["1"].ref).getDownloadURL();
@@ -180,9 +180,13 @@ class Minute extends React.Component {
                 alert(`Paired With ${pairedProfile.fname} ${pairedProfile.lname}`);
                 this.setState({ roomId: data.roomId, roomToken: data.roomToken, pairedUid: data.pairedUid, pairedProfile, paired: true }, this.joinRoom)
             }
+            if(data.matched) {
+                this.leaveRoom();
+                this.props.navigation.navigate('Chats');
+                this.state.unsubscribePoolEntry();
+            }
             if (!data.active) {
                 this.setState({ enteredPool: false });
-                this.state.unsubscribePoolEntry();
             }
         });
         this.setState({ unsubscribePoolEntry: () => unsubscribePoolEntry(), enteredPool: true });
@@ -263,6 +267,7 @@ class Minute extends React.Component {
             swipedOn: this.state.pairedUid,
             direction: 'left',
         });
+        this.state.unsubscribePoolEntry();
         this.leaveRoom();
     }
 
@@ -278,8 +283,62 @@ class Minute extends React.Component {
         let notInPool = this.state.pairingEnabled || !this.state.enteredPool ? true : this.state.pairingEnabled || this.state.enteredPool ? false : false;
 
         return (
-            <View style={{ flex: 1, backgroundColor: Colors.background, justifyContent: 'center', alignItems: 'center' }}>
-                <Swiper />
+            <View style={{ flex: 1, backgroundColor: Colors.background }}>
+                <Image source={{ uri: this.state.backgroundImage }} style={{ height, width }} />
+                <View style={{ position: 'absolute', top: 0, left: 0, height: height - 64, width, }}>
+                    <View style={{ flex: 1 }}>
+                        <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
+                        </View>
+                    </View>
+                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
+                        {
+                            this.state.joinedCall ?
+                                // IF JOINED CALL
+                                <Animated.View style={{transform: [{scale: this.callStartAnimation}]}}>
+                                    <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} />
+                                </Animated.View>
+                                :
+                                // ELSE JUST SHOW THE HOTMINUTE LOGO AND PAIRING ANIMATION
+                                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                    <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                        <Animated.View style={{ backgroundColor: '#fff2f6', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
+                                    </View>
+                                    <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} />
+                                </View>
+                        }
+                        <Text style={{ alignSelf: 'center', textAlign: 'center' }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
+                    </View>
+                    <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
+                        <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
+                            <Icon name={'sort'} size={32} color={Colors.textLightGray} />
+                        </TouchableOpacity>
+                        <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
+                            <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
+                                <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 28.0, height: 56, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
+                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+
+                {/* FILTERS MODAL */}
+                <Modal visible={this.state.filtersVisible} transparent animated animationType={'slide'}>
+                    <View style={{ justifyContent: 'flex-start', marginTop: height / 3, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                        <TouchableOpacity onPress={() => this.setState({ filtersVisible: false })}>
+                            <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
+                        </TouchableOpacity>
+                        <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>Filters</Text>
+                        <TabView
+                            style={{ flex: 1 }}
+                            navigationState={{ index: this.state.filterTabIdx, routes: [{ key: 'distance', title: 'distance' }, { key: 'gender', title: 'gender' }, { key: 'age', title: 'age' }] }}
+                            renderScene={SceneMap({ distance: DistanceFilter, gender: GenderFilter, age: AgeFilter })}
+                            renderTabBar={props => <TabBar {...props} onChangeTab={i => this.setState({ filterTabIdx: i })} />}
+                            onIndexChange={idx => this.setState({ filterTabIdx: idx })}
+                        />
+                    </View>
+                </Modal>
             </View>
         )
     }
@@ -291,8 +350,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getUserProfile: () => dispatch({type: ActionTypes.FETCH_PROFILE.REQUEST, payload: auth().currentUser.uid}),
-    getFilters: () => dispatch({type: ActionTypes.FETCH_FILTERS.REQUEST}),
+    getUserProfile: () => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: auth().currentUser.uid }),
+    getFilters: () => dispatch({ type: ActionTypes.FETCH_FILTERS.REQUEST }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Minute);

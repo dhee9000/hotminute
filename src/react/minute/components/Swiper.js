@@ -31,6 +31,24 @@ class Swiper extends React.Component {
         swipedDown: false,
     }
 
+    onSwipeRight = () => {
+        if (this.props.onSwipeRight) {
+            this.props.onSwipeRight();
+        }
+    }
+
+    onSwipeLeft = () => {
+        if (this.props.onSwipeLeft) {
+            this.props.onSwipeLeft();
+        }
+    }
+
+    onExtend = () => {
+        if (this.props.onExtend) {
+            this.props.onExtend();
+        }
+    }
+
     componentDidMount() {
         this.gestureX.addListener(data => {
             let { value } = data;
@@ -90,7 +108,7 @@ class Swiper extends React.Component {
                 useNativeDriver: false
             }).start();
         }
-        if(!prevState.swipedDown && this.state.swipedDown) {
+        if (!prevState.swipedDown && this.state.swipedDown) {
             Animated.timing(this.extendProgress, {
                 toValue: 0.5,
                 duration: 1000,
@@ -116,18 +134,22 @@ class Swiper extends React.Component {
         }
         if (event.state === State.END && this.state.rightThreshold) {
             this.setState({ swipedRight: true, swipedLeft: false });
+            this.onSwipeRight();
         }
         if (event.state === State.END && this.state.leftThreshold) {
             this.setState({ swipedLeft: true, swipedRight: false });
+            this.onSwipeLeft();
         }
         if (event.state === State.END && this.state.downThreshold) {
             this.setState({ swipedDown: true });
+            this.onExtend();
         }
     }
 
     render() {
 
         let imageRotateY = this.gestureX.interpolate({ inputRange: [-100, 100], outputRange: ['-45deg', '45deg'] });
+        let imageRotateX = this.gestureY.interpolate({ inputRange: [0, 100], outputRange: ['0deg', '-45deg'], extrapolate: 'clamp' });
         let swipeRightProgress = this.gestureX.interpolate({ inputRange: [0, 100], outputRange: [0, 0.5], extrapolate: 'clamp' });
         let swipeLeftProgress = this.gestureX.interpolate({ inputRange: [-100, 0], outputRange: [0.5, 0], extrapolate: 'clamp' });
         let swipeDownProgress = this.gestureY.interpolate({ inputRange: [0, 100], outputRange: [0, 0.16], extrapolate: 'clamp' });
@@ -135,21 +157,24 @@ class Swiper extends React.Component {
         return (
             <View style={{ justifyContent: 'center', alignItems: 'center', padding: 16.0 }}>
                 <PanGestureHandler onHandlerStateChange={this.handleGestureStateChanged} onGestureEvent={Animated.event([{ nativeEvent: { translationX: this.gestureX, translationY: this.gestureY } }], { useNativeDriver: false })} minPointers={1} maxPointers={1}>
-                    <Animated.View style={{ transform: [{ rotateY: imageRotateY }] }}>
-                        <Animated.Image blurRadius={8.0} source={{ uri: BLANK_IMAGE_URI }} style={{ height: 196, width: 196, borderRadius: 16.0 }} />
+                    <Animated.View style={{ transform: [{ rotateY: imageRotateY }, { rotateX: imageRotateX }] }}>
+                        <Animated.Image blurRadius={8.0} source={{ uri: this.props.pictureURL ? this.props.pictureURL : BLANK_IMAGE_URI }} style={{ height: 420, width: 350, borderRadius: 16.0 }} />
+                        <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0, color: Colors.primary }}>{this.props.timeLeft}</Text>
+                        </View>
                     </Animated.View>
                 </PanGestureHandler>
                 <View style={{ marginTop: 16, flexDirection: 'row', justifyContent: 'space-between', width: 196 }}>
                     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                        <LottieView source={require('../../../../assets/animations/SwipeLeft.json')} style={{ height: 32, width: 32 }} progress={this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress} />
+                        <LottieView source={require('../../../../assets/animations/SwipeLeft.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress} />
                         <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [-100, 0], outputRange: ['#f55', Colors.textLightGray], extrapolate: 'clamp' }) }}>NO</Animated.Text>
                     </View>
                     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                        <LottieView source={require('../../../../assets/animations/SwipeClock.json')} style={{ height: 32, width: 32 }} progress={this.state.swipedDown ? this.extendProgress : swipeDownProgress} />
+                        <LottieView source={require('../../../../assets/animations/SwipeClock.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedDown ? this.extendProgress : swipeDownProgress} />
                         <Animated.Text style={{ fontSize: 12.0, color: this.gestureY.interpolate({ inputRange: [0, 100], outputRange: [Colors.textLightGray, '#55f'], extrapolate: 'clamp' }) }}>EXTEND</Animated.Text>
                     </View>
                     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                        <LottieView source={require('../../../../assets/animations/SwipeRight.json')} style={{ height: 32, width: 32 }} progress={this.state.swipedRight ? this.swipeProgress : swipeRightProgress} />
+                        <LottieView source={require('../../../../assets/animations/SwipeRight.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedRight ? this.swipeProgress : swipeRightProgress} />
                         <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [0, 100], outputRange: [Colors.textLightGray, '#5f5'], extrapolate: 'clamp' }) }}>YES</Animated.Text>
                     </View>
                 </View>
