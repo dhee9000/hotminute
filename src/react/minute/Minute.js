@@ -31,7 +31,7 @@ import * as Permissions from 'expo-permissions';
 import { LinearGradient } from 'expo-linear-gradient';
 import { TabView, SceneMap } from 'react-native-tab-view';
 
-import { DistanceFilter, GenderFilter, AgeFilter } from './components';
+import { DistanceFilter, GenderFilter, AgeFilter, Swiper } from './components';
 
 class Minute extends React.Component {
 
@@ -141,7 +141,7 @@ class Minute extends React.Component {
             this.loadingAnimation.setValue(0);
 
         }
-        if(prevProps.filters.loaded != this.props.filters.loaded){
+        if (prevProps.filters.loaded != this.props.filters.loaded) {
             this.setState({
                 filters: {
                     ...this.props.filters
@@ -172,7 +172,7 @@ class Minute extends React.Component {
         // Listen for changes to entry
         let unsubscribePoolEntry = firestore().collection('pairingPool').doc(poolEntrySnapshot.id).onSnapshot(async docSnapshot => {
             let data = docSnapshot.data();
-            if (data.paired) {
+            if (data.paired && !data.matched) {
                 let pairedProfileSnapshot = await firestore().collection('profiles').doc(data.pairedUid).get();
                 let pairedProfile = pairedProfileSnapshot.data();
                 let pairedProfilePictureURL = await storage().ref(pairedProfile.images["1"].ref).getDownloadURL();
@@ -180,9 +180,13 @@ class Minute extends React.Component {
                 alert(`Paired With ${pairedProfile.fname} ${pairedProfile.lname}`);
                 this.setState({ roomId: data.roomId, roomToken: data.roomToken, pairedUid: data.pairedUid, pairedProfile, paired: true }, this.joinRoom)
             }
+            if(data.matched) {
+                this.leaveRoom();
+                this.props.navigation.navigate('Chats');
+                this.state.unsubscribePoolEntry();
+            }
             if (!data.active) {
                 this.setState({ enteredPool: false });
-                this.state.unsubscribePoolEntry();
             }
         });
         this.setState({ unsubscribePoolEntry: () => unsubscribePoolEntry(), enteredPool: true });
@@ -263,6 +267,7 @@ class Minute extends React.Component {
             swipedOn: this.state.pairedUid,
             direction: 'left',
         });
+        this.state.unsubscribePoolEntry();
         this.leaveRoom();
     }
 
@@ -288,25 +293,11 @@ class Minute extends React.Component {
                     </View>
                     <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
                         {
-                            this.state.pairedUid ?
-                                // IF PAIRED
-                                this.state.pairedProfile.pictureURL ?
-                                    // IF HAS PROFILE PICTURE SHOW PICTURE BLURRED
-                                    <Animated.Image blurRadius={12.0} source={{ uri: this.state.pairedProfile.pictureURL }} style={{ height: 196, width: 196, borderRadius: 98.0, borderColor: Colors.primary, borderWidth: 8.0, transform: [{ scale: this.callStartAnimation }] }} />
-                                    :
-                                    // ELSE JUST USE A CALL ICON
-                                    <Icon name={'phone'} color={Colors.primary} size={128} /> : null
-                        }
-                        {
-                            this.state.pairedUid ?
-                                // IF PAIRED
-                                // SHOW THE TIMER TEXT AND END CALL BUTTON
-                                <>
-                                    <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0, color: Colors.primary }}>{this.state.timeLeft}</Text>
-                                    </View>
-                                    <Button title={'End Call'} disabled={!this.state.joinedCall} onPress={this.leaveRoom} containerStyle={{ margin: 2.0 }} />
-                                </>
+                            this.state.joinedCall ?
+                                // IF JOINED CALL
+                                <Animated.View style={{transform: [{scale: this.callStartAnimation}]}}>
+                                    <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} />
+                                </Animated.View>
                                 :
                                 // ELSE JUST SHOW THE HOTMINUTE LOGO AND PAIRING ANIMATION
                                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -324,24 +315,12 @@ class Minute extends React.Component {
                         </TouchableOpacity>
                         <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
                             <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
-                                <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
+                                <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 28.0, height: 56, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
                                     <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
                                 </LinearGradient>
                             </TouchableOpacity>
                         </View>
                     </View>
-                    {
-                        this.state.joinedCall ?
-                            <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 32.0, marginHorizontal: 8.0 }}>
-                                    <Button title={'Left'} disabled={!this.state.joinedCall} onPress={this.swipeLeft} containerStyle={{ margin: 2.0, flex: 1 }} />
-                                    <Button title={'Extend'} disabled={!this.state.joinedCall} onPress={this.extendCall} containerStyle={{ margin: 2.0, flex: 2 }} />
-                                    <Button title={'Right'} disabled={!this.state.joinedCall} onPress={this.swipeRight} containerStyle={{ margin: 2.0, flex: 1 }} />
-                                </View>
-                            </View>
-                            :
-                            null
-                    }
                 </View>
 
                 {/* FILTERS MODAL */}
@@ -354,8 +333,8 @@ class Minute extends React.Component {
                         <TabView
                             style={{ flex: 1 }}
                             navigationState={{ index: this.state.filterTabIdx, routes: [{ key: 'distance', title: 'distance' }, { key: 'gender', title: 'gender' }, { key: 'age', title: 'age' }] }}
-                            renderScene={SceneMap({distance: DistanceFilter, gender: GenderFilter, age: AgeFilter })}
-                            renderTabBar={props => <TabBar {...props} onChangeTab={i => this.setState({filterTabIdx: i})}/> }
+                            renderScene={SceneMap({ distance: DistanceFilter, gender: GenderFilter, age: AgeFilter })}
+                            renderTabBar={props => <TabBar {...props} onChangeTab={i => this.setState({ filterTabIdx: i })} />}
                             onIndexChange={idx => this.setState({ filterTabIdx: idx })}
                         />
                     </View>
@@ -371,8 +350,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getUserProfile: () => dispatch({type: ActionTypes.FETCH_PROFILE.REQUEST, payload: auth().currentUser.uid}),
-    getFilters: () => dispatch({type: ActionTypes.FETCH_FILTERS.REQUEST}),
+    getUserProfile: () => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: auth().currentUser.uid }),
+    getFilters: () => dispatch({ type: ActionTypes.FETCH_FILTERS.REQUEST }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Minute);
