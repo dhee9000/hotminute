@@ -14,6 +14,7 @@ const action = actionName => (
  *  is set to true, it will fetch the profile even if it is already in the state store.
  */
 export const FETCH_PROFILE = action('FETCH_PROFILE');
+export const UPDATE_PROFILE = action('UPDATE_PROFILE');
 
 /**
  * Action Name: Listen Matches

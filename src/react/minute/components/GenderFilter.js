@@ -5,17 +5,25 @@ import { Text, RadioButton } from '../../common/components';
 import { Fonts, Colors } from '../../../config';
 
 import { connect } from 'react-redux';
-import { ActionTypes } from '../../../redux/';
+import * as ActionTypes from '../../../redux/ActionTypes';
 
 import { Slider, CheckBox } from 'react-native-elements';
 
 class GenderFilter extends React.Component {
 
     state = {
-        genders: {
-            male: true,
-            female: true,
-            other: true,
+        genders: this.props.filters.genders
+    }
+
+
+    componentDidUpdate(prevProps, prevState){
+        if(prevProps.filters.loaded != this.props.filters.loaded){
+            this.setState({
+                genders: this.props.filters.genders,
+            })
+        }
+        if(prevState.genders != this.state.genders && this.state.genders){
+            this.props.updateGenderFilter(this.state.genders);
         }
     }
 
@@ -45,11 +53,11 @@ class GenderFilter extends React.Component {
 }
 
 const mapStateToProps = state => ({
-
+    filters: state.filters,
 });
 
 const mapDispatchToProps = dispatch => ({
-
+    updateGenderFilter: (genders) => dispatch({type: ActionTypes.UPDATE_FILTER.REQUEST, payload: { genders }}),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GenderFilter);
