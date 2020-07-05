@@ -51,6 +51,8 @@ class Minute extends React.Component {
         timeLeft: 60,
         waitingForPartner: false,
 
+        showMarketingPopup: false,
+
         // AGORA STATE VARIABLES
         channelName: "TestRoom",
         joinedCall: false,
@@ -99,6 +101,9 @@ class Minute extends React.Component {
         let filtersSnapshot = await firestore().collection('filters').doc(auth().currentUser.uid).get();
         let filtersData = filtersSnapshot.data();
         this.setState({ filters: { ...filtersData } });
+
+        // MARKETING POPUP
+        this.setState({ showMarketingPopup: true });
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -180,7 +185,7 @@ class Minute extends React.Component {
                 alert(`Paired With ${pairedProfile.fname} ${pairedProfile.lname}`);
                 this.setState({ roomId: data.roomId, roomToken: data.roomToken, pairedUid: data.pairedUid, pairedProfile, paired: true }, this.joinRoom)
             }
-            if(data.matched) {
+            if (data.matched) {
                 this.leaveRoom();
                 this.props.navigation.navigate('Chats');
                 this.state.unsubscribePoolEntry();
@@ -189,6 +194,8 @@ class Minute extends React.Component {
                 this.setState({ enteredPool: false });
             }
         });
+
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.setState({ unsubscribePoolEntry: () => unsubscribePoolEntry(), enteredPool: true });
     }
 
@@ -203,6 +210,8 @@ class Minute extends React.Component {
         if (this.state.unsubscribePoolEntry) {
             this.state.unsubscribePoolEntry();
         }
+
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.setState({ enteredPool: false, pairedUid: null });
     }
 
@@ -295,7 +304,7 @@ class Minute extends React.Component {
                         {
                             this.state.joinedCall ?
                                 // IF JOINED CALL
-                                <Animated.View style={{transform: [{scale: this.callStartAnimation}]}}>
+                                <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
                                     <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} />
                                 </Animated.View>
                                 :
@@ -307,12 +316,17 @@ class Minute extends React.Component {
                                     <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} />
                                 </View>
                         }
-                        <Text style={{ alignSelf: 'center', textAlign: 'center' }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
+                        <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
                     </View>
                     <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
-                            <Icon name={'sort'} size={32} color={Colors.textLightGray} />
-                        </TouchableOpacity>
+                        {
+                            !this.state.enteredPool && !this.state.joinedCall ?
+                                <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
+                                    <Icon name={'sort'} size={32} color={Colors.textLightGray} />
+                                </TouchableOpacity>
+                                :
+                                null
+                        }
                         <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
                             <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
                                 <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 28.0, height: 56, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
@@ -337,6 +351,27 @@ class Minute extends React.Component {
                             renderTabBar={props => <TabBar {...props} onChangeTab={i => this.setState({ filterTabIdx: i })} />}
                             onIndexChange={idx => this.setState({ filterTabIdx: idx })}
                         />
+                    </View>
+                </Modal>
+
+                {/* MARKETING PROMO MODAL */}
+                <Modal visible={this.state.showMarketingPopup} transparent animated animationType={'fade'}>
+                    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, }}>
+                        <View style={{ backgroundColor: Colors.background, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0}}>
+                            <TouchableOpacity onPress={() => this.setState({ showMarketingPopup: false })} style={{ position: 'absolute', top: 8.0, left: 8.0, margin: 4.0, backgroundColor: Colors.primary, borderRadius: 16, elevation: 1.0, zIndex: 2 }}>
+                                <Icon name={'close'} size={32} color={Colors.background} />
+                            </TouchableOpacity>
+                            <Image source={{ uri: 'https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/v346-filmful-16-confettibackground_2.jpg?bg=transparent&con=3&cs=srgb&dpr=1&fm=jpg&ixlib=php-3.1.0&q=80&usm=15&vib=3&w=1300&s=48e970065b37ebf5466b48691a2a847d' }}
+                                style={{ height: 128.0, width: 312.0 }} resizeMode={'cover'} resizeMethod={'scale'}
+                            />
+                            <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, marginVertical: 4.0, marginHorizontal: 16.0 }}>Pickup Line Contest</Text>
+                            <Text style={{margin: 16.0}}>Enter your best pickup lines and get a chance to win <Text style={{ color: Colors.primary }}>hotminute premium</Text>!</Text>
+                            <TouchableOpacity style={{alignSelf: 'stretch', margin: 16.0}}>
+                                <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 28.0, height: 56, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
+                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Enter Now</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </Modal>
             </View>
