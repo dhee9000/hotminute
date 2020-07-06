@@ -148,7 +148,7 @@ class Swiper extends React.Component {
 
     render() {
 
-        let imageRotateY = this.gestureX.interpolate({ inputRange: [-100, 100], outputRange: ['-45deg', '45deg'] });
+        let imageRotateY = this.gestureX.interpolate({ inputRange: [-100, 100], outputRange: ['-45deg', '45deg'], extrapolate: 'clamp' });
         let imageRotateX = this.gestureY.interpolate({ inputRange: [0, 100], outputRange: ['0deg', '-45deg'], extrapolate: 'clamp' });
         let swipeRightProgress = this.gestureX.interpolate({ inputRange: [0, 100], outputRange: [0, 0.5], extrapolate: 'clamp' });
         let swipeLeftProgress = this.gestureX.interpolate({ inputRange: [-100, 0], outputRange: [0.5, 0], extrapolate: 'clamp' });
@@ -158,7 +158,7 @@ class Swiper extends React.Component {
             <View style={{ justifyContent: 'center', alignItems: 'center', padding: 16.0 }}>
                 <PanGestureHandler onHandlerStateChange={this.handleGestureStateChanged} onGestureEvent={Animated.event([{ nativeEvent: { translationX: this.gestureX, translationY: this.gestureY } }], { useNativeDriver: false })} minPointers={1} maxPointers={1}>
                     <Animated.View style={{ transform: [{ rotateY: imageRotateY }, { rotateX: imageRotateX }] }}>
-                        <Animated.Image blurRadius={8.0} source={{ uri: this.props.pictureURL ? this.props.pictureURL : BLANK_IMAGE_URI }} style={{ height: 420, width: 350, borderRadius: 16.0 }} />
+                        <Animated.Image blurRadius={8.0} source={{ uri: this.props.pictureURL ? this.props.pictureURL : BLANK_IMAGE_URI }} style={{ height: 384, width: 256, borderRadius: 16.0 }} />
                         <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0, color: Colors.primary }}>{this.props.timeLeft}</Text>
                         </View>
