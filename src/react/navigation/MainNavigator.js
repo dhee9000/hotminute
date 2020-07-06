@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 
 import React from 'react';
-import { View, Text, Dimensions, StatusBar } from 'react-native';
+import { View, Text, Dimensions, StatusBar, TouchableOpacity } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 
 import { Minute } from '../minute';
@@ -15,8 +15,8 @@ const { width, height } = Dimensions.get('screen');
 import Heart from '../../../assets/svg/heart.svg';
 import { createStackNavigator } from 'react-navigation-stack';
 
-const renderTabBarIcon = ({focused, color, size}, name) => {
-    switch(name){
+const renderTabBarIcon = ({ focused, color, size }, name) => {
+    switch (name) {
         case 'matches': {
             return (
                 <Icon name={'people'} color={color} size={size} />
@@ -40,19 +40,19 @@ const MainNavigator = createMaterialTopTabNavigator(
         Profile: {
             screen: Profile,
             navigationOptions: {
-                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'person'} color={tintColor} size={size} />),
+                tabBarIcon: ({ focused, tintColor, size }) => (<Icon name={'person'} color={tintColor} size={size} />),
             }
         },
         Date: {
             screen: Minute,
             navigationOptions: {
-                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'favorite'} color={tintColor} size={size} />),
+                tabBarIcon: ({ focused, tintColor, size }) => (<Icon name={'favorite'} color={tintColor} size={size} />),
             }
         },
-        Matches:{
+        Matches: {
             screen: Chats,
             navigationOptions: {
-                tabBarIcon: ({focused, tintColor, size}) => (<Icon name={'message'} color={tintColor} size={size} />),
+                tabBarIcon: ({ focused, tintColor, size }) => (<Icon name={'message'} color={tintColor} size={size} />),
             }
         },
     },
@@ -62,23 +62,31 @@ const MainNavigator = createMaterialTopTabNavigator(
         tabBarOptions: {
             activeTintColor: '#fff',
             inactiveTintColor: Colors.primaryLight,
-            contentContainerStyle: { backgroundColor: Colors.primary, padding: 0},
+            contentContainerStyle: { backgroundColor: '#ffffff00', padding: 0 },
             showIcon: true,
             showLabel: false,
         },
-        // tabBarComponent: props => {
-        //     return(
-        //         <View style={{ 
-        //             position: 'absolute', top: StatusBar.currentHeight, width, zIndex: 10,
-        //             flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', 
-        //             paddingHorizontal: 16.0, marginVertical: 16.0,
-        //         }}>
-        //             <Icon name={'chat'} color={Colors.text} size={36} />
-        //             <Heart width={36} height={36} />
-        //             <Icon name={'person'} color={Colors.text} size={36} />
-        //         </View>
-        //     )
-        // }
+        tabBarComponent: props => {
+            let { navigation, onTabPress } = props;
+            let { routes, index } = navigation.state;
+            return (
+                <View style={{
+                    flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',
+                    paddingHorizontal: 8.0, paddingVertical: 8.0,
+                    backgroundColor: Colors.background
+                }}>
+                    <TouchableOpacity onPress={() => onTabPress(routes[0])}>
+                        <Icon name={'chat'} color={index == 0 ? Colors.primary : Colors.text} size={28} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => onTabPress(routes[1])}>
+                        <Icon name={'favorite'} color={index == 1 ? Colors.primary : Colors.text} size={28} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => onTabPress(routes[2])}>
+                        <Icon name={'person'} color={index == 2 ? Colors.primary : Colors.text} size={28} />
+                    </TouchableOpacity>
+                </View>
+            )
+        }
     }
 )
 
