@@ -270,15 +270,15 @@ class Profile extends React.Component {
                                 </Animated.View>
                             </TouchableOpacity>
                         </View>
-                        <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
+                        <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editOccupation}>
                         <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                            <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.occupation}</Text>
+                            <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.occupation}</Text>
                             </Animated.View>
                         </TouchableOpacity>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editBio}>
                         <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                            <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.bio}</Text>
+                            <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.bio}</Text>
                             </Animated.View>
                         </TouchableOpacity>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading }}>Interests</Text>
@@ -305,7 +305,7 @@ class Profile extends React.Component {
                             {Object.keys(this.state.images).map(key => (
                                 <View key={key}>
                                     <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', { imageUri: this.state.images[key].uri })} >
-                                        <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                                        <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: width/3-16, width: width/3-16, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
                                     </TouchableOpacity>
                                     {
                                         this.state.editingProfile ?

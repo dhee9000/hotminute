@@ -182,7 +182,6 @@ class Minute extends React.Component {
                 let pairedProfile = pairedProfileSnapshot.data();
                 let pairedProfilePictureURL = await storage().ref(pairedProfile.images["1"].ref).getDownloadURL();
                 pairedProfile.pictureURL = pairedProfilePictureURL;
-                alert(`Paired With ${pairedProfile.fname} ${pairedProfile.lname}`);
                 this.setState({ roomId: data.roomId, roomToken: data.roomToken, pairedUid: data.pairedUid, pairedProfile, paired: true }, this.joinRoom)
             }
             if (data.matched) {
@@ -329,7 +328,7 @@ class Minute extends React.Component {
                         }
                         <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
                             <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
-                                <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 28.0, height: 56, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
+                                <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
                                     <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
                                 </LinearGradient>
                             </TouchableOpacity>
