@@ -187,7 +187,7 @@ class Minute extends React.Component {
             }
             if (data.matched) {
                 this.leaveRoom();
-                this.props.navigation.navigate('Chats');
+                this.props.navigation.navigate('Matches');
                 this.state.unsubscribePoolEntry();
             }
             if (!data.active) {
