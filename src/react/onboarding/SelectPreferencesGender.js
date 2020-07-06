@@ -20,8 +20,8 @@ class SelectPreferencesGender extends React.Component {
     state = {
         genders: {
             male: true,
-            female: true,
-            other: true,
+            female: false,
+            other: false,
         }
     }
 
@@ -44,7 +44,6 @@ class SelectPreferencesGender extends React.Component {
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                     <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>What are you looking for?</Text>
-                    <Text style={{ color: Colors.text }}>We need to know who to pair you with</Text>
                 </View>
                 <View style={{ alginItems: 'stretch', width: '100%' }}>
                     <Text style={{ fontFamily: Fonts.heading }}>Gender</Text>
@@ -65,7 +64,7 @@ class SelectPreferencesGender extends React.Component {
                     />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button title="Can we please be done already?" onPress={this.onDonePressed} />
+                    <Button title={"Almost Done"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )

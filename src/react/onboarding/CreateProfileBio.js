@@ -39,7 +39,6 @@ class CreateProfileBio extends React.Component {
     }
 
     onDonePressed = () => {
-        alert(`That's a bio that'll stand out!`);
         this.props.navigation.navigate('CreateProfileInterests', { fname: this.state.fname, lname: this.state.lname, dob: this.state.dob, age: this.state.age, gender: this.state.gender, occupation: this.state.occupation, bio: this.state.bio });
     }
 
@@ -47,16 +46,15 @@ class CreateProfileBio extends React.Component {
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
-                    <Text style={{ color: Colors.text }}>Let's get to know you.</Text>
+                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Bio</Text>
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                     <Input
                         containerStyle={{ marginBottom: 32.0 }}
                         inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                         inputContainerStyle={{ borderColor: Colors.accent }}
-                        label={'Who are you?'}
                         numberOfLines={4}
+                        multiline
                         labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                         keyboardType={'default'}
                         placeholder={'A short description of yourself'}
@@ -66,7 +64,7 @@ class CreateProfileBio extends React.Component {
                     />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button title="Looks Good" onPress={this.onDonePressed} />
+                    <Button disabled={!this.state.bio || this.state.bio.length < 3} title={"Looks Good"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )

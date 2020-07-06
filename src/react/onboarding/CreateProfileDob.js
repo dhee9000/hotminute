@@ -48,7 +48,6 @@ class CreateProfileName extends React.Component {
     }
 
     onDonePressed = async () => {
-        alert(`So you're ${this.state.age} years old?`);
         this.props.navigation.navigate('CreateProfileGender', { fname: this.state.fname, lname: this.state.lname, dob: this.state.dob, age: this.state.age });
     }
 
@@ -56,13 +55,11 @@ class CreateProfileName extends React.Component {
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
-                    <Text style={{ color: Colors.text }}>And how old are you?</Text>
+                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>How old are you?</Text>
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                     <View style={{ marginHorizontal: 8.0, marginBottom: 32.0 }}>
-                        <Text style={{ color: Colors.text }}>Are you old enough to be dating?</Text>
-                        <Text style={{ color: Colors.accent }} onPress={this.onChooseDateTapped}>
+                        <Text style={{ color: Colors.accent, fontSize: 32.0 }} onPress={this.onChooseDateTapped}>
                             {this.state.dob ? dateToNiceString(this.state.dob) : "Choose Date of Birth"}
                         </Text>
                     </View>
@@ -75,7 +72,7 @@ class CreateProfileName extends React.Component {
                         />}
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button disabled={this.state.age < 18} title="I swear I'm old enough" onPress={this.onDonePressed} />
+                    <Button disabled={this.state.age < 18} title={"Alright, what's next?"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )

@@ -41,7 +41,6 @@ class CreateProfileGender extends React.Component {
     }
 
     onDonePressed = () => {
-        alert(`Just to review, you are ${this.state.fname}, a ${this.state.age} year old ${this.state.gender}.`);
         this.props.navigation.navigate('CreateProfileOccupation', { fname: this.state.fname, lname: this.state.lname, dob: this.state.dob, age: this.state.age, gender: this.state.gender });
     }
 
@@ -49,14 +48,13 @@ class CreateProfileGender extends React.Component {
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
-                    <Text style={{ color: Colors.text }}>Pick your gender</Text>
+                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Gender</Text>
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
-                    <RadioButton options={[{ key: 'male', text: 'Male' }, { key: 'female', text: 'Female' }, { key: 'other', text: 'Other' }]} onChange={this.onChangeGender} />
+                    <RadioButton options={[{ key: 'male', text: 'Male' }, { key: 'female', text: 'Female' }, { key: 'other', text: 'Other' }]} onOptionChange={this.onChangeGender} />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button title="Looks Good" onPress={this.onDonePressed} />
+                    <Button title={"Looks Good"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )

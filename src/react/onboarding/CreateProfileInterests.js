@@ -41,7 +41,6 @@ class CreateProfileInterests extends React.Component {
     }
 
     onDonePressed = async () => {
-        alert(`Almost there! Creating profile for ${this.state.fname} ${this.state.lname}`)
         await firestore().collection('profiles').doc(auth().currentUser.uid).set({
             fname: this.state.fname,
             lname: this.state.lname,
@@ -75,8 +74,7 @@ class CreateProfileInterests extends React.Component {
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
-                    <Text style={{ color: Colors.text }}>What should we call you?</Text>
+                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Interests</Text>
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
@@ -100,7 +98,7 @@ class CreateProfileInterests extends React.Component {
                         />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button disabled={this.state.interests.length < 3} title="Are we done yet?" onPress={this.onDonePressed} />
+                    <Button disabled={this.state.interests.length < 3} title={"Are we done yet?"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )

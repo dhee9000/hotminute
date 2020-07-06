@@ -18,8 +18,8 @@ import firestore from '@react-native-firebase/firestore';
 class SelectPreferencesAge extends React.Component {
 
     state = {
-       minAge: 18,
-       maxAge: 24,
+        minAge: 18,
+        maxAge: 24,
     }
 
     async componentDidMount() {
@@ -53,11 +53,11 @@ class SelectPreferencesAge extends React.Component {
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>What are you looking for?</Text>
-                    <Text style={{ color: Colors.text }}>We won't judge.</Text>
+                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Age Filter</Text>
                 </View>
                 <View style={{ alginItems: 'stretch', width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading }}>Min Age</Text>
+                    <Text style={{ alignSelf: 'center', color: Colors.textLightGray }}>Min Age</Text>
+                    <Text style={{ alignSelf: 'center', fontSize: 32.0 }}>{this.state.minAge} years old</Text>
                     <Slider
                         onValueChange={value => this.setState({ minAge: value })}
                         minimumValue={18}
@@ -67,8 +67,8 @@ class SelectPreferencesAge extends React.Component {
                         thumbTintColor={Colors.primary}
                         minimumTrackTintColor={Colors.primary}
                     />
-                    <Text>{this.state.minAge} years old</Text>
-                    <Text style={{ fontFamily: Fonts.heading }}>Max Age</Text>
+                    <Text style={{ alignSelf: 'center', color: Colors.textLightGray }}>Max Age</Text>
+                    <Text style={{ alignSelf: 'center', fontSize: 32.0 }}>{this.state.maxAge} years old</Text>
                     <Slider
                         onValueChange={value => this.setState({ maxAge: value })}
                         minimumValue={this.state.minAge}
@@ -78,10 +78,9 @@ class SelectPreferencesAge extends React.Component {
                         thumbTintColor={Colors.primary}
                         minimumTrackTintColor={Colors.primary}
                     />
-                    <Text>{this.state.maxAge} years old</Text>
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button title="Yup, Looks Good" onPress={this.onDonePressed} />
+                    <Button title={"Alright, we're all set!"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )

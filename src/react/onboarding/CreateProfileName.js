@@ -33,7 +33,6 @@ class CreateProfileName extends React.Component {
     }
 
     onDonePressed = () => {
-        alert(`Nice to meet you ${this.state.fname} ${this.state.lname}`);
         this.props.navigation.navigate('CreateProfileDob', {fname: this.state.fname, lname: this.state.lname});
     }
 
@@ -42,14 +41,12 @@ class CreateProfileName extends React.Component {
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                     <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
-                    <Text style={{ color: Colors.text }}>What should we call you?</Text>
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
                             containerStyle={{ marginBottom: 32.0 }}
                             inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             inputContainerStyle={{ borderColor: Colors.accent }}
-                            label={'What do people call you?'}
                             labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             keyboardType={'default'}
                             placeholder={'First Name'}
@@ -61,7 +58,6 @@ class CreateProfileName extends React.Component {
                             containerStyle={{ marginBottom: 32.0 }}
                             inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             inputContainerStyle={{ borderColor: Colors.accent }}
-                            label={'Bond, James Bond.'}
                             labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             keyboardType={'default'}
                             placeholder={'Last Name'}
@@ -71,7 +67,7 @@ class CreateProfileName extends React.Component {
                         />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button disabled={!this.state.fname || !this.state.lname || this.state.fname.length < 2 || this.state.lname.length < 2} title="That's Me" onPress={this.onDonePressed} />
+                    <Button disabled={!this.state.fname || !this.state.lname || this.state.fname.length < 2 || this.state.lname.length < 2} title={"That's Me"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )

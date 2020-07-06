@@ -38,7 +38,6 @@ class CreateProfileOccupation extends React.Component {
     }
 
     onDonePressed = () => {
-        alert(`Nice, so you're a ${this.state.occupation}!`);
         this.props.navigation.navigate('CreateProfileBio', { fname: this.state.fname, lname: this.state.lname, dob: this.state.dob, age: this.state.age, gender: this.state.gender, occupation: this.state.occupation });
     }
 
@@ -46,15 +45,13 @@ class CreateProfileOccupation extends React.Component {
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                 <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
-                    <Text style={{ color: Colors.text }}>What do you do?</Text>
+                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who do you do?</Text>
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                     <Input
                         containerStyle={{ marginBottom: 32.0 }}
                         inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                         inputContainerStyle={{ borderColor: Colors.accent }}
-                        label={'What do you do?'}
                         labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                         keyboardType={'default'}
                         placeholder={'ex. Student, Youtuber, Model'}
@@ -64,7 +61,7 @@ class CreateProfileOccupation extends React.Component {
                     />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button disabled={!this.state.fname || !this.state.lname || this.state.fname.length < 2 || this.state.lname.length < 2} title="That's Me" onPress={this.onDonePressed} />
+                    <Button disabled={!this.state.occupation || this.state.fname.occupation < 3} title={"What's next?"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )
