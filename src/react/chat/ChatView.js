@@ -38,12 +38,15 @@ class ChatView extends React.Component {
             messages = messages.map(msg => {
                 let senderProfile = this.props.profilesById[msg.sentBy];
                 if (senderProfile) {
-                    return { ...msg, _id: msg.id, 
+                    return {
+                        ...msg, _id: msg.id,
                         // createdAt: msg.sentAt.toDate(), 
-                        user: { _id: msg.sentBy, name: `${senderProfile.fname} ${senderProfile.lname}`, avatar: senderProfile.images["1"].url } }
+                        user: { _id: msg.sentBy, name: `${senderProfile.fname} ${senderProfile.lname}`, avatar: senderProfile.images["1"].url }
+                    }
                 }
                 else {
-                    return { ...msg, _id: msg.id, 
+                    return {
+                        ...msg, _id: msg.id,
                         // createdAt: msg.sentAt.toDate() 
                     };
                 }
@@ -135,14 +138,14 @@ class ChatView extends React.Component {
     renderMessageText = props => {
         return (
             <View>
-                <Text style={{color: props.position === 'right' ? Colors.primary : Colors.text, padding: 8.0}}>{props.currentMessage.text}</Text>
+                <Text style={{ color: props.position === 'right' ? Colors.text : Colors.background, padding: 8.0 }}>{props.currentMessage.text}</Text>
             </View>
         )
     }
 
     renderBubble = props => {
-        return(
-            <View style={{backgroundColor: props.position === 'right' ? '#fff2f6' : '#efefef', borderRadius: 8.0, marginRight: props.position === 'left' ? 60.0 : 0, marginLeft: props.position === 'right' ? 60.0 : 0}}>
+        return (
+            <View style={{ backgroundColor: props.position === 'right' ? Colors.primary : '#efefef', borderRadius: 8.0, marginRight: props.position === 'left' ? 60.0 : 0, marginLeft: props.position === 'right' ? 60.0 : 0 }}>
                 {this.renderMessageText(props)}
             </View>
         )
@@ -161,9 +164,9 @@ class ChatView extends React.Component {
                         <TouchableOpacity onPress={this.props.navigation.pop}>
                             <Icon name={'chevron-left'} size={32} color={'#f55'} />
                         </TouchableOpacity>
-                        <Text style={{ fontSize: 24.0, color: Colors.background }}>{name}</Text>
+                        <Text style={{ fontSize: 30.0, fontFamily: Fonts.heading, color: Colors.primary }}>{name}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => this.props.navigation.push('ProfileView', {uid: this.state.userId})}>
+                    <TouchableOpacity onPress={() => this.props.navigation.push('ProfileView', { uid: this.state.userId })}>
                         <Icon name={'info'} color={Colors.primary} />
                     </TouchableOpacity>
                 </View>

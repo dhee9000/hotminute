@@ -302,37 +302,37 @@ class Minute extends React.Component {
                             </Animated.View>
                             :
                             <>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
-                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
-                                </View>
-                            </View>
-                            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
-                                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                    <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                        <Animated.View style={{ backgroundColor: '#fff2f6', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
+                                <View style={{ flex: 1 }}>
+                                    <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
+                                        <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
                                     </View>
-                                    <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} />
                                 </View>
-                                <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
-                            </View>
-                            <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
-                                {
-                                    !this.state.enteredPool && !this.state.joinedCall ?
-                                        <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
-                                            <Icon name={'sort'} size={32} color={Colors.textLightGray} />
+                                <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
+                                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                        <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                            <Animated.View style={{ backgroundColor: '#e63462aa', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
+                                        </View>
+                                        <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} />
+                                    </View>
+                                    <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
+                                </View>
+                                <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
+                                    {
+                                        !this.state.enteredPool && !this.state.joinedCall ?
+                                            <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
+                                                <Icon name={'sort'} size={32} color={Colors.textLightGray} />
+                                            </TouchableOpacity>
+                                            :
+                                            null
+                                    }
+                                    <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
+                                        <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
+                                            <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
+                                                <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
+                                            </LinearGradient>
                                         </TouchableOpacity>
-                                        :
-                                        null
-                                }
-                                <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
-                                    <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
-                                        <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
-                                            <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
-                                        </LinearGradient>
-                                    </TouchableOpacity>
+                                    </View>
                                 </View>
-                            </View>
                             </>
                     }
                 </View>
