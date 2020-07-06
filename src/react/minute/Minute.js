@@ -294,46 +294,47 @@ class Minute extends React.Component {
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
                 <Image source={{ uri: this.state.backgroundImage }} style={{ height, width }} />
                 <View style={{ position: 'absolute', top: 0, left: 0, height: height - 64, width, }}>
-                    <View style={{ flex: 1 }}>
-                        <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
-                            <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
-                        </View>
-                    </View>
-                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
-                        {
-                            this.state.joinedCall ?
-                                // IF JOINED CALL
-                                <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
-                                    <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} />
-                                </Animated.View>
-                                :
-                                // ELSE JUST SHOW THE HOTMINUTE LOGO AND PAIRING ANIMATION
+                    {
+                        this.state.joinedCall ?
+                            // IF JOINED CALL
+                            <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
+                                <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} />
+                            </Animated.View>
+                            :
+                            <>
+                            <View style={{ flex: 1 }}>
+                                <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
+                                </View>
+                            </View>
+                            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
                                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                     <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                         <Animated.View style={{ backgroundColor: '#fff2f6', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
                                     </View>
                                     <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} />
                                 </View>
-                        }
-                        <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
-                    </View>
-                    <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
-                        {
-                            !this.state.enteredPool && !this.state.joinedCall ?
-                                <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
-                                    <Icon name={'sort'} size={32} color={Colors.textLightGray} />
-                                </TouchableOpacity>
-                                :
-                                null
-                        }
-                        <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
-                            <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
-                                <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
-                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                                <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
+                            </View>
+                            <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
+                                {
+                                    !this.state.enteredPool && !this.state.joinedCall ?
+                                        <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
+                                            <Icon name={'sort'} size={32} color={Colors.textLightGray} />
+                                        </TouchableOpacity>
+                                        :
+                                        null
+                                }
+                                <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
+                                    <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
+                                        <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
+                                            <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
+                                        </LinearGradient>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            </>
+                    }
                 </View>
 
                 {/* FILTERS MODAL */}
@@ -356,7 +357,7 @@ class Minute extends React.Component {
                 {/* MARKETING PROMO MODAL */}
                 <Modal visible={this.state.showMarketingPopup} transparent animated animationType={'fade'}>
                     <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, }}>
-                        <View style={{ backgroundColor: Colors.background, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0}}>
+                        <View style={{ backgroundColor: Colors.background, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0 }}>
                             <TouchableOpacity onPress={() => this.setState({ showMarketingPopup: false })} style={{ position: 'absolute', top: 8.0, left: 8.0, margin: 4.0, backgroundColor: Colors.primary, borderRadius: 16, elevation: 1.0, zIndex: 2 }}>
                                 <Icon name={'close'} size={32} color={Colors.background} />
                             </TouchableOpacity>
@@ -364,8 +365,8 @@ class Minute extends React.Component {
                                 style={{ height: 128.0, width: 312.0 }} resizeMode={'cover'} resizeMethod={'scale'}
                             />
                             <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, marginVertical: 4.0, marginHorizontal: 16.0 }}>Pickup Line Contest</Text>
-                            <Text style={{margin: 16.0}}>Enter your best pickup lines and get a chance to win <Text style={{ color: Colors.primary }}>hotminute premium</Text>!</Text>
-                            <TouchableOpacity style={{alignSelf: 'stretch', margin: 16.0}}>
+                            <Text style={{ margin: 16.0 }}>Enter your best pickup lines and get a chance to win <Text style={{ color: Colors.primary }}>hotminute premium</Text>!</Text>
+                            <TouchableOpacity style={{ alignSelf: 'stretch', margin: 16.0 }}>
                                 <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 28.0, height: 56, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
                                     <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Enter Now</Text>
                                 </LinearGradient>

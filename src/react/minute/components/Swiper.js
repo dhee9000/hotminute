@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Animated, Vibration } from 'react-native';
+import { View, Animated, Vibration, Dimensions } from 'react-native';
 
 import { Text, RadioButton } from '../../common/components';
 import { Fonts, Colors } from '../../../config';
@@ -12,6 +12,8 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import LottieView from 'lottie-react-native';
 
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+
+const { height, width } = Dimensions.get('screen');
 
 class Swiper extends React.Component {
 
@@ -156,28 +158,28 @@ class Swiper extends React.Component {
 
         return (
             <View style={{ justifyContent: 'center', alignItems: 'center', padding: 16.0 }}>
+                <Animated.View style={{ transform: [{ rotateY: imageRotateY }, { rotateX: imageRotateX }] }}>
+                    <Animated.Image blurRadius={8.0} source={{ uri: this.props.pictureURL ? this.props.pictureURL : BLANK_IMAGE_URI }} style={{ height, width }} />
+                </Animated.View>
                 <PanGestureHandler onHandlerStateChange={this.handleGestureStateChanged} onGestureEvent={Animated.event([{ nativeEvent: { translationX: this.gestureX, translationY: this.gestureY } }], { useNativeDriver: false })} minPointers={1} maxPointers={1}>
-                    <Animated.View style={{ transform: [{ rotateY: imageRotateY }, { rotateX: imageRotateX }] }}>
-                        <Animated.Image blurRadius={8.0} source={{ uri: this.props.pictureURL ? this.props.pictureURL : BLANK_IMAGE_URI }} style={{ height: 384, width: 256, borderRadius: 16.0 }} />
-                        <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0, color: Colors.primary }}>{this.props.timeLeft}</Text>
+                    <Animated.View style={{ position: 'absolute', top: 0, left: 0, height, width, alignItems: 'stretch', justifyContent: 'center' }}>
+                        <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 64.0, color: Colors.primary }}>{this.props.timeLeft}</Text>
+                        <View style={{ marginTop: 16, flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <LottieView source={require('../../../../assets/animations/SwipeLeft.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress} />
+                                <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [-100, 0], outputRange: ['#f55', Colors.textLightGray], extrapolate: 'clamp' }) }}>NO</Animated.Text>
+                            </View>
+                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <LottieView source={require('../../../../assets/animations/SwipeClock.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedDown ? this.extendProgress : swipeDownProgress} />
+                                <Animated.Text style={{ fontSize: 12.0, color: this.gestureY.interpolate({ inputRange: [0, 100], outputRange: [Colors.textLightGray, '#55f'], extrapolate: 'clamp' }) }}>EXTEND</Animated.Text>
+                            </View>
+                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <LottieView source={require('../../../../assets/animations/SwipeRight.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedRight ? this.swipeProgress : swipeRightProgress} />
+                                <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [0, 100], outputRange: [Colors.textLightGray, '#5f5'], extrapolate: 'clamp' }) }}>YES</Animated.Text>
+                            </View>
                         </View>
                     </Animated.View>
                 </PanGestureHandler>
-                <View style={{ marginTop: 16, flexDirection: 'row', justifyContent: 'space-between', width: 196 }}>
-                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                        <LottieView source={require('../../../../assets/animations/SwipeLeft.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress} />
-                        <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [-100, 0], outputRange: ['#f55', Colors.textLightGray], extrapolate: 'clamp' }) }}>NO</Animated.Text>
-                    </View>
-                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                        <LottieView source={require('../../../../assets/animations/SwipeClock.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedDown ? this.extendProgress : swipeDownProgress} />
-                        <Animated.Text style={{ fontSize: 12.0, color: this.gestureY.interpolate({ inputRange: [0, 100], outputRange: [Colors.textLightGray, '#55f'], extrapolate: 'clamp' }) }}>EXTEND</Animated.Text>
-                    </View>
-                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                        <LottieView source={require('../../../../assets/animations/SwipeRight.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedRight ? this.swipeProgress : swipeRightProgress} />
-                        <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [0, 100], outputRange: [Colors.textLightGray, '#5f5'], extrapolate: 'clamp' }) }}>YES</Animated.Text>
-                    </View>
-                </View>
             </View>
         )
     }
