@@ -28,11 +28,14 @@ class ChatView extends React.Component {
     componentDidMount() {
         let chatId = this.props.navigation.getParam('chatId', undefined)
         let userId = this.props.navigation.getParam('userId', undefined);
+        
         if (!chatId || !userId) {
             this.props.navigation.pop();
             return;
         }
+
         this.setState({ chatId, userId });
+
         firestore().collection('chats').doc(chatId).collection('messages').limit(25).orderBy('sentAt', 'desc').onSnapshot(snapshot => {
             let messages = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             messages = messages.map(msg => {
@@ -135,14 +138,14 @@ class ChatView extends React.Component {
     renderMessageText = props => {
         return (
             <View>
-                <Text style={{color: props.position === 'right' ? Colors.primary : Colors.text, padding: 8.0}}>{props.currentMessage.text}</Text>
+                <Text style={{color: props.position === 'right' ? Colors.text : Colors.primary, padding: 8.0}}>{props.currentMessage.text}</Text>
             </View>
         )
     }
 
     renderBubble = props => {
         return(
-            <View style={{backgroundColor: props.position === 'right' ? '#fff2f6' : '#efefef', borderRadius: 8.0, marginRight: props.position === 'left' ? 60.0 : 0, marginLeft: props.position === 'right' ? 60.0 : 0}}>
+            <View style={{backgroundColor: props.position === 'right' ? Colors.primary : Colors.white, borderRadius: 8.0, marginRight: props.position === 'left' ? 60.0 : 0, marginLeft: props.position === 'right' ? 60.0 : 0}}>
                 {this.renderMessageText(props)}
             </View>
         )
@@ -155,13 +158,13 @@ class ChatView extends React.Component {
 
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
-                <View style={{ paddingTop: 64.0, backgroundColor: '#efefef', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, overflow: 'hidden' }}>
-                    {this.state.userId ? <Image source={{ uri: profile.images["1"].url }} blurRadius={8.0} style={{ width, height: height / 3, position: 'absolute', top: 0, left: 0, right: 0 }} /> : null}
+                <View style={{ paddingTop: 64.0, backgroundColor: Colors.background, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, overflow: 'hidden' }}>
+                    {this.state.userId ? <Image source={{ uri: profile.images[Object.keys(profile.images)[0]].url }} blurRadius={8.0} style={{ width: width-16, height: height / 3, borderRadius: 8, position: 'absolute', top: 0, left: 0, right: 0 }} /> : null}
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                         <TouchableOpacity onPress={this.props.navigation.pop}>
                             <Icon name={'chevron-left'} size={32} color={'#f55'} />
                         </TouchableOpacity>
-                        <Text style={{ fontSize: 24.0, color: Colors.background }}>{name}</Text>
+                        <Text style={{ fontSize: 24.0, color: Colors.text }}>{name}</Text>
                     </View>
                     <TouchableOpacity onPress={() => this.props.navigation.push('ProfileView', {uid: this.state.userId})}>
                         <Icon name={'info'} color={Colors.primary} />
