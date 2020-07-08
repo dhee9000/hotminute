@@ -291,8 +291,7 @@ class Minute extends React.Component {
 
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
-                <Image source={{ uri: this.state.backgroundImage }} style={{ height, width }} />
-                <View style={{ position: 'absolute', top: 0, left: 0, height: height - 64, width, }}>
+                <View style={{ flex: 1 }}>
                     {
                         this.state.joinedCall ?
                             // IF JOINED CALL
