@@ -35,7 +35,7 @@ export default class RadioButton extends Component {
                         </View>
                     );
                 })}
-                <Text> Selected: {options.filter(option => option.key === this.state.value)[0].text} </Text>
+                <Text style={{alignSelf: 'center', color: Colors.textLightGray,}}> Selected: {options.filter(option => option.key === this.state.value)[0].text} </Text>
             </View>
         );
     }
@@ -51,15 +51,15 @@ const styles = StyleSheet.create({
     radioText: {
         marginRight: 35,
         fontSize: 20,
-        color: '#000',
-        fontWeight: '700'
+        fontFamily: Fonts.heading,
+        color: Colors.text,
     },
     radioCircle: {
         height: 30,
         width: 30,
         borderRadius: 100,
         borderWidth: 2,
-        borderColor: '#3740ff',
+        borderColor: Colors.primary,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -67,12 +67,12 @@ const styles = StyleSheet.create({
         width: 15,
         height: 15,
         borderRadius: 50,
-        backgroundColor: '#3740ff',
+        backgroundColor: Colors.primary,
     },
     result: {
         marginTop: 20,
         color: 'white',
         fontWeight: '600',
-        backgroundColor: '#F3FBFE',
+        backgroundColor: Colors.primary,
     },
 });

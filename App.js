@@ -48,8 +48,8 @@ export default function App() {
   if (fontsLoaded) {
     return (
       <View style={{ flex: 1 }}>
-        <StatusBar barStyle={'dark-content'} backgroundColor={'transparent'} translucent />
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primary }}>
+        <StatusBar barStyle={'light-content'} backgroundColor={'transparent'} translucent />
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
           <ReduxProvider store={appState} style={{ flex: 1 }}>
             <ThemeProvider theme={theme} style={{ flex: 1 }}>
               <AppContainer style={{ flex: 1 }} />

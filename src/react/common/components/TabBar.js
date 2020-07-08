@@ -15,7 +15,7 @@ const TabBar = props => {
                         RNAnimated.interpolate(props.position, {
                             inputRange,
                             outputRange: inputRange.map(inputIndex =>
-                                inputIndex === i ? 255 : 230
+                                inputIndex === i ? 33 : 230
                             ),
                         })
                     ),
@@ -23,7 +23,7 @@ const TabBar = props => {
                         RNAnimated.interpolate(props.position, {
                             inputRange,
                             outputRange: inputRange.map(inputIndex =>
-                                inputIndex === i ? 255 : 52
+                                inputIndex === i ? 33 : 52
                             ),
                         })
                     ),
@@ -31,7 +31,7 @@ const TabBar = props => {
                         RNAnimated.interpolate(props.position, {
                             inputRange,
                             outputRange: inputRange.map(inputIndex =>
-                                inputIndex === i ? 255 : 98
+                                inputIndex === i ? 33 : 98
                             ),
                         })
                     )
@@ -42,7 +42,7 @@ const TabBar = props => {
                         RNAnimated.interpolate(props.position, {
                             inputRange,
                             outputRange: inputRange.map(inputIndex =>
-                                inputIndex === i ? 230 : 255
+                                inputIndex === i ? 230 : 33
                             ),
                         })
                     ),
@@ -50,7 +50,7 @@ const TabBar = props => {
                         RNAnimated.interpolate(props.position, {
                             inputRange,
                             outputRange: inputRange.map(inputIndex =>
-                                inputIndex === i ? 52 : 255
+                                inputIndex === i ? 52 : 33
                             ),
                         })
                     ),
@@ -58,7 +58,7 @@ const TabBar = props => {
                         RNAnimated.interpolate(props.position, {
                             inputRange,
                             outputRange: inputRange.map(inputIndex =>
-                                inputIndex === i ? 98 : 255
+                                inputIndex === i ? 98 : 33
                             ),
                         })
                     )

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Platform, ScrollView } from 'react-native';
 
-import { Text } from '../common/components';
+import { Text, RadioButton } from '../common/components';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
@@ -11,8 +11,6 @@ import { Fonts, Colors } from '../../config';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input, Button } from 'react-native-elements';
-
-import { RadioButton } from './components';
 
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';

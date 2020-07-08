@@ -265,20 +265,20 @@ class Profile extends React.Component {
                                 </Animated.View>
                             </TouchableOpacity>
                             <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editLname}>
-                            <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                                <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>{this.state.lname}</Text>
+                                <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>{this.state.lname}</Text>
                                 </Animated.View>
                             </TouchableOpacity>
                         </View>
                         <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editOccupation}>
-                        <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                            <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.occupation}</Text>
+                            <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
+                                <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.occupation}</Text>
                             </Animated.View>
                         </TouchableOpacity>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editBio}>
-                        <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                            <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.bio}</Text>
+                            <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
+                                <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.bio}</Text>
                             </Animated.View>
                         </TouchableOpacity>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading }}>Interests</Text>
@@ -305,7 +305,7 @@ class Profile extends React.Component {
                             {Object.keys(this.state.images).map(key => (
                                 <View key={key}>
                                     <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', { imageUri: this.state.images[key].uri })} >
-                                        <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: width/3-16, width: width/3-16, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                                        <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: width / 3 - 16, width: width / 3 - 16, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
                                     </TouchableOpacity>
                                     {
                                         this.state.editingProfile ?
@@ -332,7 +332,7 @@ class Profile extends React.Component {
                     </ScrollView>
                 </View>
                 <Modal visible={this.state.showSettings} transparent animated animationType={'slide'}>
-                    <View style={{ justifyContent: 'flex-start', marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                    <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
                         <TouchableOpacity onPress={() => this.setState({ showSettings: false })}>
                             <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
                         </TouchableOpacity>
@@ -374,7 +374,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    updateProfile: newProfile => dispatch({type: ActionTypes.UPDATE_PROFILE.REQUEST, payload: {...newProfile, updateId: new Date().getTime().toString()}})
+    updateProfile: newProfile => dispatch({ type: ActionTypes.UPDATE_PROFILE.REQUEST, payload: { ...newProfile, updateId: new Date().getTime().toString() } })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

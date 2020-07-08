@@ -33,6 +33,8 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 
 import { DistanceFilter, GenderFilter, AgeFilter, Swiper } from './components';
 
+import Heart from '../../../assets/svg/heart.svg';
+
 class Minute extends React.Component {
 
     state = {
@@ -101,9 +103,6 @@ class Minute extends React.Component {
         let filtersSnapshot = await firestore().collection('filters').doc(auth().currentUser.uid).get();
         let filtersData = filtersSnapshot.data();
         this.setState({ filters: { ...filtersData } });
-
-        // MARKETING POPUP
-        this.setState({ showMarketingPopup: true });
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -310,9 +309,10 @@ class Minute extends React.Component {
                             <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
                                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                     <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                        <Animated.View style={{ backgroundColor: '#fff2f6', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
+                                        <Animated.View style={{ backgroundColor: '#fff2f622', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
                                     </View>
-                                    <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} />
+                                    {/* <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} /> */}
+                                    <Heart style={{width: 196, height: 196}} />
                                 </View>
                                 <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
                             </View>

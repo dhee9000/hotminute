@@ -142,10 +142,12 @@ class ProfileView extends React.Component {
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ padding: 16.0, flex: 1 }}>
                     <View style={{ flexDirection: 'row', paddingTop: 16.0, alignItems: 'center', justifyContent: 'space-between' }}>
-                        <View style={{ flex: 1 }}>
-                            <TouchableOpacity onPress={() => this.props.navigation.pop()}>
-                                <Text style={{ color: '#f55', fontSize: 32.0 }}>X</Text>
-                            </TouchableOpacity>
+                        <View style={{ flex: 1, alignItems: 'flex-start' }}>
+                            <View style={{ backgroundColor: Colors.primary, borderRadius: 16.0 }}>
+                                <TouchableOpacity onPress={() => this.props.navigation.pop()}>
+                                    <Icon name={'close'} size={32} color={Colors.text} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>match</Text>
@@ -183,11 +185,13 @@ class ProfileView extends React.Component {
                 </View>
                 <Modal visible={this.state.showMenu} transparent animated animationType={'slide'}>
                     <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                        <TouchableOpacity onPress={this.morePressed}>
+                            <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
+                        </TouchableOpacity>
                         <Text style={{ alignSelf: 'center' }}>match with</Text>
                         <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0 }}>{this.state.fname} {this.state.lname}</Text>
                         <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
                         <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
-                        <Button title={'Close'} onPress={this.morePressed} containerStyle={{ margin: 2.0 }} />
                     </View>
                 </Modal>
             </View>
