@@ -89,7 +89,7 @@ class CreateProfileInterests extends React.Component {
                             onChangeText={editInterest => this.setState({ editInterest })}
                             value={this.state.editInterest}
                         />
-                        <Button onPress={this.onAddInterestPressed} title={'Add'} type={'outline'} />
+                        <Button disabled={!this.state.editInterest || this.state.editInterest.length < 2} onPress={this.onAddInterestPressed} title={'Add'} type={'outline'} />
                         <FlatList
                             contentContainerStyle={{margin: 16.0}}
                             data={this.state.interests}
