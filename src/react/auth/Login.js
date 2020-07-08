@@ -80,7 +80,7 @@ class Login extends React.Component {
             }
             else {
                 // ... if it doesn't navigate to create profile screen
-                this.props.navigation.navigate('CreateProfileName');
+                this.props.navigation.navigate('GetPermissionMic');
             }
         }
     }

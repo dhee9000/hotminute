@@ -16,11 +16,13 @@ import { SelectPreferencesGender } from '../onboarding';
 import { SelectPreferencesAge } from '../onboarding';
 import { SelectPreferencesHeight } from '../onboarding';
 
-import { GetPermissions } from '../onboarding';
+import { GetPermissionMic, GetPermissionCameraRoll, GetPermissionLocation } from '../onboarding';
 
 const OnboardingNavigator = createSwitchNavigator(
     {
-        GetPermissions,
+        GetPermissionMic,
+        GetPermissionCameraRoll,
+        GetPermissionLocation,
         CreateProfileName,
         CreateProfileDob,
         CreateProfileGender,
