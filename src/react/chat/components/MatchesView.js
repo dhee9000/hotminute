@@ -74,8 +74,8 @@ class MatchesView extends React.Component {
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', margin: 8.0 }}>
                         <Image blurRadius={4.0} source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 8, height: 96, width: '100%' }} />
-                        <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'flex-start', padding: 8.0 }}>
-                            <Text numberOfLines={2} style={{ fontSize: 24.0, textAlign: 'center', color: Colors.background, fontFamily: Fonts.heading }}>{profile.fname} {profile.lname}</Text>
+                        <View style={{ backgroundColor: '#333333aa', borderRadius: 8, position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'flex-start', padding: 8.0 }}>
+                            <Text numberOfLines={2} style={{ fontSize: 24.0, textAlign: 'center', color: Colors.text, fontFamily: Fonts.heading }}>{profile.fname} {profile.lname}</Text>
                         </View>
                     </View>
 
