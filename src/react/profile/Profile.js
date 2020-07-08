@@ -251,9 +251,6 @@ class Profile extends React.Component {
                                 <Icon name={'edit'} size={32} color={this.state.editingProfile ? Colors.primary : Colors.textLightGray} />
                             </Animated.View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.showSettingsMenu}>
-                            <Icon name={'info'} size={32} color={Colors.textLightGray} />
-                        </TouchableOpacity>
                     </View>
                     {this.state.editingProfile ? <Text style={{ alignSelf: 'center', color: Colors.textLightGray, fontSize: 12.0 }}>tap something below to change it</Text> : null}
                     <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center' }}>
