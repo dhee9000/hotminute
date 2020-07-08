@@ -21,7 +21,7 @@ class CreateProfileInterests extends React.Component {
 
     state = {
         editInterest: '',
-        interests: ['Basketball']
+        interests: [],
     }
 
     async componentDidMount() {
@@ -81,7 +81,7 @@ class CreateProfileInterests extends React.Component {
                             containerStyle={{ marginBottom: 32.0 }}
                             inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             inputContainerStyle={{ borderColor: Colors.accent }}
-                            label={'Add an Interest'}
+                            label={'Add an Interest (at least 3)'}
                             labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             keyboardType={'default'}
                             placeholder={'Basketball'}
