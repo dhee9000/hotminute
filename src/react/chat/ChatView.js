@@ -199,6 +199,7 @@ class ChatView extends React.Component {
                     minInputToolbarHeight={0}
                     renderFooter={() => <View style={{ height: 90 }} />}
                     showUserAvatar
+                    onPressAvatar={() => this.props.push('ProfileView', { uid: this.state.userId})}
                     user={{
                         _id: auth().currentUser.uid,
                         name: 'Dheeraj Yalamanchili'
