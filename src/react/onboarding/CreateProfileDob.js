@@ -65,7 +65,7 @@ class CreateProfileName extends React.Component {
                     </View>
                     {this.state.showDatePicker &&
                         <DateTimePicker
-                            value={this.state.date ? this.state.date : this.state.initialDate}
+                            value={this.state.dob ? this.state.dob : this.state.initialDate}
                             mode={'date'}
                             display="default"
                             onChange={this.onChangeDate}
