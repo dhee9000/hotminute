@@ -82,10 +82,7 @@ class Start extends React.Component {
                         <View style={{ position: 'absolute', width, paddingHorizontal: 16.0, bottom: 16, alignContent: 'stretch', marginBottom: 16.0 }}>
                             {this.state.signedIn ? <Text style={{ color: Colors.textLightGray, fontSize: 10.0, alignSelf: 'center', marginBottom: 4.0 }}>Signed in as {this.state.profileFetched ? `${this.state.fname} ${this.state.lname}` : auth().currentUser.uid} <Text style={{ fontSize: 10.0, color: Colors.textLightGray, textDecorationLine: 'underline' }} onPress={this.signOutPressed}>Sign Out</Text></Text> : null}
                             <TouchableOpacity onPress={this.onGetStartedPressed} onLongPress={() => this.props.navigation.navigate('GodMode')}>
-                                <LinearGradient 
-                                    style={{ flex: 1, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%' }} 
-                                    colors={[Colors.primaryDark, Colors.primary]}                                    
-                                >
+                            <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={[Colors.primaryDark, Colors.primary]}>
                                     <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Get Started</Text>
                                 </LinearGradient>
                             </TouchableOpacity>
