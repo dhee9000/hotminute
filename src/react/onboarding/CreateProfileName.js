@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Platform, ScrollView } from 'react-native';
 
-import { Text } from '../common/components';
+import { Text, DismissKeyboardView } from '../common/components';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
@@ -33,16 +33,17 @@ class CreateProfileName extends React.Component {
     }
 
     onDonePressed = () => {
-        this.props.navigation.navigate('CreateProfileDob', {fname: this.state.fname, lname: this.state.lname});
+        this.props.navigation.navigate('CreateProfileDob', { fname: this.state.fname, lname: this.state.lname });
     }
 
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
-                <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
-                </View>
-                <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
+            <DismissKeyboardView>
+                <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
+                    <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
+                        <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
+                    </View>
+                    <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
                             containerStyle={{ marginBottom: 32.0 }}
                             inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
@@ -65,11 +66,12 @@ class CreateProfileName extends React.Component {
                             onChangeText={lname => this.setState({ lname })}
                             value={this.state.lname}
                         />
+                    </View>
+                    <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
+                        <Button disabled={!this.state.fname || !this.state.lname || this.state.fname.length < 2 || this.state.lname.length < 2} title={"That's Me"} onPress={this.onDonePressed} />
+                    </View>
                 </View>
-                <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button disabled={!this.state.fname || !this.state.lname || this.state.fname.length < 2 || this.state.lname.length < 2} title={"That's Me"} onPress={this.onDonePressed} />
-                </View>
-            </View>
+            </DismissKeyboardView>
         )
     }
 }
