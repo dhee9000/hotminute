@@ -190,6 +190,7 @@ class ChatView extends React.Component {
                                     _id: auth().currentUser.uid,
                                     name: 'Dheeraj Yalamanchili'
                                 }}
+                                isKeyboardInternallyHandled
                             />
                         </View>
                     </KeyboardAvoidingView>
