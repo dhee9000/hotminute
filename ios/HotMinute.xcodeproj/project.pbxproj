@@ -70,6 +70,7 @@
 		E0767DC48A4D6DC675B2739C /* libPods-HotMinute-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HotMinute-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		F61F2F2224B90ADE00C453B6 /* HotMinuteRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = HotMinuteRelease.entitlements; path = HotMinute/HotMinuteRelease.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +129,7 @@
 		13B07FAE1A68108700A75B9A /* HotMinute */ = {
 			isa = PBXGroup;
 			children = (
+				F61F2F2224B90ADE00C453B6 /* HotMinuteRelease.entitlements */,
 				A27624B3245D6E8E00A0B686 /* GoogleService-Info.plist */,
 				A27624B2245D6E6F00A0B686 /* HotMinute.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -756,7 +758,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = HotMinute/HotMinute.entitlements;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = 9W92ZT84SB;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -787,10 +789,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = HotMinute/HotMinute.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HotMinute/HotMinuteRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = HotMinute/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;

@@ -67,7 +67,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Hot Minute to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Hot Minute to access your device&apos;s accelerometer</string>
+	<string>Allow Hot Minute to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Hot Minute periences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -105,9 +105,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
 	<key>UIUserInterfaceStyle</key>
 	<string>Dark</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>
