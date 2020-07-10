@@ -26,9 +26,19 @@ const theme = {
   }
 }
 
+import messaging from '@react-native-firebase/messaging';
+
 export default function App() {
 
   const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     const loadFonts = async () => {

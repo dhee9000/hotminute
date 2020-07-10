@@ -41,6 +41,7 @@ class Start extends React.Component {
         }
         let token = await messaging().getToken();
         console.log(token);
+        
         setTimeout(() =>
             Animated.timing(this.enterAnimation, {
                 toValue: 1,
