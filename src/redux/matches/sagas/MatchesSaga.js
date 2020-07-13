@@ -27,6 +27,7 @@ function* watchListenMatchesRequested() {
                         yield put({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: otherUid });
                     }
 
+                    yield put({ type: ActionTypes.LISTEN_MATCHES.SUCCESS });
                     yield put({ type: ActionTypes.FETCH_MATCHES.SUCCESS, payload: matchesDocsData });
                 }
             }
