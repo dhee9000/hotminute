@@ -41,7 +41,8 @@ class Start extends React.Component {
             let profileSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
             let profileData = profileSnapshot.data();
             if (profileSnapshot.exists) {
-                this.setState({ profileFetched: true, ...profileData })
+                this.setState({ profileFetched: true, ...profileData });
+                this.props.navigation.navigate('Main');
             }
         }
     }
