@@ -76,13 +76,13 @@ const MainNavigator = createMaterialTopTabNavigator(
                     backgroundColor: Colors.background
                 }}>
                     <TouchableOpacity onPress={() => onTabPress({route: routes[0]})}>
-                        <Icon name={'chat'} color={index == 0 ? Colors.primary : Colors.text} size={28} />
+                        <Icon name={'person'} color={index == 0 ? Colors.primary : Colors.text} size={28} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => onTabPress({route: routes[1]})}>
                         <Icon name={'favorite'} color={index == 1 ? Colors.primary : Colors.text} size={28} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => onTabPress({route: routes[2]})}>
-                        <Icon name={'person'} color={index == 2 ? Colors.primary : Colors.text} size={28} />
+                        <Icon name={'chat'} color={index == 2 ? Colors.primary : Colors.text} size={28} />
                     </TouchableOpacity>
                 </View>
             )
