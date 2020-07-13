@@ -53,6 +53,7 @@ class Minute extends React.Component {
         timeLeft: 60,
         waitingForPartner: false,
 
+        showInstructionsPopup: false,
         showMarketingPopup: false,
 
         // AGORA STATE VARIABLES
@@ -81,7 +82,7 @@ class Minute extends React.Component {
         RtcEngine.on('joinChannelSuccess', data => {    // When user joins channel
             RtcEngine.startPreview();
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-            this.setState({ joinedCall: true });
+            this.setState({ joinedCall: true, showInstructionsPopup: true });
         });
         RtcEngine.on('error', data => {
             switch (data.errorCode) {
@@ -350,6 +351,21 @@ class Minute extends React.Component {
                             renderTabBar={props => <TabBar {...props} onChangeTab={i => this.setState({ filterTabIdx: i })} />}
                             onIndexChange={idx => this.setState({ filterTabIdx: idx })}
                         />
+                    </View>
+                </Modal>
+
+                {/* INSTRUCTIONS MODAL */}
+                <Modal visible={this.state.showInstructionsPopup} transparent animated animationType={'slide'}>
+                    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, }}>
+                        <View style={{ backgroundColor: Colors.text, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0, padding: 16.0 }}>
+                        <TouchableOpacity onPress={() => this.setState({ showInstructionsPopup: false})}>
+                                <Icon name={'close'} size={32} color={Colors.primary} />
+                            </TouchableOpacity>
+                            <Text style={{color: '#f55'}}>Swipe Left if you are not interested</Text>
+                            <Text style={{color: '#5f5'}}>Swipe Right if you are interested</Text>
+                            <Text style={{color: '#55f'}}>Swipe Down to extend your time</Text>
+                            <Text style={{color: Colors.primary}}>Have a flipping amazing time :)</Text>
+                        </View>
                     </View>
                 </Modal>
 
