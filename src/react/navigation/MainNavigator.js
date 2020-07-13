@@ -66,6 +66,11 @@ const MainNavigator = createMaterialTopTabNavigator(
             showIcon: true,
             showLabel: false,
         },
+        navigationOptions: {
+            cardStyle: {
+                backgroundColor: Colors.background
+            }
+        },
         tabBarComponent: props => {
             let { navigation, onTabPress } = props;
             let { routes, index } = navigation.state;
@@ -99,7 +104,12 @@ const MainStack = createStackNavigator(
         ViewImage,
     },
     {
-        headerMode: 'none'
+        headerMode: 'none',
+        navigationOptions: {
+            cardStyle: {
+                backgroundColor: Colors.background
+            }
+        }
     }
 )
 
