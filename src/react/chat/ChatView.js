@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TextInput, Image, Dimensions } from 'react-native';
+import { View, TextInput, Image, Dimensions, ActivityIndicator } from 'react-native';
 
 import { Text } from '../common/components';
 import { Fonts, Colors } from '../../config';
@@ -161,50 +161,38 @@ class ChatView extends React.Component {
 
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
-                {/* <View style={{ marginTop: 64.0, backgroundColor: Colors.background, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
-                    {this.state.userId ? <Image source={{ uri: profile.images[Object.keys(profile.images)[0]].url }} blurRadius={8.0} style={{ width: width - 64, height: 64, borderRadius: 16, alignSelf: 'center' }} /> : null}
-                    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: width-64, padding: 16.0 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+
+                {this.state.chatId ?
+                    <>
+                        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 144.0, elevation: 2.0, zIndex: 2, alignItems: 'center', justifyContent: 'center' }}>
+                            <View style={{ width: width - 64, borderRadius: 64.0, height: 64.0, backgroundColor: Colors.background, shadowColor: "#000", shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.23, shadowRadius: 2.62, elevation: 4, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, }}>
                                 <TouchableOpacity onPress={this.props.navigation.pop}>
                                     <Icon name={'chevron-left'} size={32} color={'#f55'} />
                                 </TouchableOpacity>
                                 <Text style={{ fontSize: 24.0, color: Colors.text }}>{name}</Text>
+                                <TouchableOpacity onPress={() => this.props.navigation.push('ProfileView', { uid: this.state.userId })}>
+                                    <Icon name={'info'} color={Colors.primary} />
+                                </TouchableOpacity>
                             </View>
-                            <TouchableOpacity onPress={() => this.props.navigation.push('ProfileView', { uid: this.state.userId })}>
-                                <Icon name={'info'} color={Colors.primary} />
-                            </TouchableOpacity>
                         </View>
-                    </View>
-                </View> */}
-
-                <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 144.0, elevation: 2.0, zIndex: 2, alignItems: 'center', justifyContent: 'center' }}>
-                    <View style={{ width: width - 64, borderRadius: 64.0, height: 64.0, backgroundColor: Colors.background, shadowColor: "#000", shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.23, shadowRadius: 2.62, elevation: 4, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, }}>
-                        <TouchableOpacity onPress={this.props.navigation.pop}>
-                            <Icon name={'chevron-left'} size={32} color={'#f55'} />
-                        </TouchableOpacity>
-                        <Text style={{ fontSize: 24.0, color: Colors.text }}>{name}</Text>
-                        <TouchableOpacity onPress={() => this.props.navigation.push('ProfileView', { uid: this.state.userId })}>
-                            <Icon name={'info'} color={Colors.primary} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <GiftedChat
-                    messages={this.state.messages}
-                    onSend={this.onSend}
-                    renderInputToolbar={this.renderInputToolbar}
-                    renderMessageText={this.renderMessageText}
-                    renderBubble={this.renderBubble}
-                    messagesContainerStyle={{}}
-                    minInputToolbarHeight={0}
-                    renderFooter={() => <View style={{ height: 90 }} />}
-                    showUserAvatar
-                    onPressAvatar={() => this.props.push('ProfileView', { uid: this.state.userId})}
-                    user={{
-                        _id: auth().currentUser.uid,
-                        name: 'Dheeraj Yalamanchili'
-                    }}
-                />
+                        <GiftedChat
+                            messages={this.props.chatsById[this.state.chatId].messages.allIds}
+                            onSend={this.onSend}
+                            renderInputToolbar={this.renderInputToolbar}
+                            renderMessageText={this.renderMessageText}
+                            renderBubble={this.renderBubble}
+                            messagesContainerStyle={{}}
+                            minInputToolbarHeight={0}
+                            renderFooter={() => <View style={{ height: 90 }} />}
+                            showUserAvatar
+                            onPressAvatar={() => this.props.push('ProfileView', { uid: this.state.userId })}
+                            user={{
+                                _id: auth().currentUser.uid,
+                                name: 'Dheeraj Yalamanchili'
+                            }}
+                        />
+                    </>
+                    : <ActivityIndicator />}
             </View>
         )
     }
@@ -213,6 +201,9 @@ class ChatView extends React.Component {
 const mapStateToProps = state => ({
     profileIds: state.profiles.allIds,
     profilesById: state.profiles.byId,
+
+    chatIds: state.chats.allIds,
+    chatsById: state.chats.byId,
 });
 
 const mapDispatchToProps = dispatch => ({
