@@ -13,6 +13,7 @@ import Heart from '../../../assets/svg/heart.svg';
 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
 import storage from '@react-native-firebase/storage';
 import config from '../../config/Agora';
 
@@ -74,6 +75,13 @@ class Splash extends React.Component {
                         this.goToLocation(stateCode);
                     }
                     else {
+
+                        this.setState({ currentActionString: 'Registering Notifications...' });
+                        let fcmToken = await messaging().getToken();
+                        await firestore().collection('notificationTokens').doc(auth().currentUser.uid).set({
+                            tokens: firestore.FieldValue.arrayUnion(fcmToken)
+                        }, {merge: true});
+
                         this.setState({ currentActionString: 'Checking Dating Period...' });
                         let configDocSnapshot = await firestore().collection('meta').doc('config').get();
                         let { datingPeriods, datingPeriodLength } = configDocSnapshot.data();
