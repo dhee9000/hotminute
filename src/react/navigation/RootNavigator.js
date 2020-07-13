@@ -1,21 +1,22 @@
 import { createSwitchNavigator } from 'react-navigation';
 
+import { Splash, DatingPeriodInfo, LocationInfo } from '../splash';
 import { Login, Signup, Start } from '../auth';
 import MainNavigator from './MainNavigator';
 import OnboardingNavigator from './OnboardingNavigator';
 
-import { GodMode } from '../_godmode';
-
 const RootNavigator  = createSwitchNavigator(
     {
+        Splash,
+        DatingPeriodInfo,
+        LocationInfo,
         Start,
         Login,
-        GodMode,
         Onboarding: OnboardingNavigator,
         Main: MainNavigator,
     },
     {
-
+        
     }
 );
 
