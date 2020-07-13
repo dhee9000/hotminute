@@ -71,7 +71,7 @@ class ChatsView extends React.Component {
                 <FlatList
                     ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
                     data={this.props.chatsIds}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item}
                     renderItem={this.renderChat}
                 />
             </View>

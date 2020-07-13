@@ -103,7 +103,7 @@ class MatchesView extends React.Component {
                 <FlatList
                     data={this.props.matchesIds}
                     renderItem={this.renderMatch}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item}
                     ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
                 />
             </View>
