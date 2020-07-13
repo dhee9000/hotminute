@@ -1,7 +1,7 @@
 const action = actionName => (
     {
-        REQUEST: actionName + '_REQUEST', 
-        SUCCESS: actionName + '_SUCCESS', 
+        REQUEST: actionName + '_REQUEST',
+        SUCCESS: actionName + '_SUCCESS',
         FAILURE: actionName + '_FAILURE'
     }
 );
@@ -42,6 +42,11 @@ export const FETCH_MATCH = action('FETCH_MATCH');
 
 export const LISTEN_CHATS = action('LISTEN_CHATS');
 export const FETCH_CHATS = action('FETCH_CHATS');
+
+export const FETCH_MESSAGE = action('FETCH_MESSAGE');
+export const FETCH_MESSAGES = action('FETCH_MESSAGES');
+
+export const LISTEN_MESSAGES = action('LISTEN_MESSAGES');
 
 /**
  * Action Name: Fetch Chat

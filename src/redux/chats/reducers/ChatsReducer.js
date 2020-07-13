@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import * as ActionTypes from '../../ActionTypes';
+import messages from './MessagesReducer';
 
 const allIds = (state = [], action = {}) => {
     switch (action.type) {
@@ -47,6 +48,7 @@ const byId = (state = {}, action = {}) => {
                         loaded: false,
                         loading: true,
                         error: false,
+                        messages: messages(state[id] ? state[id].messages : undefined, action),
                     }
                 }
             }
@@ -55,15 +57,16 @@ const byId = (state = {}, action = {}) => {
         
         case ActionTypes.FETCH_CHAT.SUCCESS: {
 
-            let data = action.payload;
+            let doc = action.payload;
 
             return {
                 ...state,
-                [data.id]: {
+                [doc.id]: {
                     loaded: true,
                     loading: false,
                     error: false,
-                    ...data,
+                    ...doc,
+                    messages: messages(state[doc.id] ? state[doc.id].messages : undefined, action),
                 }
             }
         }
@@ -79,11 +82,25 @@ const byId = (state = {}, action = {}) => {
                     loading: false,
                     error: false,
                     ...doc,
+                    messages: messages(state[doc.id] ? state[doc.id].messages : undefined, action),
                 }
             });
             
             return newState;
 
+        }
+
+        case ActionTypes.FETCH_MESSAGE.SUCCESS: {
+
+            let { id, chatId } = action.payload;
+
+            return {
+                ...state,
+                [chatId]: {
+                    ...state[chatId],
+                    messages: messages(state[chatId].messages, action),
+                }
+            }
         }
 
         default: {
