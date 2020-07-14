@@ -35,6 +35,8 @@ import { DistanceFilter, GenderFilter, AgeFilter, Swiper } from './components';
 
 import Heart from '../../../assets/svg/heart.svg';
 
+import { DatingPeriodInfo } from '../splash';
+
 class Minute extends React.Component {
 
     state = {
@@ -55,6 +57,8 @@ class Minute extends React.Component {
 
         showInstructionsPopup: false,
         showMarketingPopup: false,
+
+        inDatingPeriod: false,
 
         // AGORA STATE VARIABLES
         channelName: "TestRoom",
@@ -104,6 +108,23 @@ class Minute extends React.Component {
         let filtersSnapshot = await firestore().collection('filters').doc(auth().currentUser.uid).get();
         let filtersData = filtersSnapshot.data();
         this.setState({ filters: { ...filtersData } });
+
+        let configDocSnapshot = await firestore().collection('meta').doc('config').get();
+        let { datingPeriods, datingPeriodLength } = configDocSnapshot.data();
+        datingPeriods = datingPeriods.map(period => period.toDate());
+
+        let inDatingPeriod = false;
+        let currentHour = new Date().getUTCHours();
+
+        datingPeriods.map(datingPeriod => {
+            if (datingPeriod.getUTCHours() <= currentHour && datingPeriod.getUTCHours() + datingPeriodLength / 60 >= currentHour) {
+                inDatingPeriod = inDatingPeriod || true;
+            }
+            else {
+                inDatingPeriod = inDatingPeriod || false;
+            }
+        });
+        this.setState({ inDatingPeriod });
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -294,6 +315,12 @@ class Minute extends React.Component {
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
                 <View style={{ flex: 1 }}>
                     {
+                        !this.state.inDatingPeriod ? 
+
+                        <DatingPeriodInfo />
+
+                        :
+
                         this.state.joinedCall ?
                             // IF JOINED CALL
                             <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
@@ -301,38 +328,38 @@ class Minute extends React.Component {
                             </Animated.View>
                             :
                             <>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
-                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
-                                </View>
-                            </View>
-                            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
-                                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                    <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                        <Animated.View style={{ backgroundColor: '#fff2f622', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
+                                <View style={{ flex: 1 }}>
+                                    <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
+                                        <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
                                     </View>
-                                    {/* <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} /> */}
-                                    <Heart style={{width: 196, height: 196}} />
                                 </View>
-                                <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
-                            </View>
-                            <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
-                                {
-                                    !this.state.enteredPool && !this.state.joinedCall ?
-                                        <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
-                                            <Icon name={'sort'} size={32} color={Colors.textLightGray} />
+                                <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
+                                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                        <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                            <Animated.View style={{ backgroundColor: '#fff2f622', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
+                                        </View>
+                                        {/* <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} /> */}
+                                        <Heart style={{ width: 196, height: 196 }} />
+                                    </View>
+                                    <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
+                                </View>
+                                <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
+                                    {
+                                        !this.state.enteredPool && !this.state.joinedCall ?
+                                            <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
+                                                <Icon name={'sort'} size={32} color={Colors.textLightGray} />
+                                            </TouchableOpacity>
+                                            :
+                                            null
+                                    }
+                                    <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
+                                        <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
+                                            <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
+                                                <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
+                                            </LinearGradient>
                                         </TouchableOpacity>
-                                        :
-                                        null
-                                }
-                                <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
-                                    <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
-                                        <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
-                                            <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
-                                        </LinearGradient>
-                                    </TouchableOpacity>
+                                    </View>
                                 </View>
-                            </View>
                             </>
                     }
                 </View>
@@ -358,13 +385,13 @@ class Minute extends React.Component {
                 <Modal visible={this.state.showInstructionsPopup} transparent animated animationType={'slide'}>
                     <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, }}>
                         <View style={{ backgroundColor: Colors.text, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0, padding: 16.0 }}>
-                        <TouchableOpacity onPress={() => this.setState({ showInstructionsPopup: false})}>
+                            <TouchableOpacity onPress={() => this.setState({ showInstructionsPopup: false })}>
                                 <Icon name={'close'} size={32} color={Colors.primary} />
                             </TouchableOpacity>
-                            <Text style={{color: '#f55'}}>Swipe Left if you are not interested</Text>
-                            <Text style={{color: '#5f5'}}>Swipe Right if you are interested</Text>
-                            <Text style={{color: '#55f'}}>Swipe Down to extend your time</Text>
-                            <Text style={{color: Colors.primary}}>Have a flipping amazing time :)</Text>
+                            <Text style={{ color: '#f55' }}>Swipe Left if you are not interested</Text>
+                            <Text style={{ color: '#5f5' }}>Swipe Right if you are interested</Text>
+                            <Text style={{ color: '#55f' }}>Swipe Down to extend your time</Text>
+                            <Text style={{ color: Colors.primary }}>Have a flipping amazing time :)</Text>
                         </View>
                     </View>
                 </Modal>

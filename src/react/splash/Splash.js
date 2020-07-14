@@ -81,29 +81,8 @@ class Splash extends React.Component {
                         await firestore().collection('notificationTokens').doc(auth().currentUser.uid).set({
                             tokens: firestore.FieldValue.arrayUnion(fcmToken)
                         }, {merge: true});
-
-                        this.setState({ currentActionString: 'Checking Dating Period...' });
-                        let configDocSnapshot = await firestore().collection('meta').doc('config').get();
-                        let { datingPeriods, datingPeriodLength } = configDocSnapshot.data();
-                        datingPeriods = datingPeriods.map(period => period.toDate());
-
-                        let inDatingPeriod = false;
-                        let currentHour = new Date().getUTCHours();
-
-                        datingPeriods.map(datingPeriod => {
-                            if (datingPeriod.getUTCHours() <= currentHour && datingPeriod.getUTCHours() + datingPeriodLength / 60 >= currentHour) {
-                                inDatingPeriod = inDatingPeriod || true;
-                            }
-                            else {
-                                inDatingPeriod = inDatingPeriod || false;
-                            }
-                        });
-                        if (!inDatingPeriod) {
-                            this.goToDatingPeriods();
-                        }
-                        else {
-                            this.props.navigation.navigate('Main');
-                        }
+                        
+                        this.goToMain();
                     }
                 }
             }
@@ -113,6 +92,12 @@ class Splash extends React.Component {
     goToStart = () => {
         setTimeout(() => {
             this.props.navigation.navigate('Start');
+        }, 1000);
+    }
+
+    goToMain = () => {
+        setTimeout(() => {
+            this.props.navigation.navigate('Main');
         }, 1000);
     }
 
