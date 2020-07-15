@@ -18,6 +18,7 @@ const BACKGROUND_IMAGE_URI = 'https://m.economictimes.com/thumb/msid-64168358,wi
 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
 import { LinearGradient } from 'expo-linear-gradient';
 
 class Start extends React.Component {
@@ -30,6 +31,16 @@ class Start extends React.Component {
     enterAnimation = new Animated.Value(0);
 
     async componentDidMount() {
+        const authStatus = await messaging().requestPermission();
+        const enabled =
+            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        if (enabled) {
+            console.log('Authorization status:', authStatus);
+        }
+        let token = await messaging().getToken();
+        console.log(token);
         setTimeout(() =>
             Animated.timing(this.enterAnimation, {
                 toValue: 1,
@@ -83,9 +94,9 @@ class Start extends React.Component {
                         <View style={{ position: 'absolute', width, paddingHorizontal: 16.0, bottom: 16, alignContent: 'stretch', marginBottom: 16.0 }}>
                             {this.state.signedIn ? <Text style={{ color: Colors.textLightGray, fontSize: 10.0, alignSelf: 'center', marginBottom: 4.0 }}>Signed in as {this.state.profileFetched ? `${this.state.fname} ${this.state.lname}` : auth().currentUser.uid} <Text style={{ fontSize: 10.0, color: Colors.textLightGray, textDecorationLine: 'underline' }} onPress={this.signOutPressed}>Sign Out</Text></Text> : null}
                             <TouchableOpacity onPress={this.onGetStartedPressed} onLongPress={() => this.props.navigation.navigate('GodMode')}>
-                                <LinearGradient 
-                                    style={{ flex: 1, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%' }} 
-                                    colors={[Colors.primaryDark, Colors.primary]}                                    
+                                <LinearGradient
+                                    style={{ flex: 1, paddingVertical: 16.0, borderRadius: 64.0, justifyContent: 'center', alignItems: 'center', width: '100%' }}
+                                    colors={[Colors.primaryDark, Colors.primary]}
                                 >
                                     <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Get Started</Text>
                                 </LinearGradient>
