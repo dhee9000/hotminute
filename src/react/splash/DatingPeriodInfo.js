@@ -58,7 +58,7 @@ class DatingPeriodInfo extends React.Component {
             nextDatingPeriod = datingPeriods[0];
         }
 
-        let timeToNext = Math.max((nextDatingPeriod.getUTCHours() - currentHour)*60*60, (currentHour - nextDatingPeriod.getUTCHours())*60*60);
+        let timeToNext = Math.max((nextDatingPeriod.getUTCHours() - currentHour)*60*60, 24*60*60 - (currentHour - nextDatingPeriod.getUTCHours())*60*60);
         console.log(timeToNext);
         this.setState({timeToNext, inDatingPeriod, datingPeriods, datingPeriodLength});
     }
