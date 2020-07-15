@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Platform, ScrollView, TouchableOpacity, FlatList } from 'react-native';
 
-import { Text } from '../common/components';
+import { Text, DismissKeyboardView } from '../common/components';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
@@ -78,35 +78,37 @@ class CreateProfileInterests extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
-                <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Interests</Text>
+            <DismissKeyboardView>
+                <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
+                    <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
+                        <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Interests</Text>
+                    </View>
+                    <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
+                        <Input
+                            containerStyle={{ marginBottom: 32.0 }}
+                            inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                            inputContainerStyle={{ borderColor: Colors.accent }}
+                            label={'Add an Interest (at least 3)'}
+                            labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                            keyboardType={'default'}
+                            placeholder={'Basketball'}
+                            placeholderTextColor={Colors.textLightGray}
+                            onChangeText={editInterest => this.setState({ editInterest })}
+                            value={this.state.editInterest}
+                        />
+                        <Button disabled={!this.state.editInterest || this.state.editInterest.length < 2} onPress={this.onAddInterestPressed} title={'Add'} type={'outline'} />
+                        <FlatList
+                            contentContainerStyle={{ margin: 16.0 }}
+                            data={this.state.interests}
+                            renderItem={this.renderInterest}
+                            keyExtractor={item => item}
+                        />
+                    </View>
+                    <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
+                        <Button disabled={this.state.interests.length < 3} title={"Are we done yet?"} onPress={this.onDonePressed} />
+                    </View>
                 </View>
-                <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
-                    <Input
-                        containerStyle={{ marginBottom: 32.0 }}
-                        inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                        inputContainerStyle={{ borderColor: Colors.accent }}
-                        label={'Add an Interest (at least 3)'}
-                        labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                        keyboardType={'default'}
-                        placeholder={'Basketball'}
-                        placeholderTextColor={Colors.textLightGray}
-                        onChangeText={editInterest => this.setState({ editInterest })}
-                        value={this.state.editInterest}
-                    />
-                    <Button disabled={!this.state.editInterest || this.state.editInterest.length < 2} onPress={this.onAddInterestPressed} title={'Add'} type={'outline'} />
-                    <FlatList
-                        contentContainerStyle={{ margin: 16.0 }}
-                        data={this.state.interests}
-                        renderItem={this.renderInterest}
-                        keyExtractor={item => item}
-                    />
-                </View>
-                <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button disabled={this.state.interests.length < 3} title={"Are we done yet?"} onPress={this.onDonePressed} />
-                </View>
-            </View>
+            </DismissKeyboardView>
         )
     }
 }

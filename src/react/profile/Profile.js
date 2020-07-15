@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, ScrollView, TouchableOpacity, Modal, Dimensions, Animated, LayoutAnimation, Platform, UIManager, Alert } from 'react-native';
+import { View, Image, ScrollView, TouchableOpacity, Modal, Dimensions, Animated, LayoutAnimation, Platform, UIManager, Alert, KeyboardAvoidingView } from 'react-native';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -7,7 +7,7 @@ if (Platform.OS === 'android') {
     }
 }
 
-import { Text } from '../common/components';
+import { Text, DismissKeyboardView } from '../common/components';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
@@ -237,131 +237,137 @@ class Profile extends React.Component {
 
     render() {
         return (
-            <View style={{ backgroundColor: Colors.background, flex: 1 }}>
-                <View style={{ padding: 16.0, flex: 1 }}>
-                    <View style={{ paddingTop: 16.0, alignItems: 'center', justifyContent: 'center' }}>
-                        <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>profile</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-around', alingItems: 'center', marginVertical: 8.0 }}>
-                        <TouchableOpacity onPress={this.showSettingsMenu}>
-                            <Icon name={'settings'} size={32} color={Colors.textLightGray} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.editProfile}>
-                            <Animated.View style={{ transform: [{ rotate: this.editingWiggle.interpolate({ inputRange: [-1, 1], outputRange: ['-35deg', '35deg'] }) }] }}>
-                                <Icon name={'edit'} size={32} color={this.state.editingProfile ? Colors.primary : Colors.textLightGray} />
-                            </Animated.View>
-                        </TouchableOpacity>
-                    </View>
-                    {this.state.editingProfile ? <Text style={{ alignSelf: 'center', color: Colors.textLightGray, fontSize: 12.0 }}>tap something below to change it</Text> : null}
-                    <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center' }}>
-                        <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
-                        <View style={{ flexDirection: 'row', marginTop: 16.0 }}>
-                            <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editFname} >
-                                <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>{this.state.fname} </Text>
-                                </Animated.View>
-                            </TouchableOpacity>
-                            <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editLname}>
-                                <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>{this.state.lname}</Text>
-                                </Animated.View>
-                            </TouchableOpacity>
-                        </View>
-                        <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
-                        <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editOccupation}>
-                            <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                                <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.occupation}</Text>
-                            </Animated.View>
-                        </TouchableOpacity>
-                        <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editBio}>
-                            <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                                <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.bio}</Text>
-                            </Animated.View>
-                        </TouchableOpacity>
-                        <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading }}>Interests</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical: 8.0 }}>
-                            {this.state.interests.map(interest => (
-                                <TouchableOpacity key={interest} disabled={!this.state.editingProfile} onPress={() => this.deleteInterest(interest)}>
-                                    <View style={{ backgroundColor: Colors.primary, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0 }}>
-                                        <Text style={{ color: Colors.background }}>{this.state.editingProfile ? 'X ' : ''}{interest}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            ))}
-                            {this.state.editingProfile ?
-                                <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.addInterest}>
-                                    <View style={{ backgroundColor: Colors.background, borderColor: Colors.primary, borderStyle: 'dashed', borderWidth: 2.0, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0 }}>
-                                        <Text style={{ color: Colors.primary }}>+ Add</Text>
-                                    </View>
-                                </TouchableOpacity>
-                                :
-                                null
-                            }
-                        </View>
-                        <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0 }}>Pictures</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical: 16.0 }}>
-                            {Object.keys(this.state.images).map(key => (
-                                <View key={key}>
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', { imageUri: this.state.images[key].uri })} >
-                                        <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: width / 3 - 16, width: width / 3 - 16, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+            <DismissKeyboardView>
+                <View style={{ flex: 1 }}>
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'height' : 'none'} style={{ flex: 1 }}>
+                        <View style={{ backgroundColor: Colors.background, flex: 1 }}>
+                            <View style={{ padding: 16.0, flex: 1 }}>
+                                <View style={{ paddingTop: 16.0, alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>profile</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-around', alingItems: 'center', marginVertical: 8.0 }}>
+                                    <TouchableOpacity onPress={this.showSettingsMenu}>
+                                        <Icon name={'settings'} size={32} color={Colors.textLightGray} />
                                     </TouchableOpacity>
-                                    {
-                                        this.state.editingProfile ?
-                                            <View style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '100%', alignItems: 'center', justifyContent: 'flex-start', }}>
-                                                <View style={{ borderRadius: 8, backgroundColor: '#E63462AA', height: 120, width: 120, alignItems: 'center', justifyContent: 'center' }}>
-                                                    <Text style={{ fontSize: 32.0, fontFamily: Fonts.heading, color: Colors.background }}>X</Text>
+                                    <TouchableOpacity onPress={this.editProfile}>
+                                        <Animated.View style={{ transform: [{ rotate: this.editingWiggle.interpolate({ inputRange: [-1, 1], outputRange: ['-35deg', '35deg'] }) }] }}>
+                                            <Icon name={'edit'} size={32} color={this.state.editingProfile ? Colors.primary : Colors.textLightGray} />
+                                        </Animated.View>
+                                    </TouchableOpacity>
+                                </View>
+                                {this.state.editingProfile ? <Text style={{ alignSelf: 'center', color: Colors.textLightGray, fontSize: 12.0 }}>tap something below to change it</Text> : null}
+                                <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center' }}>
+                                    <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
+                                    <View style={{ flexDirection: 'row', marginTop: 16.0 }}>
+                                        <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editFname} >
+                                            <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
+                                                <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>{this.state.fname} </Text>
+                                            </Animated.View>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editLname}>
+                                            <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
+                                                <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, }}>{this.state.lname}</Text>
+                                            </Animated.View>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
+                                    <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editOccupation}>
+                                        <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
+                                            <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.occupation}</Text>
+                                        </Animated.View>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editBio}>
+                                        <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
+                                            <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.bio}</Text>
+                                        </Animated.View>
+                                    </TouchableOpacity>
+                                    <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading }}>Interests</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical: 8.0 }}>
+                                        {this.state.interests.map(interest => (
+                                            <TouchableOpacity key={interest} disabled={!this.state.editingProfile} onPress={() => this.deleteInterest(interest)}>
+                                                <View style={{ backgroundColor: Colors.primary, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0 }}>
+                                                    <Text style={{ color: Colors.background }}>{this.state.editingProfile ? 'X ' : ''}{interest}</Text>
                                                 </View>
-                                            </View>
+                                            </TouchableOpacity>
+                                        ))}
+                                        {this.state.editingProfile ?
+                                            <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.addInterest}>
+                                                <View style={{ backgroundColor: Colors.background, borderColor: Colors.primary, borderStyle: 'dashed', borderWidth: 2.0, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0 }}>
+                                                    <Text style={{ color: Colors.primary }}>+ Add</Text>
+                                                </View>
+                                            </TouchableOpacity>
                                             :
                                             null
-                                    }
-                                </View>
-                            ))}
-                            {this.state.editingProfile ?
-                                <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.addImage}>
-                                    <View style={{ backgroundColor: Colors.background, borderColor: Colors.primary, borderStyle: 'dashed', height: 120, width: 120, borderWidth: 2.0, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0, alignItems: 'center', justifyContent: 'center' }}>
-                                        <Text style={{ color: Colors.primary }}>+</Text>
+                                        }
                                     </View>
-                                </TouchableOpacity>
-                                :
-                                null
-                            }
+                                    <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0 }}>Pictures</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical: 16.0 }}>
+                                        {Object.keys(this.state.images).map(key => (
+                                            <View key={key}>
+                                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', { imageUri: this.state.images[key].uri })} >
+                                                    <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: width / 3 - 16, width: width / 3 - 16, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                                                </TouchableOpacity>
+                                                {
+                                                    this.state.editingProfile ?
+                                                        <View style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '100%', alignItems: 'center', justifyContent: 'flex-start', }}>
+                                                            <View style={{ borderRadius: 8, backgroundColor: '#E63462AA', height: 120, width: 120, alignItems: 'center', justifyContent: 'center' }}>
+                                                                <Text style={{ fontSize: 32.0, fontFamily: Fonts.heading, color: Colors.background }}>X</Text>
+                                                            </View>
+                                                        </View>
+                                                        :
+                                                        null
+                                                }
+                                            </View>
+                                        ))}
+                                        {this.state.editingProfile ?
+                                            <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.addImage}>
+                                                <View style={{ backgroundColor: Colors.background, borderColor: Colors.primary, borderStyle: 'dashed', height: 120, width: 120, borderWidth: 2.0, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0, alignItems: 'center', justifyContent: 'center' }}>
+                                                    <Text style={{ color: Colors.primary }}>+</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                            :
+                                            null
+                                        }
+                                    </View>
+                                </ScrollView>
+                            </View>
+                            <Modal visible={this.state.showSettings} transparent animated animationType={'slide'}>
+                                <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                                    <TouchableOpacity onPress={() => this.setState({ showSettings: false })}>
+                                        <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
+                                    </TouchableOpacity>
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>Settings</Text>
+                                    <View>
+                                        <Button title={'Log Out'} onPress={this.logoutPressed} />
+                                    </View>
+                                </View>
+                            </Modal>
+                            <Modal visible={this.state.asking} transparent animated animationType={'slide'}>
+                                <View style={{ justifyContent: 'flex-start', marginTop: height / 4, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                                    <TouchableOpacity onPress={() => this.setState({ asking: false })}>
+                                        <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
+                                    </TouchableOpacity>
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>{this.state.askQuestion}</Text>
+                                    <View>
+                                        <Input
+                                            containerStyle={{ marginBottom: 32.0 }}
+                                            inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                            inputContainerStyle={{ borderColor: Colors.accent }}
+                                            labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                            keyboardType={'default'}
+                                            placeholder={this.state.askQuestion}
+                                            placeholderTextColor={Colors.textLightGray}
+                                            onChangeText={text => this.setState({ askAnswer: text })}
+                                            value={this.state.askAnswer}
+                                        />
+                                        <Button title={'Save'} onPress={this.state.askCb} />
+                                    </View>
+                                </View>
+                            </Modal>
                         </View>
-                    </ScrollView>
+                    </KeyboardAvoidingView>
                 </View>
-                <Modal visible={this.state.showSettings} transparent animated animationType={'slide'}>
-                    <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
-                        <TouchableOpacity onPress={() => this.setState({ showSettings: false })}>
-                            <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
-                        </TouchableOpacity>
-                        <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>Settings</Text>
-                        <View>
-                            <Button title={'Log Out'} onPress={this.logoutPressed} />
-                        </View>
-                    </View>
-                </Modal>
-                <Modal visible={this.state.asking} transparent animated animationType={'slide'}>
-                    <View style={{ justifyContent: 'flex-start', marginTop: height / 2, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
-                        <TouchableOpacity onPress={() => this.setState({ asking: false })}>
-                            <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
-                        </TouchableOpacity>
-                        <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>{this.state.askQuestion}</Text>
-                        <View>
-                            <Input
-                                containerStyle={{ marginBottom: 32.0 }}
-                                inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                                inputContainerStyle={{ borderColor: Colors.accent }}
-                                labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
-                                keyboardType={'default'}
-                                placeholder={this.state.askQuestion}
-                                placeholderTextColor={Colors.textLightGray}
-                                onChangeText={text => this.setState({ askAnswer: text })}
-                                value={this.state.askAnswer}
-                            />
-                            <Button title={'Save'} onPress={this.state.askCb} />
-                        </View>
-                    </View>
-                </Modal>
-            </View>
+            </DismissKeyboardView>
         )
     }
 }

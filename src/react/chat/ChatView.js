@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TextInput, Image, Dimensions, ActivityIndicator } from 'react-native';
+import { View, TextInput, Image, Dimensions, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 
 import { Text } from '../common/components';
 import { Fonts, Colors } from '../../config';

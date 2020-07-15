@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ActivityIndicator, Modal, KeyboardAvoidingView, Dimensions, Platform } from 'react-native';
 
-import { Text } from '../common/components';
+import { Text, DismissKeyboardView } from '../common/components';
 import { Fonts, Colors } from '../../config';
 
 import { connect } from 'react-redux';
