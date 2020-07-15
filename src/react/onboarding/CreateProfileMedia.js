@@ -19,6 +19,8 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth, { firebase } from '@react-native-firebase/auth';
 
+import ImageResizer from 'react-native-image-resizer';
+
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 
 class CreateProfileMedia extends React.Component {
@@ -52,6 +54,10 @@ class CreateProfileMedia extends React.Component {
             try {
                 let image = await ImagePicker.launchImageLibraryAsync({ allowsEditing: false, aspect: [1, 1] });
                 if (!image.cancelled) {
+
+                    let resizedImage = await ImageResizer.createResizedImage(image.uri, 1920, 1920, 'JPEG', 80, 0, null, true);
+                    image.uri = resizedImage.uri;
+
                     newState = {};
                     newState.images = { ...this.state.images };
                     newState.images[id] = image;
