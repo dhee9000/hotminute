@@ -24,6 +24,7 @@ class Splash extends React.Component {
     state = {
         currentActionString: '',
         initialTimeOver: false,
+        jumpTo: null,
     }
 
 
@@ -95,32 +96,26 @@ class Splash extends React.Component {
         }
     }
 
-    goToStart = () => {
-        while (!this.state.initialTimeOver) {
-
+    componentDidUpdate(prevProps, prevState){
+        if(this.state.initialTimeOver && this.state.jumpTo){
+            this.props.navigation.navigate(this.state.jumpTo);
         }
-        this.props.navigation.navigate('Start');
+    }
+
+    goToStart = () => {
+        this.setState({ jumpTo: 'Start'});
     }
 
     goToMain = () => {
-        while (!this.state.initialTimeOver) {
-
-        }
-        this.props.navigation.navigate('Main');
+        this.setState({ jumpTo: 'Main'});
     }
 
     goToLocation = state => {
-        while (!this.state.initialTimeOver) {
-
-        }
-        this.props.navigation.navigate('LocationInfo', { state });
+        this.setState({ jumpTo: 'Location'});
     }
 
     goToDatingPeriods = () => {
-        while (!this.state.initialTimeOver) {
-
-        }
-        this.props.navigation.navigate('DatingPeriodInfo');
+        this.setState({ jumpTo: 'DatingPeriodInfo'});
     }
 
     enterAnim = new Animated.Value(0);
