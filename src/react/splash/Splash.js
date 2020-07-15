@@ -23,6 +23,7 @@ class Splash extends React.Component {
 
     state = {
         currentActionString: '',
+        initialTimeOver: false,
     }
 
 
@@ -46,6 +47,10 @@ class Splash extends React.Component {
                 )
             )
         ]).start();
+
+        setTimeout(() => {
+            this.setState({ initialTimeOver: true });
+        }, 1000)
 
         this.setState({ currentActionString: 'Checking User...' });
         if (!auth().currentUser) {
@@ -78,10 +83,11 @@ class Splash extends React.Component {
 
                         this.setState({ currentActionString: 'Registering Notifications...' });
                         let fcmToken = await messaging().getToken();
-                        await firestore().collection('notificationTokens').doc(auth().currentUser.uid).set({
-                            tokens: firestore.FieldValue.arrayUnion(fcmToken)
-                        }, {merge: true});
-                        
+                        await firestore().collection('users').doc(auth().currentUser.uid).set({
+                            fcmTokens: firestore.FieldValue.arrayUnion(fcmToken)
+                        }, { merge: true });
+
+                        this.setState({ currentActionString: 'Almost Done...'})
                         this.goToMain();
                     }
                 }
@@ -90,27 +96,31 @@ class Splash extends React.Component {
     }
 
     goToStart = () => {
-        setTimeout(() => {
-            this.props.navigation.navigate('Start');
-        }, 1000);
+        while (!this.state.initialTimeOver) {
+
+        }
+        this.props.navigation.navigate('Start');
     }
 
     goToMain = () => {
-        setTimeout(() => {
-            this.props.navigation.navigate('Main');
-        }, 1000);
+        while (!this.state.initialTimeOver) {
+
+        }
+        this.props.navigation.navigate('Main');
     }
 
     goToLocation = state => {
-        setTimeout(() => {
-            this.props.navigation.navigate('LocationInfo', { state });
-        }, 1000);
+        while (!this.state.initialTimeOver) {
+
+        }
+        this.props.navigation.navigate('LocationInfo', { state });
     }
 
     goToDatingPeriods = () => {
-        setTimeout(() => {
-            this.props.navigation.navigate('DatingPeriodInfo');
-        }, 1000);
+        while (!this.state.initialTimeOver) {
+
+        }
+        this.props.navigation.navigate('DatingPeriodInfo');
     }
 
     enterAnim = new Animated.Value(0);
