@@ -45,7 +45,7 @@ class SelectPreferencesAge extends React.Component {
             filtersComplete: true,
             profileComplete: true,
         })
-        this.props.navigation.navigate('Main');
+        this.props.navigation.navigate('Splash');
         // this.props.navigation.navigate('Main', {maxDistance: this.state.maxDistance, genders: this.state.genders, minAge: this.state.minAge, maxAge: this.state.maxAge});
     }
 
