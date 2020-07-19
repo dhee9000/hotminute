@@ -9,17 +9,28 @@ function* watchProfileRequested() {
     yield takeEvery(ActionTypes.FETCH_PROFILE.REQUEST,
         function* onProfileRequested(action) {
 
-            let uid = action.payload;
-
-            console.log("REQUEST: Requested Profile with UID: " + uid);
-
-            let profile = yield select(state => state.profiles[uid]);
-            if (profile && (profile.loaded || profile.loading)) {
-                console.log("CACHE: Profile with UID already loaded: " + uid);
-                return;
-            }
-
             try {
+
+                let uid = null;
+                let force = false;
+                if (action.payload.uid) {
+                    uid = action.payload.uid;
+                }
+                else {
+                    uid = action.payload;
+                }
+                if (action.payload.force) {
+                    force = action.payload.force;
+                }
+
+                console.log("REQUEST: Requested Profile with UID: " + uid);
+
+                let profile = yield select(state => state.profiles[uid]);
+                if ((profile && profile.loaded && !force) || (profile && profile.loading)) {
+                    console.log("CACHE: Profile with UID already" + profile.loaded ? " loaded: " : " loading: " + uid);
+                    return;
+                }
+
 
                 let profileRef = firestore().collection('profiles').doc(uid);
                 let profileSnapshot = yield call([profileRef, profileRef.get]);
@@ -62,9 +73,9 @@ function* watchUpdateProfileRequested() {
                 yield call([profileDocRef, profileDocRef.update], newProfileData);
                 yield put({ type: ActionTypes.UPDATE_PROFILE, payload: action.payload.updateId });
             }
-            catch(e){
+            catch (e) {
                 console.log("Profile Update Error: ", e);
-                yield put({type: ActionTypes.UPDATE_PROFILE.FAILURE, payload: e});
+                yield put({ type: ActionTypes.UPDATE_PROFILE.FAILURE, payload: e });
             }
         }
     );
