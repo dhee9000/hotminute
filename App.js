@@ -15,6 +15,8 @@ const AppContainer = createAppContainer(RootNavigator);
 import { ThemeProvider } from 'react-native-elements';
 import * as Font from 'expo-font';
 
+import RemoteConfig from '@react-native-firebase/remote-config';
+
 const { height, width } = Dimensions.get('screen');
 
 const theme = {
@@ -44,6 +46,25 @@ export default function App() {
     }
     loadFonts().then(() => setFontsLoaded(true));
   }, []);
+
+  useEffect(() => {
+    RemoteConfig().setDefaults(
+      {
+        supported_region_codes: ['TX']
+      }
+    )
+    .then(RemoteConfig().fetchAndActivate)
+    .then(
+      activated => {
+        if(activated){
+          console.log("Activated Remote Config");
+        }
+        else{
+          console.log("Could not activate Remote Config");
+        }
+      }
+    )
+  })
 
   if (fontsLoaded) {
     return (

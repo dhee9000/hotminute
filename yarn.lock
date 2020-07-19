@@ -1255,6 +1255,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-7.4.2.tgz#736476df3b88b129172dd090df5190f71bcba83a"
   integrity sha512-PuMRvWFFgElFXDp71TmEs+eype8GrrUEibLFpqlzVLheUTtzRG4+ofZiWr8yAO0nXmuPSPgkroQzAMbeEf2J3A==
 
+"@react-native-firebase/remote-config@^7.2.2":
+  version "7.2.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-7.2.2.tgz#6c59a7d1442483a4b1d5bc78e5d2374a841c7db3"
+  integrity sha512-7cJ8EecCq0VqWB6Uo9XyPIeTtn0DEO9JodUz6nM5B4XA/a+PXt5XFSxh9co2kzpzl55nj3yljC3C42OOb4Glsg==
+
 "@react-native-firebase/storage@^7.2.2":
   version "7.2.2"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-7.2.2.tgz#a2fcbd1bee602516ae863372ba5e3260e4e92ead"
