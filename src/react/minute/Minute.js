@@ -80,7 +80,6 @@ class Minute extends React.Component {
         this.props.getUserProfile();
         this.props.getFilters();
 
-        Permissions.askAsync(Permissions.AUDIO_RECORDING);
         RtcEngine.init(AgoraConfig);
         RtcEngine.setEnableSpeakerphone(true);
         RtcEngine.setDefaultAudioRouteToSpeakerphone(true);
@@ -117,18 +116,18 @@ class Minute extends React.Component {
         // Check Audio Permission
         let { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
         if (status !== 'granted') {
-            this.setState({preCheckCompleted: true, hasRecordingPermission: false});
+            this.setState({ preCheckCompleted: true, hasRecordingPermission: false });
             return;
         }
-        this.setState({hasRecordingPermission: true});
+        this.setState({ hasRecordingPermission: true });
 
         // Check Location Permission
         let granted = await Location.requestPermission({ ios: "whenInUse", android: { detail: "coarse" } });
         if (!granted) {
-            this.setState({preCheckCompleted: true, hasLocationPermission: true});
+            this.setState({ preCheckCompleted: true, hasLocationPermission: true });
             return;
         }
-        this.setState({hasLocationPermission: true});
+        this.setState({ hasLocationPermission: true });
 
         // Check Location in Supported Region
         let currentLocation = await Location.getLatestLocation();
@@ -140,16 +139,16 @@ class Minute extends React.Component {
         console.log("SUPPORTED REGIONS:", supportedRegions);
         let regionCode = addressLookup.results[0].address_components.filter(component => component.types.includes('administrative_area_level_1'))[0].short_name;
 
-        this.setState({userLocation: { location: currentLocation, address: addressLookup, regionCode }});
+        this.setState({ userLocation: { location: currentLocation, address: addressLookup, regionCode } });
 
         if (supportedRegions.value.includes(regionCode)) {
-            this.setState({locationCheckSuccessful: true});
+            this.setState({ locationCheckSuccessful: true });
         }
         else {
-            this.setState({locationCheckSuccessful: false});
+            this.setState({ locationCheckSuccessful: false });
         }
 
-        this.setState({preCheckCompleted: true, hasRecordingPermission: true, hasLocationPermission: true, locationCheckSuccessful: true});;
+        this.setState({ preCheckCompleted: true, hasRecordingPermission: true, hasLocationPermission: true, locationCheckSuccessful: true });;
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -299,7 +298,7 @@ class Minute extends React.Component {
     }
 
     leaveRoom = async () => {
-        this.setState({showInstructionsPopup: false});
+        this.setState({ showInstructionsPopup: false });
         if (this.state.timer) {
             clearTimeout(this.state.timer);
         }
@@ -336,48 +335,48 @@ class Minute extends React.Component {
     render() {
 
 
-    if (!this.state.preCheckCompleted) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Heart height={196} width={196} />
-                <Text>Loading</Text>
-            </View>
-        )
-    }
+        if (!this.state.preCheckCompleted) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Heart height={196} width={196} />
+                    <Text>Loading</Text>
+                </View>
+            )
+        }
 
-    if (!this.state.hasRecordingPermission) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Image source={require('../../../assets/img/audio-permission.png')} style={{ height: 196, width: 196 }} />
-                <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
-                <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Recording Permission</Text>
-                <Text style={{ textAlign: 'center' }}>It looks like you denied the audio recording permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the microphone permission!</Text>
-            </View>
-        )
-    }
+        if (!this.state.hasRecordingPermission) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Image source={require('../../../assets/img/audio-permission.png')} style={{ height: 196, width: 196 }} />
+                    <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
+                    <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Recording Permission</Text>
+                    <Text style={{ textAlign: 'center' }}>It looks like you denied the audio recording permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the microphone permission!</Text>
+                </View>
+            )
+        }
 
-    if (!this.state.hasLocationPermission) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Image source={require('../../../assets/img/location-permission.png')} style={{ height: 196, width: 196 }} />
-                <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
-                <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Location Permission</Text>
-                <Text style={{ textAlign: 'center' }}>It looks like you denied the location permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the location permission!</Text>
-            </View>
-        )
-    }
+        if (!this.state.hasLocationPermission) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Image source={require('../../../assets/img/location-permission.png')} style={{ height: 196, width: 196 }} />
+                    <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
+                    <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Location Permission</Text>
+                    <Text style={{ textAlign: 'center' }}>It looks like you denied the location permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the location permission!</Text>
+                </View>
+            )
+        }
 
-    if (!this.state.locationCheckSuccessful) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Image source={require('../../../assets/img/location-permission.png')} style={{ height: 196, width: 196 }} />
-                <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
-                <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>We're not available in {this.state.userLocation.regionCode} yet!</Text>
-                <Text style={{ textAlign: 'center' }}>Thanks for downloading hotminute! We don't serve your region yet but we'd love to have you on the app!</Text>
-                <Text style={{ textAlign: 'center' }}>hotminute is slowly expanding to other regions and you can make it happen in {this.state.userLocation.regionCode}. Just submit your email below and we'll make it happen as soon as possible!</Text>
-            </View>
-        )
-    }
+        if (!this.state.locationCheckSuccessful) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Image source={require('../../../assets/img/location-permission.png')} style={{ height: 196, width: 196 }} />
+                    <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
+                    <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>We're not available in {this.state.userLocation.regionCode} yet!</Text>
+                    <Text style={{ textAlign: 'center' }}>Thanks for downloading hotminute! We don't serve your region yet but we'd love to have you on the app!</Text>
+                    <Text style={{ textAlign: 'center' }}>hotminute is slowly expanding to other regions and you can make it happen in {this.state.userLocation.regionCode}. Just submit your email below and we'll make it happen as soon as possible!</Text>
+                </View>
+            )
+        }
 
 
         // TODO: Review Logic
@@ -431,10 +430,10 @@ class Minute extends React.Component {
                 </View>
 
                 {/* FILTERS MODAL */}
-                <FiltersModal showModal={this.state.filtersVisible} onClose={() => this.setState({filtersVisible: false})} />
+                <FiltersModal showModal={this.state.filtersVisible} onClose={() => this.setState({ filtersVisible: false })} />
 
                 {/* INSTRUCTIONS MODAL */}
-                <InstructionsModal showModal={this.state.showInstructionsPopup} onClose={() => this.setState({showInstructionsPopup: false})} />
+                <InstructionsModal showModal={this.state.showInstructionsPopup} onClose={() => this.setState({ showInstructionsPopup: false })} />
 
                 {/* MARKETING PROMO MODAL */}
                 <Modal visible={this.state.showMarketingPopup} transparent animated animationType={'fade'}>
