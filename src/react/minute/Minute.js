@@ -216,6 +216,7 @@ class Minute extends React.Component {
             minAge: parseInt(this.state.filters.minAge),
             gender: this.state.userProfile.gender,
             dob: this.state.userProfile.dob,
+            location: this.state.userLocation.location,
             enteredAt: firebase.firestore.FieldValue.serverTimestamp(),
             active: true,
         });
