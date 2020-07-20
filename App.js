@@ -48,22 +48,27 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    RemoteConfig().setDefaults(
-      {
-        supported_region_codes: ['TX']
-      }
-    )
-    .then(RemoteConfig().fetchAndActivate)
-    .then(
-      activated => {
-        if(activated){
-          console.log("Activated Remote Config");
+    try {
+      RemoteConfig().setDefaults(
+        {
+          supported_region_codes: ['TX']
         }
-        else{
-          console.log("Could not activate Remote Config");
-        }
-      }
-    )
+      )
+        .then(RemoteConfig().fetchAndActivate)
+        .then(
+          activated => {
+            if (activated) {
+              console.log("Activated Remote Config");
+            }
+            else {
+              console.log("Could not activate Remote Config");
+            }
+          }
+        )
+    }
+    catch (e) {
+      console.log(e);
+    }
   })
 
   if (fontsLoaded) {
