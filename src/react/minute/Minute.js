@@ -28,6 +28,7 @@ const { Agora } = NativeModules;
 const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = Agora;
 
 import * as Permissions from 'expo-permissions';
+import * as Device from 'expo-device';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Location from 'react-native-location';
@@ -119,6 +120,7 @@ class Minute extends React.Component {
             this.setState({ preCheckCompleted: true, hasRecordingPermission: false });
             return;
         }
+        console.log("PRE CHECK", "AUDIO RECORDING CHECK COMPLETED");
         this.setState({ hasRecordingPermission: true });
 
         // Check Location Permission
@@ -127,6 +129,7 @@ class Minute extends React.Component {
             this.setState({ preCheckCompleted: true, hasLocationPermission: true });
             return;
         }
+        console.log("PRE CHECK", "LOCATION CHECK COMPLETED");
         this.setState({ hasLocationPermission: true });
 
         // Check Location in Supported Region
@@ -147,6 +150,7 @@ class Minute extends React.Component {
         else {
             this.setState({ locationCheckSuccessful: false });
         }
+        console.log("PRE CHECK", "REGION CHECK COMPLETED");
 
         this.setState({ preCheckCompleted: true, hasRecordingPermission: true, hasLocationPermission: true, locationCheckSuccessful: true });;
     }
