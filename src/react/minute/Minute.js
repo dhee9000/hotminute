@@ -28,7 +28,6 @@ const { Agora } = NativeModules;
 const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = Agora;
 
 import * as Permissions from 'expo-permissions';
-import * as Device from 'expo-device';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Location from 'react-native-location';
