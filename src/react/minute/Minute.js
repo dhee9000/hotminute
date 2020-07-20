@@ -108,23 +108,6 @@ class Minute extends React.Component {
         let filtersSnapshot = await firestore().collection('filters').doc(auth().currentUser.uid).get();
         let filtersData = filtersSnapshot.data();
         this.setState({ filters: { ...filtersData } });
-
-        let configDocSnapshot = await firestore().collection('meta').doc('config').get();
-        let { datingPeriods, datingPeriodLength } = configDocSnapshot.data();
-        datingPeriods = datingPeriods.map(period => period.toDate());
-
-        let inDatingPeriod = false;
-        let currentHour = new Date().getUTCHours();
-
-        datingPeriods.map(datingPeriod => {
-            if (datingPeriod.getUTCHours() <= currentHour && datingPeriod.getUTCHours() + datingPeriodLength / 60 >= currentHour) {
-                inDatingPeriod = inDatingPeriod || true;
-            }
-            else {
-                inDatingPeriod = inDatingPeriod || false;
-            }
-        });
-        this.setState({ inDatingPeriod });
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -315,12 +298,6 @@ class Minute extends React.Component {
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
                 <View style={{ flex: 1 }}>
                     {
-                        !this.state.inDatingPeriod ? 
-
-                        <DatingPeriodInfo />
-
-                        :
-
                         this.state.joinedCall ?
                             // IF JOINED CALL
                             <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
