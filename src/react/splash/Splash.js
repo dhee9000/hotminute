@@ -75,7 +75,6 @@ class Splash extends React.Component {
                     let { longitude, latitude } = currentLocation;
                     let response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAPS_API_KEY}`);
                     let addressLookup = await response.json();
-                    console.log(addressLookup);
                     let stateCode = addressLookup.results[0].address_components.filter(component => component.types.includes('administrative_area_level_1'))[0].short_name;
                     if (!stateCode === 'TX') {
                         this.goToLocation(stateCode);
