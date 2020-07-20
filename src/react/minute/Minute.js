@@ -114,13 +114,18 @@ class Minute extends React.Component {
 
 
         // Check Audio Permission
-        let { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-        if (status !== 'granted') {
-            this.setState({ preCheckCompleted: true, hasRecordingPermission: false });
-            return;
+        try {
+            let { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+            if (status !== 'granted') {
+                this.setState({ preCheckCompleted: true, hasRecordingPermission: false });
+                return;
+            }
+            console.log("PRE CHECK", "AUDIO RECORDING CHECK COMPLETED");
+            this.setState({ hasRecordingPermission: true });
         }
-        console.log("PRE CHECK", "AUDIO RECORDING CHECK COMPLETED");
-        this.setState({ hasRecordingPermission: true });
+        catch (e) {
+            console.log("AUDIO PERMISSION CHECK FAILED", e);
+        }
 
         // Check Location Permission
         let granted = await Location.requestPermission({ ios: "whenInUse", android: { detail: "coarse" } });
