@@ -10,7 +10,7 @@ if (Platform.OS === 'android') {
 const { height, width } = Dimensions.get('screen');
 
 import { Text, TabBar } from '../common/components';
-import { Fonts, Colors, AgoraConfig } from '../../config';
+import { Fonts, Colors, AgoraConfig, GoogleMaps } from '../../config';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
@@ -19,6 +19,7 @@ import firebase from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import RemoteConfig from '@react-native-firebase/remote-config';
 
 import { Input, Button, Icon, Slider, CheckBox } from 'react-native-elements';
 
@@ -29,13 +30,11 @@ const { FPS30, AudioProfileDefault, AudioScenarioDefault, Host, Adaptative } = A
 import * as Permissions from 'expo-permissions';
 
 import { LinearGradient } from 'expo-linear-gradient';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import Location from 'react-native-location';
 
-import { DistanceFilter, GenderFilter, AgeFilter, Swiper } from './components';
+import { FiltersModal, InstructionsModal, Swiper } from './components';
 
 import Heart from '../../../assets/svg/heart.svg';
-
-import { DatingPeriodInfo } from '../splash';
 
 class Minute extends React.Component {
 
@@ -58,7 +57,12 @@ class Minute extends React.Component {
         showInstructionsPopup: false,
         showMarketingPopup: false,
 
-        inDatingPeriod: false,
+        // Checks
+        preCheckCompleted: false,
+        hasAudioPermission: false,
+        hasLocationPermission: false,
+        locationCheckSuccessful: false,
+        userLocation: {},
 
         // AGORA STATE VARIABLES
         channelName: "TestRoom",
@@ -108,6 +112,44 @@ class Minute extends React.Component {
         let filtersSnapshot = await firestore().collection('filters').doc(auth().currentUser.uid).get();
         let filtersData = filtersSnapshot.data();
         this.setState({ filters: { ...filtersData } });
+
+
+        // Check Audio Permission
+        let { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+        if (status !== 'granted') {
+            this.setState({preCheckCompleted: true, hasRecordingPermission: false});
+            return;
+        }
+        this.setState({hasRecordingPermission: true});
+
+        // Check Location Permission
+        let granted = await Location.requestPermission({ ios: "whenInUse", android: { detail: "coarse" } });
+        if (!granted) {
+            this.setState({preCheckCompleted: true, hasLocationPermission: true});
+            return;
+        }
+        this.setState({hasLocationPermission: true});
+
+        // Check Location in Supported Region
+        let currentLocation = await Location.getLatestLocation();
+        let { longitude, latitude } = currentLocation;
+        let response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GoogleMaps.key}`);
+        let addressLookup = await response.json();
+
+        const supportedRegions = RemoteConfig().getValue('supported_region_codes');
+        console.log("SUPPORTED REGIONS:", supportedRegions);
+        let regionCode = addressLookup.results[0].address_components.filter(component => component.types.includes('administrative_area_level_1'))[0].short_name;
+
+        this.setState({userLocation: { location: currentLocation, address: addressLookup, regionCode }});
+
+        if (supportedRegions.value.includes(regionCode)) {
+            this.setState({locationCheckSuccessful: true});
+        }
+        else {
+            this.setState({locationCheckSuccessful: false});
+        }
+
+        this.setState({preCheckCompleted: true, hasRecordingPermission: true, hasLocationPermission: true, locationCheckSuccessful: true});;
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -256,6 +298,7 @@ class Minute extends React.Component {
     }
 
     leaveRoom = async () => {
+        this.setState({showInstructionsPopup: false});
         if (this.state.timer) {
             clearTimeout(this.state.timer);
         }
@@ -290,6 +333,51 @@ class Minute extends React.Component {
     loadingAnimation = new Animated.Value(0);
 
     render() {
+
+
+    if (!this.state.preCheckCompleted) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Heart height={196} width={196} />
+                <Text>Loading</Text>
+            </View>
+        )
+    }
+
+    if (!this.state.hasRecordingPermission) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Image source={require('../../../assets/img/audio-permission.png')} style={{ height: 196, width: 196 }} />
+                <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
+                <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Recording Permission</Text>
+                <Text style={{ textAlign: 'center' }}>It looks like you denied the audio recording permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the microphone permission!</Text>
+            </View>
+        )
+    }
+
+    if (!this.state.hasLocationPermission) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Image source={require('../../../assets/img/location-permission.png')} style={{ height: 196, width: 196 }} />
+                <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
+                <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Location Permission</Text>
+                <Text style={{ textAlign: 'center' }}>It looks like you denied the location permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the location permission!</Text>
+            </View>
+        )
+    }
+
+    if (!this.state.locationCheckSuccessful) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Image source={require('../../../assets/img/location-permission.png')} style={{ height: 196, width: 196 }} />
+                <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
+                <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>We're not available in {this.state.userLocation.regionCode} yet!</Text>
+                <Text style={{ textAlign: 'center' }}>Thanks for downloading hotminute! We don't serve your region yet but we'd love to have you on the app!</Text>
+                <Text style={{ textAlign: 'center' }}>hotminute is slowly expanding to other regions and you can make it happen in {this.state.userLocation.regionCode}. Just submit your email below and we'll make it happen as soon as possible!</Text>
+            </View>
+        )
+    }
+
 
         // TODO: Review Logic
         let notInPool = this.state.pairingEnabled || !this.state.enteredPool ? true : this.state.pairingEnabled || this.state.enteredPool ? false : false;
@@ -342,36 +430,10 @@ class Minute extends React.Component {
                 </View>
 
                 {/* FILTERS MODAL */}
-                <Modal visible={this.state.filtersVisible} transparent animated animationType={'slide'}>
-                    <View style={{ justifyContent: 'flex-start', marginTop: height / 3, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
-                        <TouchableOpacity onPress={() => this.setState({ filtersVisible: false })}>
-                            <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
-                        </TouchableOpacity>
-                        <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>Filters</Text>
-                        <TabView
-                            style={{ flex: 1 }}
-                            navigationState={{ index: this.state.filterTabIdx, routes: [{ key: 'distance', title: 'distance' }, { key: 'gender', title: 'gender' }, { key: 'age', title: 'age' }] }}
-                            renderScene={SceneMap({ distance: DistanceFilter, gender: GenderFilter, age: AgeFilter })}
-                            renderTabBar={props => <TabBar {...props} onChangeTab={i => this.setState({ filterTabIdx: i })} />}
-                            onIndexChange={idx => this.setState({ filterTabIdx: idx })}
-                        />
-                    </View>
-                </Modal>
+                <FiltersModal showModal={this.state.filtersVisible} onClose={() => this.setState({filtersVisible: false})} />
 
                 {/* INSTRUCTIONS MODAL */}
-                <Modal visible={this.state.showInstructionsPopup} transparent animated animationType={'slide'}>
-                    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, }}>
-                        <View style={{ backgroundColor: Colors.text, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0, padding: 16.0 }}>
-                            <TouchableOpacity onPress={() => this.setState({ showInstructionsPopup: false })}>
-                                <Icon name={'close'} size={32} color={Colors.primary} />
-                            </TouchableOpacity>
-                            <Text style={{ color: '#f55' }}>Swipe Left if you are not interested</Text>
-                            <Text style={{ color: '#5f5' }}>Swipe Right if you are interested</Text>
-                            <Text style={{ color: '#55f' }}>Swipe Down to extend your time</Text>
-                            <Text style={{ color: Colors.primary }}>Have a flipping amazing time :)</Text>
-                        </View>
-                    </View>
-                </Modal>
+                <InstructionsModal showModal={this.state.showInstructionsPopup} onClose={() => this.setState({showInstructionsPopup: false})} />
 
                 {/* MARKETING PROMO MODAL */}
                 <Modal visible={this.state.showMarketingPopup} transparent animated animationType={'fade'}>
