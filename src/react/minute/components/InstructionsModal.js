@@ -14,7 +14,7 @@ const InstructionsModal = (props) => {
         <Modal visible={props.showModal} transparent animated animationType={'slide'}>
         <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, }}>
             <View style={{ backgroundColor: Colors.text, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0, padding: 16.0 }}>
-                <TouchableOpacity onPress={() => this.setState({ showInstructionsPopup: false })}>
+                <TouchableOpacity onPress={() => props.onClose()}>
                     <Icon name={'close'} size={32} color={Colors.primary} />
                 </TouchableOpacity>
                 <Text style={{ color: '#f55' }}>Swipe Left if you are not interested</Text>
