@@ -10,7 +10,9 @@ const { height, width } = Dimensions.get('screen');
 
 import {TabView, SceneMap } from 'react-native-tab-view';
 
-import { DistanceFilter, GenderFilter, AgeFilter } from './index';
+import DistanceFilter from './DistanceFilter';
+import GenderFilter from './GenderFilter';
+import AgeFilter from './AgeFilter';
 
 const FiltersModal = (props) => {
 
