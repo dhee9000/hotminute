@@ -130,7 +130,7 @@ class Minute extends React.Component {
         // Check Location Permission
         let granted = await Location.requestPermission({ ios: "whenInUse", android: { detail: "coarse" } });
         if (!granted) {
-            this.setState({ preCheckCompleted: true, hasLocationPermission: true });
+            this.setState({ preCheckCompleted: true, hasLocationPermission: false });
             return;
         }
         console.log("PRE CHECK", "LOCATION CHECK COMPLETED");
