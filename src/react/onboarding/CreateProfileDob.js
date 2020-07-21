@@ -23,7 +23,7 @@ class CreateProfileName extends React.Component {
         showDatePicker: false,
         initialDate: new Date(947409600000),
         dob: new Date(1288224800000),
-        age: getAge(new Date(1288409600000).toString())
+        age: getAge(new Date(1288224800000).toString())
     }
 
     async componentDidMount() {
@@ -38,8 +38,8 @@ class CreateProfileName extends React.Component {
     }
 
     onChangeDate = (event, selectedDate) => {
-        this.setState({ showDatePicker: Platform.OS === 'ios' ? true : false });
         const currentDate = selectedDate || this.state.dob;
+        this.setState({ showDatePicker: Platform.OS === 'ios' });
         this.setState({ dob: currentDate, age: getAge(currentDate.toString()) })
     };
 
@@ -65,9 +65,9 @@ class CreateProfileName extends React.Component {
                     </View>
                     {this.state.showDatePicker &&
                         <DateTimePicker
-                            value={this.state.dob ? this.state.dob : this.state.initialDate}
+                            value={this.state.dob}
                             mode={'date'}
-                            display="default"
+                            display={'default'}
                             onChange={this.onChangeDate}
                         />}
                 </View>
