@@ -226,6 +226,32 @@ class Profile extends React.Component {
         }
     }
 
+    deleteImage = id => {
+
+        let numImg = 0;
+        Object.keys(this.state.images).map(() => numImg += 1);
+        console.log("NUm IMG", numImg);
+        if(numImg <= 3){
+            alert("You must have at least 3 images!");
+            return;
+        }
+        
+        let newImageState = this.state.images;
+
+        Object.keys(newImageState).map(key => {
+            if (key === id) {
+                delete newImageState[id];
+            }
+            if (key > id) {
+                newImageState[parseInt(key) - 1] = newImageState[key];
+                delete newImageState[key];
+            }
+        });
+
+        this.setState({images: newImageState});
+
+    }
+
     askForField = (prompt, defAns, cb) => {
         let askCb = () => {
             cb(this.state.askAnswer);
@@ -314,9 +340,11 @@ class Profile extends React.Component {
                                     {
                                         this.state.editingProfile ?
                                             <View style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '100%', alignItems: 'center', justifyContent: 'flex-start', }}>
-                                                <View style={{ borderRadius: 8, backgroundColor: '#E63462AA', height: 120, width: 120, alignItems: 'center', justifyContent: 'center' }}>
-                                                    <Text style={{ fontSize: 32.0, fontFamily: Fonts.heading, color: Colors.background }}>X</Text>
-                                                </View>
+                                                <TouchableOpacity onPress={() => this.deleteImage(key)}>
+                                                    <View style={{ borderRadius: 8, backgroundColor: '#E63462AA', height: 120, width: 120, alignItems: 'center', justifyContent: 'center' }}>
+                                                        <Text style={{ fontSize: 32.0, fontFamily: Fonts.heading, color: Colors.background }}>X</Text>
+                                                    </View>
+                                                </TouchableOpacity>
                                             </View>
                                             :
                                             null
