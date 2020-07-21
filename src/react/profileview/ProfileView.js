@@ -21,18 +21,14 @@ const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Pr
 
 import { Button, Icon } from 'react-native-elements';
 
-generateCombinedDocId = function (uid1, uid2) {
+const generateCombinedDocId = (uid1, uid2) => {
     if (uid1.localeCompare(uid2) < 0) {
-        return `${uid1}_${uid2}`;
-    }
-    else if (uid1.localeCompare(uid2) > 0) {
-        return `${uid2}_${uid1}`;
+        return uid2 + "_" + uid1;
     }
     else {
-        throw (new Error("cannot create combined id for same user"));
+        return uid1 + "_" + uid2;
     }
 }
-
 
 class ProfileView extends React.Component {
 
@@ -77,7 +73,7 @@ class ProfileView extends React.Component {
             this.setState({ images: processedImages });
         });
 
-        let chatDoc = await firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid, uid)).get();
+        let chatDoc = await firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid.toString(), uid)).get();
 
         this.setState({
             fname: profileData.fname,
@@ -92,15 +88,18 @@ class ProfileView extends React.Component {
     }
 
     chatPressed = async () => {
+        let chatId = generateCombinedDocId(auth().currentUser.uid.toString(), this.state.uid);
         if (!this.state.chatExists) {
-            await firestore().collection('chats').doc(generateCombinedDocId(auth().currentUser.uid, this.state.uid)).set({
+            console.log("CREATING CHAT:", chatId)
+            await firestore().collection('chats').doc(chatId).set({
                 uids: [auth().currentUser.uid, this.state.uid],
             });
-            this.props.navigation.navigate('ChatView', { chatId: generateCombinedDocId(auth().currentUser.uid, this.state.uid), userId: this.state.uid });
+            this.setState({chatExists: true});
+            this.props.navigation.navigate('ChatView', { chatId, userId: this.state.uid });
         }
         else {
             this.props.navigation.pop();
-            this.props.navigation.navigate('ChatView', { chatId: generateCombinedDocId(auth().currentUser.uid, this.state.uid), userId: this.state.uid });
+            this.props.navigation.navigate('ChatView', { chatId, userId: this.state.uid });
         }
     }
 
