@@ -50,6 +50,7 @@ class Minute extends React.Component {
         pairedUid: '',
         pairedProfile: {},
         enteredPool: false,
+        poolEntryId: null,
 
         timeLeft: 60,
         waitingForPartner: false,
@@ -228,6 +229,8 @@ class Minute extends React.Component {
             active: true,
         });
 
+        this.setState({poolEntryId: poolEntrySnapshot.id})
+
         // Listen for changes to entry
         let unsubscribePoolEntry = firestore().collection('pairingPool').doc(poolEntrySnapshot.id).onSnapshot(async docSnapshot => {
             let data = docSnapshot.data();
@@ -237,6 +240,9 @@ class Minute extends React.Component {
                 let pairedProfilePictureURL = await storage().ref(pairedProfile.images["1"].ref).getDownloadURL();
                 pairedProfile.pictureURL = pairedProfilePictureURL;
                 this.setState({ roomId: data.roomId, roomToken: data.roomToken, pairedUid: data.pairedUid, pairedProfile, paired: true }, this.joinRoom)
+            }
+            if(data.partnerExtended && data.extended){
+                this.setState({timeLeft: this.state.timeLeft + 30});
             }
             if (data.matched) {
                 this.leaveRoom();
@@ -335,7 +341,9 @@ class Minute extends React.Component {
     }
 
     extendCall = async () => {
-
+        firestore().collection('pairingPool').doc(this.state.poolEntryId).update({
+            extended: true,
+        });
     }
 
     loadingAnimation = new Animated.Value(0);
