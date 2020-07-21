@@ -20,7 +20,6 @@ const { height, width } = Dimensions.get('screen');
 class ChatView extends React.Component {
 
     state = {
-        messages: [],
         chatId: undefined,
         userId: undefined,
     }
@@ -28,34 +27,11 @@ class ChatView extends React.Component {
     componentDidMount() {
         let chatId = this.props.navigation.getParam('chatId', undefined)
         let userId = this.props.navigation.getParam('userId', undefined);
-
         if (!chatId || !userId) {
             this.props.navigation.pop();
             return;
         }
-
         this.setState({ chatId, userId });
-
-        firestore().collection('chats').doc(chatId).collection('messages').limit(25).orderBy('sentAt', 'desc').onSnapshot(snapshot => {
-            let messages = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-            messages = messages.map(msg => {
-                let senderProfile = this.props.profilesById[msg.sentBy];
-                if (senderProfile) {
-                    return {
-                        ...msg, _id: msg.id,
-                        // createdAt: msg.sentAt.toDate(), 
-                        user: { _id: msg.sentBy, name: `${senderProfile.fname} ${senderProfile.lname}`, avatar: senderProfile.images["1"].url }
-                    }
-                }
-                else {
-                    return {
-                        ...msg, _id: msg.id,
-                        // createdAt: msg.sentAt.toDate() 
-                    };
-                }
-            })
-            this.setState({ messages })
-        });
     }
 
     onSend = messages => {
@@ -93,8 +69,6 @@ class ChatView extends React.Component {
                 placeholder={'type a message...'}
                 multiline={props.multiline}
                 editable={!props.disableComposer}
-                // onChange={this.onContentSizeChange}
-                // onContentSizeChange={e => props.on}
                 onChangeText={text => props.onTextChanged(text)}
                 style={{
                     padding: 16.0,
@@ -176,10 +150,25 @@ class ChatView extends React.Component {
                             </View>
                         </View>
                         <GiftedChat
-                            messages={this.props.chatsById[this.state.chatId].messages.allIds}
+                            messages={this.props.chatsById[this.state.chatId].messages.allIds.map(id => {
+                                
+                                console.log("MESSAGES", this.props.chatsById[this.state.chatId].messages);
+                                let message = this.props.chatsById[this.state.chatId].messages.byId[id];
+
+                                console.log("MESSAGE", message);
+
+                                return {
+                                    _id: message.id,
+                                    user: {
+                                        _id: message.sentBy,
+                                        name: this.props.profilesById[message.sentBy].fname + " " + this.props.profilesById[message.sentBy].lname,
+                                        avatar: this.props.profilesById[message.sentBy].images["1"].url,
+                                    },
+                                    text: message.text,
+                                }
+                            }).reverse()}
                             onSend={this.onSend}
                             renderInputToolbar={this.renderInputToolbar}
-                            renderMessageText={this.renderMessageText}
                             renderBubble={this.renderBubble}
                             messagesContainerStyle={{}}
                             minInputToolbarHeight={0}
@@ -188,7 +177,7 @@ class ChatView extends React.Component {
                             onPressAvatar={() => this.props.push('ProfileView', { uid: this.state.userId })}
                             user={{
                                 _id: auth().currentUser.uid,
-                                name: 'Dheeraj Yalamanchili'
+                                name: this.props.profilesById[auth().currentUser.uid].fname + " " + this.props.profilesById[auth().currentUser.uid].lname
                             }}
                         />
                     </>

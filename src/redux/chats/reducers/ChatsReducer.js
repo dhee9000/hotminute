@@ -90,7 +90,7 @@ const byId = (state = {}, action = {}) => {
 
         }
 
-        case ActionTypes.FETCH_MESSAGE.SUCCESS: {
+        case ActionTypes.FETCH_MESSAGE.SUCCESS, ActionTypes.FETCH_MESSAGES.SUCCESS: {
 
             let { id, chatId } = action.payload;
 
@@ -102,6 +102,7 @@ const byId = (state = {}, action = {}) => {
                 }
             }
         }
+
 
         default: {
             return state;

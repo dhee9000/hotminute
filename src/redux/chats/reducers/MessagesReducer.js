@@ -16,10 +16,24 @@ const allIds = (state = [], action) => {
                     ]
                 );
             }
-            else{
+            else {
                 return state;
             }
             break;
+        }
+
+        case ActionTypes.FETCH_MESSAGES.SUCCESS: {
+
+            let newState = state;
+            action.payload.messages.map(message => {
+                if (!newState.includes(message.id)) {
+                    newState.push(message.id);
+                }
+            });
+            return newState;
+            break;
+
+
         }
 
         default: {
@@ -41,6 +55,7 @@ const byId = (state = {}, action) => {
                 {
                     ...state,
                     [id]: {
+                        id,
                         sentAt,
                         sentBy,
                         text,
@@ -48,6 +63,25 @@ const byId = (state = {}, action) => {
                 }
             );
             break;
+        }
+
+        case ActionTypes.FETCH_MESSAGES.SUCCESS: {
+
+            let messages = action.payload.messages;
+            let newState = state;
+
+            messages.map(message => {
+                let { id, sentAt, sentBy, text } = message;
+                newState[id] = {
+                    id,
+                    sentAt,
+                    sentBy,
+                    text,
+                }
+            });
+
+            return newState;
+
         }
 
 
