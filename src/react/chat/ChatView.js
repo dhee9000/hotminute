@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TextInput, Image, Dimensions, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { View, TextInput, Image, Dimensions, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { Text } from '../common/components';
 import { Fonts, Colors } from '../../config';
@@ -101,14 +101,26 @@ class ChatView extends React.Component {
 
     renderInputToolbar = props => {
         return (
-            <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, }}>
-                <View style={{ flex: 5 }}>
-                    {this.renderComposer(props)}
+            Platform.select({
+                ios: <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'height' : 'none'}>
+                    <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, }}>
+                        <View style={{ flex: 5 }}>
+                            {this.renderComposer(props)}
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            {this.renderSend(props)}
+                        </View>
+                    </View>
+                </KeyboardAvoidingView>,
+                android: <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16.0, }}>
+                    <View style={{ flex: 5 }}>
+                        {this.renderComposer(props)}
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        {this.renderSend(props)}
+                    </View>
                 </View>
-                <View style={{ flex: 1 }}>
-                    {this.renderSend(props)}
-                </View>
-            </View>
+            })
         )
     }
 
@@ -151,11 +163,8 @@ class ChatView extends React.Component {
                         </View>
                         <GiftedChat
                             messages={this.props.chatsById[this.state.chatId].messages.allIds.map(id => {
-                                
-                                console.log("MESSAGES", this.props.chatsById[this.state.chatId].messages);
-                                let message = this.props.chatsById[this.state.chatId].messages.byId[id];
 
-                                console.log("MESSAGE", message);
+                                let message = this.props.chatsById[this.state.chatId].messages.byId[id];
 
                                 return {
                                     _id: message.id,
@@ -170,11 +179,10 @@ class ChatView extends React.Component {
                             onSend={this.onSend}
                             renderInputToolbar={this.renderInputToolbar}
                             renderBubble={this.renderBubble}
-                            messagesContainerStyle={{}}
                             minInputToolbarHeight={0}
                             renderFooter={() => <View style={{ height: 90 }} />}
                             showUserAvatar
-                            onPressAvatar={() => this.props.push('ProfileView', { uid: this.state.userId })}
+                            onPressAvatar={() => this.props.navigation.push('ProfileView', { uid: this.state.userId })}
                             user={{
                                 _id: auth().currentUser.uid,
                                 name: this.props.profilesById[auth().currentUser.uid].fname + " " + this.props.profilesById[auth().currentUser.uid].lname
