@@ -148,7 +148,7 @@ class Minute extends React.Component {
 
         this.setState({ userLocation: { location: currentLocation, address: addressLookup, regionCode } });
 
-        if (supportedRegions.value.includes(regionCode)) {
+        if (["TX"].includes(regionCode)) {
             this.setState({ locationCheckSuccessful: true });
         }
         else {
