@@ -31,6 +31,7 @@ import * as Permissions from 'expo-permissions';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Location from 'react-native-location';
+import LottieView from 'lottie-react-native';
 
 import { FiltersModal, InstructionsModal, Swiper } from './components';
 
@@ -229,7 +230,7 @@ class Minute extends React.Component {
             active: true,
         });
 
-        this.setState({poolEntryId: poolEntrySnapshot.id})
+        this.setState({ poolEntryId: poolEntrySnapshot.id })
 
         // Listen for changes to entry
         let unsubscribePoolEntry = firestore().collection('pairingPool').doc(poolEntrySnapshot.id).onSnapshot(async docSnapshot => {
@@ -239,15 +240,18 @@ class Minute extends React.Component {
                 let pairedProfile = pairedProfileSnapshot.data();
                 let pairedProfilePictureURL = await storage().ref(pairedProfile.images["1"].ref).getDownloadURL();
                 pairedProfile.pictureURL = pairedProfilePictureURL;
-                this.setState({ roomId: data.roomId, roomToken: data.roomToken, pairedUid: data.pairedUid, pairedProfile, paired: true }, this.joinRoom)
+                this.setState({ roomId: data.roomId, roomToken: data.roomToken, pairedUid: data.pairedUid, pairedProfile, paired: true }, this.joinRoom);
+                this.confettiAnimation.setValue(0);
             }
-            if(data.partnerExtended && data.extended){
-                this.setState({timeLeft: this.state.timeLeft + 30});
+            if (data.partnerExtended && data.extended) {
+                this.setState({ timeLeft: this.state.timeLeft + 30 });
+                this.playConfetti();
             }
             if (data.matched) {
                 this.leaveRoom();
                 this.props.navigation.navigate('Matches');
                 this.state.unsubscribePoolEntry();
+                this.playConfetti();
             }
             if (!data.active) {
                 this.setState({ enteredPool: false });
@@ -272,6 +276,15 @@ class Minute extends React.Component {
 
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.setState({ enteredPool: false, pairedUid: null });
+    }
+
+    playConfetti = () => {
+        this.confettiAnimation.setValue(0);
+        Animated.timing(this.confettiAnimation, {
+            toValue: 1,
+            duration: 3000,
+            useNativeDriver: true,
+        }).start();
     }
 
     joinRoom = async () => {
@@ -347,6 +360,7 @@ class Minute extends React.Component {
     }
 
     loadingAnimation = new Animated.Value(0);
+    confettiAnimation = new Animated.Value(0);
 
     render() {
 
@@ -406,6 +420,9 @@ class Minute extends React.Component {
                             // IF JOINED CALL
                             <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
                                 <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} />
+                                <View pointerEvents={'none'} style={{ position: 'absolute', height, width, top: 0, left: 0 }}>
+                                    <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0 }} progress={this.confettiAnimation} />
+                                </View>
                             </Animated.View>
                             :
                             <>
