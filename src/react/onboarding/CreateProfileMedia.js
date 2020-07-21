@@ -135,6 +135,7 @@ class CreateProfileMedia extends React.Component {
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                     <Text style={{ color: Colors.text, marginBottom: 16.0 }}>Choose up to 6 pictures (at least 3) of yourself to show on your profile after dates match with you.</Text>
+                    <Text style={{ fontFamily: Fonts.heading, marginBottom: 16.0 }}>Your first picture will become your profile picture.</Text>
                     <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'space-evenly', marginVertical: 2.0 }}>
                         <this.ProfileImage imageId={1} />
                         <this.ProfileImage imageId={2} />
