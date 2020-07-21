@@ -234,7 +234,7 @@ class Minute extends React.Component {
         // Listen for changes to entry
         let unsubscribePoolEntry = firestore().collection('pairingPool').doc(poolEntrySnapshot.id).onSnapshot(async docSnapshot => {
             let data = docSnapshot.data();
-            if (data.paired && !data.matched && !this.state.partnerUid === this.state.pairedUid) {
+            if (data.paired && !data.matched && !data.extended) {
                 let pairedProfileSnapshot = await firestore().collection('profiles').doc(data.pairedUid).get();
                 let pairedProfile = pairedProfileSnapshot.data();
                 let pairedProfilePictureURL = await storage().ref(pairedProfile.images["1"].ref).getDownloadURL();
