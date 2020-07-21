@@ -22,12 +22,9 @@ const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Pr
 import { Button, Icon } from 'react-native-elements';
 
 const generateCombinedDocId = (uid1, uid2) => {
-    if (uid1.localeCompare(uid2) < 0) {
-        return uid2 + "_" + uid1;
-    }
-    else {
-        return uid1 + "_" + uid2;
-    }
+    let strings = [uid1, uid2];
+    strings.sort();
+    return strings[0] + "_" + strings[1]
 }
 
 class ProfileView extends React.Component {
