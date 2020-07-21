@@ -162,7 +162,7 @@ class Swiper extends React.Component {
         return (
             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Animated.View style={{ transform: [{ rotateY: imageRotateY }, { rotateX: imageRotateX }] }}>
-                    <Animated.Image blurRadius={8.0} source={{ uri: this.props.pictureURL ? this.props.pictureURL : BLANK_IMAGE_URI }} style={{ height, width, borderRadius: 8.0 }} />
+                    <Animated.Image blurRadius={24.0} source={{ uri: this.props.pictureURL ? this.props.pictureURL : BLANK_IMAGE_URI }} style={{ height, width, borderRadius: 8.0 }} />
                 </Animated.View>
                 <PanGestureHandler onHandlerStateChange={this.handleGestureStateChanged} onGestureEvent={Animated.event([{ nativeEvent: { translationX: this.gestureX, translationY: this.gestureY } }], { useNativeDriver: false })} minPointers={1} maxPointers={1}>
                     <Animated.View style={{ position: 'absolute', top: 0, left: 0, height, width, alignItems: 'center', justifyContent: 'center', backgroundColor: '#33333377' }}>
