@@ -360,16 +360,16 @@ class Minute extends React.Component {
             )
         }
 
-        if (!this.state.hasRecordingPermission) {
-            return (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Image source={require('../../../assets/img/audio-permission.png')} style={{ height: 196, width: 196 }} />
-                    <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
-                    <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Recording Permission</Text>
-                    <Text style={{ textAlign: 'center' }}>It looks like you denied the audio recording permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the microphone permission!</Text>
-                </View>
-            )
-        }
+        // if (!this.state.hasRecordingPermission) {
+        //     return (
+        //         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        //             <Image source={require('../../../assets/img/audio-permission.png')} style={{ height: 196, width: 196 }} />
+        //             <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
+        //             <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Recording Permission</Text>
+        //             <Text style={{ textAlign: 'center' }}>It looks like you denied the audio recording permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the microphone permission!</Text>
+        //         </View>
+        //     )
+        // }
 
         if (!this.state.hasLocationPermission) {
             return (
