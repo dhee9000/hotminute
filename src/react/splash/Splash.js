@@ -64,33 +64,14 @@ class Splash extends React.Component {
                 this.goToStart();
             }
             else {
-                this.setState({ currentActionString: 'Checking Permission...' });
-                let permissionGranted = await Location.requestPermission({ ios: "whenInUse", android: { detail: "coarse" } })
-                if (!permissionGranted) {
-                    alert("You must grant location permissions for HotMinute to work!");
-                }
-                else {
-                    this.setState({ currentActionString: 'Checking Location...' });
-                    let currentLocation = await Location.getLatestLocation();
-                    let { longitude, latitude } = currentLocation;
-                    let response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAPS_API_KEY}`);
-                    let addressLookup = await response.json();
-                    let stateCode = addressLookup.results[0].address_components.filter(component => component.types.includes('administrative_area_level_1'))[0].short_name;
-                    if (!stateCode === 'TX') {
-                        this.goToLocation(stateCode);
-                    }
-                    else {
+                this.setState({ currentActionString: 'Registering Notifications...' });
+                let fcmToken = await messaging().getToken();
+                await firestore().collection('users').doc(auth().currentUser.uid).set({
+                    fcmTokens: firestore.FieldValue.arrayUnion(fcmToken)
+                }, { merge: true });
 
-                        this.setState({ currentActionString: 'Registering Notifications...' });
-                        let fcmToken = await messaging().getToken();
-                        await firestore().collection('users').doc(auth().currentUser.uid).set({
-                            fcmTokens: firestore.FieldValue.arrayUnion(fcmToken)
-                        }, { merge: true });
-
-                        this.setState({ currentActionString: 'Almost Done...'})
-                        this.goToMain();
-                    }
-                }
+                this.setState({ currentActionString: 'Almost Done...'})
+                this.goToMain();
             }
         }
     }
