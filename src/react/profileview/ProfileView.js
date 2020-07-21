@@ -162,9 +162,9 @@ class ProfileView extends React.Component {
                             <Button onPress={this.chatPressed} icon={<Icon name={'message'} color={Colors.background} />} containerStyle={{ margin: 4.0 }} />
                             <Button onPress={this.morePressed} icon={<Icon name={'more-horiz'} color={Colors.primary} />} type={'outline'} containerStyle={{ margin: 4.0 }} />
                         </View>
-                        <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
-                        <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.occupation}</Text>
-                        <Text style={{ fontSize: 18, color: Colors.textLightGray }}>{this.state.bio}</Text>
+                        <Text style={{ fontSize: 28, color: Colors.textLightGray, fontFamily: Fonts.heading }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
+                        <Text style={{ fontSize: 20, color: Colors.textLightGray, textAlign: 'center' }}>{this.state.occupation}</Text>
+                        <Text style={{ fontSize: 16, color: Colors.text, textAlign: 'center' }}>{this.state.bio}</Text>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading }}>Interests</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', marginVertical: 8.0 }}>
                             {this.state.interests.map(interest => (
