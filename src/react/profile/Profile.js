@@ -28,6 +28,8 @@ import { Button, Icon, Input } from 'react-native-elements';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 
+import ImageResizer from 'react-native-image-resizer';
+
 const { height, width } = Dimensions.get('screen');
 
 class Profile extends React.Component {
@@ -134,6 +136,7 @@ class Profile extends React.Component {
                 occupation: this.state.occupation,
                 bio: this.state.bio,
                 interests: this.state.interests,
+                images: this.state.images,
             })
             this.state.editingAnimRunner.stop();
             Animated.timing(this.editingWiggle, {
@@ -201,6 +204,10 @@ class Profile extends React.Component {
             try {
                 let image = await ImagePicker.launchImageLibraryAsync({ allowsEditing: false, aspect: [1, 1] });
                 if (!image.cancelled) {
+
+                    let resizedImage = await ImageResizer.createResizedImage(image.uri, 1920, 1920, 'JPEG', 80, 0, null, true);
+                    image.uri = resizedImage.uri;
+
                     let newImages = {};
                     newImages = { ...this.state.images };
                     newImages[id] = image;
@@ -253,7 +260,7 @@ class Profile extends React.Component {
                         </TouchableOpacity>
                     </View>
                     {this.state.editingProfile ? <Text style={{ alignSelf: 'center', color: Colors.textLightGray, fontSize: 12.0 }}>tap something below to change it</Text> : null}
-                    <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center' }}>
+                    <ScrollView style={{ flex: 1, marginTop: 16.0 }} contentContainerStyle={{ alignItems: 'center', padding: 16.0 }}>
                         <Image source={{ uri: this.state.images[Object.keys(this.state.images)[0]] ? this.state.images[Object.keys(this.state.images)[0]].uri : BLANK_IMAGE_URI }} resizeMode={'cover'} style={{ height: IMG_DIM, width: IMG_DIM, backgroundColor: Colors.primary, borderRadius: IMG_DIM / 2, margin: 2.0 }} />
                         <View style={{ flexDirection: 'row', marginTop: 16.0 }}>
                             <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editFname} >

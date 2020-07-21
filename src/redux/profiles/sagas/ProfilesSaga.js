@@ -62,12 +62,49 @@ function* watchUpdateProfileRequested() {
     yield takeLatest(ActionTypes.UPDATE_PROFILE.REQUEST,
         function* onUpdateProfileRequested(action) {
             let profileDocRef = firestore().collection('profiles').doc(auth().currentUser.uid);
+
+            // PRE PROCESS IMAGES
+            Object.keys(action.payload.images).forEach(async key => {
+
+                let image = action.payload.images[key];
+
+                if(image.ref){
+                    return;
+                }
+
+                // Create a record of this image.
+                let imageDoc = await profileDocRef.collection('images').add({
+                    uploadDate: firestore.FieldValue.serverTimestamp(),
+                    originalUri: image.uri,
+                });
+
+                let { id } = imageDoc;
+
+                // Upload the image.
+                let fileName = `${auth().currentUser.uid}_${Date.now().toString()}`.replace(' ', '');
+                let fileExtension = image.uri.substr(image.uri.lastIndexOf('.') + 1);
+                let storageRef = `profiles/${auth().currentUser.uid}/images/${fileName}.${fileExtension}`
+                await storage().ref(storageRef).putFile(image.uri);
+
+                // Set the image on the profile.
+                let updateKey = `images.${key}`;
+                await profileDocRef.update({
+                    [updateKey]: {
+                        id,
+                        ref: storageRef,
+                    }
+                })
+
+            })
+
+            // UPDATE ACTUAL PROFILE DOC
             let newProfileData = {
                 fname: action.payload.fname,
                 lname: action.payload.lname,
                 occupation: action.payload.occupation,
                 bio: action.payload.bio,
                 interests: action.payload.interests,
+                images: action.payload.images,
             }
             try {
                 yield call([profileDocRef, profileDocRef.update], newProfileData);
