@@ -300,15 +300,15 @@ class Profile extends React.Component {
                                 </Animated.View>
                             </TouchableOpacity>
                         </View>
-                        <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
+                        <Text style={{ fontSize: 28, color: Colors.textLightGray, fontFamily: Fonts.heading }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editOccupation}>
                             <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                                <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.occupation}</Text>
+                                <Text style={{ fontSize: 20, color: Colors.textLightGray, textAlign: 'center' }}>{this.state.occupation}</Text>
                             </Animated.View>
                         </TouchableOpacity>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editBio}>
                             <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
-                                <Text style={{ fontSize: 16, color: Colors.textLightGray }}>{this.state.bio}</Text>
+                                <Text style={{ fontSize: 16, color: Colors.text, textAlign: 'center' }}>{this.state.bio}</Text>
                             </Animated.View>
                         </TouchableOpacity>
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading }}>Interests</Text>
