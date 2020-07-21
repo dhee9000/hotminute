@@ -35,10 +35,6 @@ class Start extends React.Component {
         const enabled =
             authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
             authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-        if (enabled) {
-            console.log('Authorization status:', authStatus);
-        }
         let token = await messaging().getToken();
         console.log(token);
         setTimeout(() =>
@@ -51,7 +47,7 @@ class Start extends React.Component {
         if (auth().currentUser) {
             let profileSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
             let profileData = profileSnapshot.data();
-            if (profileSnapshot.exists) {
+            if (profileSnapshot.exists && profileData.profileComplete) {
                 this.setState({ profileFetched: true, ...profileData });
                 this.props.navigation.navigate('Main');
             }
