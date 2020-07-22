@@ -114,7 +114,10 @@ class ProfileView extends React.Component {
 
     reportMatchPressed = () => {
 
-        let otherUid = this.props.matchesById[this.state.uid].uids.filter(uid => uid != auth().currentUser.uid)[0];
+        let matchId = this.props.matchesIds.filter(matchId => {
+            return this.props.matchesById[matchId].uids.includes(this.state.uid);
+        })[0];
+        let otherUid = this.props.matchesById[matchId].uids.filter(uid => uid != auth().currentUser.uid)[0];
 
         Alert.prompt(
             'Why are you reporting this user?',
@@ -130,7 +133,6 @@ class ProfileView extends React.Component {
         );
 
         this.unmatchPressed(matchId);
-
     }
 
     render() {
