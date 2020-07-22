@@ -48,6 +48,8 @@ export const FETCH_MESSAGES = action('FETCH_MESSAGES');
 
 export const LISTEN_MESSAGES = action('LISTEN_MESSAGES');
 
+export const MESSAGE_SENT = 'MESSAGE_SENT';
+
 /**
  * Action Name: Fetch Chat
  * Action Description: Fetches a single chat. Analogous to FETCH MATCH and FETCH MATCHES

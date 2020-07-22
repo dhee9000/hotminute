@@ -36,6 +36,18 @@ const allIds = (state = [], action) => {
 
         }
 
+        case ActionTypes.MESSAGE_SENT: {
+
+            let message = action.payload.message;
+            let newState = state;
+
+            let { id, sentAt, sentBy, text } = message;
+            newState.push(id);
+
+            return newState;
+
+        }
+
         default: {
             return state;
             break;
@@ -79,6 +91,18 @@ const byId = (state = {}, action) => {
                     text,
                 }
             });
+
+            return newState;
+
+        }
+
+        case ActionTypes.MESSAGE_SENT: {
+
+            let message = action.payload.message;
+            let newState = state;
+
+            let { id, sentAt, sentBy, text } = message;
+            newState[id] = { id, sentAt, sentBy, text };
 
             return newState;
 

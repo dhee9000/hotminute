@@ -5,7 +5,7 @@ import { Text } from '../common/components';
 import { Fonts, Colors } from '../../config';
 
 import { connect } from 'react-redux';
-import { ActionTypes } from '../../redux/';
+import *  as ActionTypes from '../../redux/ActionTypes';
 import { GiftedChat } from 'react-native-gifted-chat';
 
 import { Input, Icon } from 'react-native-elements';
@@ -35,12 +35,18 @@ class ChatView extends React.Component {
     }
 
     onSend = messages => {
-        messages.map(msg => {
-            firestore().collection('chats').doc(this.state.chatId).collection('messages').add({
-                sentAt: firestore.FieldValue.serverTimestamp(),
+        messages.map(async msg => {
+
+            let date = new Date();
+
+            let messageObj = {
+                sentAt: date,
                 sentBy: auth().currentUser.uid,
                 text: msg.text,
-            })
+            }
+            let messageRef = await firestore().collection('chats').doc(this.state.chatId).collection('messages').add(messageObj);
+            messageObj.id = messageRef.id;
+            this.props.messageSent(this.state.chatId, messageObj);
         });
     }
 
@@ -70,6 +76,8 @@ class ChatView extends React.Component {
                 multiline={props.multiline}
                 editable={!props.disableComposer}
                 onChangeText={text => props.onTextChanged(text)}
+                onSubmitEditing={() => props.onSend({ text: props.text.trim() }, true)}
+                blurOnSubmit={false}
                 style={{
                     padding: 16.0,
                     borderRadius: 32.0,
@@ -205,6 +213,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     getProfile: uid => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: uid }),
+    messageSent: (chatId, messageObj) => dispatch({type: ActionTypes.MESSAGE_SENT, payload: {chatId, message: messageObj}})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatView);

@@ -22,11 +22,11 @@ const allIds = (state = [], action = {}) => {
 
             let docs = action.payload;
             docs.forEach(doc => {
-                if(!newState.includes(doc.id)){
+                if (!newState.includes(doc.id)) {
                     newState.push(doc.id);
                 }
             });
-            
+
             return newState;
 
         }
@@ -54,7 +54,7 @@ const byId = (state = {}, action = {}) => {
             }
 
         }
-        
+
         case ActionTypes.FETCH_CHAT.SUCCESS: {
 
             let doc = action.payload;
@@ -73,7 +73,7 @@ const byId = (state = {}, action = {}) => {
 
         case ActionTypes.FETCH_CHATS.SUCCESS: {
 
-            let newState = {...state};
+            let newState = { ...state };
 
             let docs = action.payload;
             docs.forEach(doc => {
@@ -85,7 +85,7 @@ const byId = (state = {}, action = {}) => {
                     messages: messages(state[doc.id] ? state[doc.id].messages : undefined, action),
                 }
             });
-            
+
             return newState;
 
         }
@@ -103,6 +103,20 @@ const byId = (state = {}, action = {}) => {
             }
         }
 
+        case ActionTypes.MESSAGE_SENT: {
+
+            let { chatId } = action.payload;
+
+            return {
+                ...state,
+                [chatId]: {
+                    ...state[chatId],
+                    messages: messages(state[chatId].messages, action),
+                }
+            }
+
+        }
+
 
         default: {
             return state;
@@ -110,6 +124,6 @@ const byId = (state = {}, action = {}) => {
     }
 }
 
-const ChatsReducer = combineReducers({allIds, byId});
+const ChatsReducer = combineReducers({ allIds, byId });
 
 export default ChatsReducer;
