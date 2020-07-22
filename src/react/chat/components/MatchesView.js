@@ -70,7 +70,7 @@ class MatchesView extends React.Component {
         if (this.props.profileIds.includes(uid) && this.props.profilesById[uid].loaded) {
             let profile = this.props.profilesById[uid];
             return (
-                <TouchableOpacity onPress={() => { this.matchClicked(item) }} onLongPress={() => { this.matchLongPressed(item) }}>
+                <TouchableOpacity onPress={() => { this.matchClicked(item) }}>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', margin: 8.0 }}>
                         <Image blurRadius={4.0} source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 8, height: 96, width: '100%' }} />
