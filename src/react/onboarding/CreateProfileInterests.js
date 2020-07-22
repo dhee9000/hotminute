@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Platform, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { View, Platform, ScrollView, TouchableOpacity, FlatList, Image } from 'react-native';
 
 import { Text, DismissKeyboardView } from '../common/components';
 
@@ -83,6 +83,7 @@ class CreateProfileInterests extends React.Component {
                     <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Interests</Text>
                     </View>
+                    <Image source={require('../../../assets/img/interests-visual.png')} style={{height: 144, width: 144}} />
                     <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
                             containerStyle={{ marginBottom: 32.0 }}
