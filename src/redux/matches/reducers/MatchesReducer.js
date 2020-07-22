@@ -9,7 +9,10 @@ const allIds = (state = [], action = {}) => {
 
             let id = action.payload;
             if (!newState.includes(id)) {
-                newState.push(id);
+                newState = [
+                    id,
+                    ...newState,
+                ]
             }
 
             return newState;
