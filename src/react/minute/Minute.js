@@ -86,12 +86,18 @@ class Minute extends React.Component {
         RtcEngine.setEnableSpeakerphone(true);
         RtcEngine.setDefaultAudioRouteToSpeakerphone(true);
         RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
-        RtcEngine.on('userJoined', data => this.setState({ partnerUid: data.uid, partnerOnCall: true })); // When a user joins the call
+        RtcEngine.on('userJoined', data => this.setState({ partnerUid: data.uid, partnerOnCall: true, showInstructionsPopup: true })); // When a user joins the call
         RtcEngine.on('userOffline', data => this.setState({ partnerUid: null, partnerOnCall: false }));
         RtcEngine.on('joinChannelSuccess', data => {    // When user joins channel
             RtcEngine.startPreview();
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-            this.setState({ joinedCall: true, showInstructionsPopup: true });
+            this.setState({ joinedCall: true });
+            setTimeout(() => {
+                if(this.state.waitingForPartner && !this.state.partnerOnCall){
+                    alert('Your partner didn\'t join the call!');
+                    this.leaveRoom();
+                }
+            }, 5000)
         });
         RtcEngine.on('error', data => {
             switch (data.errorCode) {
@@ -174,7 +180,7 @@ class Minute extends React.Component {
             Animated.timing(this.callStartAnimation, {
                 toValue: 1,
                 duration: 1000,
-                easing: Easing.bounce,
+                easing: Easing.cubic,
                 useNativeDriver: true,
             }).start();
             this.runTime();
@@ -293,6 +299,7 @@ class Minute extends React.Component {
             {
                 text: 'Join',
                 onPress: () => {
+                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                     RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
                     this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, waitingForPartner: true });
                     setTimeout(() => {
@@ -331,7 +338,7 @@ class Minute extends React.Component {
         }
         RtcEngine.leaveChannel();
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        this.setState({ partnerOnCall: false, partnerUid: null, joinedCall: false, timer: null, });
+        this.setState({ partnerOnCall: false, partnerUid: null, joinedCall: false, timer: null, waitingForPartner: false });
         this.leavePool();
     }
 
@@ -416,7 +423,7 @@ class Minute extends React.Component {
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
                 <View style={{ flex: 1 }}>
                     {
-                        this.state.joinedCall ?
+                        this.state.joinedCall && !this.state.waitingForPartner ?
                             // IF JOINED CALL
                             <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
                                 <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} />
@@ -443,20 +450,24 @@ class Minute extends React.Component {
                                 </View>
                                 <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
                                     {
-                                        !this.state.enteredPool && !this.state.joinedCall ?
+                                        !this.state.enteredPool && !this.state.joinedCall && !this.state.waitingForPartner ?
                                             <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
                                                 <Icon name={'sort'} size={32} color={Colors.textLightGray} />
                                             </TouchableOpacity>
                                             :
                                             null
                                     }
-                                    <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
-                                        <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
-                                            <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
-                                                <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
-                                            </LinearGradient>
-                                        </TouchableOpacity>
-                                    </View>
+                                    {
+                                        this.state.waitingForPartner ? null :
+
+                                        <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
+                                            <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
+                                                <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
+                                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
+                                                </LinearGradient>
+                                            </TouchableOpacity>
+                                        </View>
+                                    }
                                 </View>
                             </>
                     }
