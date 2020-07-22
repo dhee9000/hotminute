@@ -4,7 +4,7 @@ import { View, Image, ScrollView, TouchableOpacity, Modal, Dimensions, Alert } f
 import { Text } from '../common/components';
 
 import { connect } from 'react-redux';
-import { ActionTypes } from '../../redux/';
+import * as ActionTypes from '../../redux/ActionTypes';
 
 import { Colors, Fonts } from '../../config';
 
@@ -136,8 +136,8 @@ class ProfileView extends React.Component {
     render() {
         return (
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
-                <View style={{ padding: 16.0, flex: 1 }}>
-                    <View style={{ flexDirection: 'row', paddingTop: 16.0, alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: 'row', paddingTop: 32.0, paddingHorizontal: 16.0, alignItems: 'center', justifyContent: 'space-between' }}>
                         <View style={{ flex: 1, alignItems: 'flex-start' }}>
                             <View style={{ backgroundColor: Colors.primary, borderRadius: 16.0 }}>
                                 <TouchableOpacity onPress={() => this.props.navigation.pop()}>
