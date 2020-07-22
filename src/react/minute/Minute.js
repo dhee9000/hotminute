@@ -462,8 +462,8 @@ class Minute extends React.Component {
 
                                         <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
                                             <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
-                                                <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
-                                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
+                                                <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={[Colors.primaryDark, Colors.primary]}>
+                                                    <Text style={{ fontFamily: Fonts.heading, color: notInPool ? Colors.background : Colors.text }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
                                                 </LinearGradient>
                                             </TouchableOpacity>
                                         </View>
