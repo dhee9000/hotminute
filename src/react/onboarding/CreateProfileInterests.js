@@ -67,10 +67,10 @@ class CreateProfileInterests extends React.Component {
 
     renderInterest = ({ item }) => {
         return (
-            <TouchableOpacity onPress={() => this.setState({ interests: this.state.interests.filter(interest => interest !== item) })}>
+            <TouchableOpacity key={item} onPress={() => this.setState({ interests: this.state.interests.filter(interest => interest !== item) })}>
                 <View style={{ backgroundColor: Colors.primary, borderRadius: 16.0, paddingHorizontal: 16.0, paddingVertical: 4.0, margin: 2.0, flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={{ color: Colors.background }}>{item}</Text>
-                    <Text style={{ color: Colors.background }}>X</Text>
+                    <Text style={{ color: Colors.text }}> ✕</Text>
                 </View>
             </TouchableOpacity>
         )
@@ -94,15 +94,22 @@ class CreateProfileInterests extends React.Component {
                             placeholder={'Basketball'}
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={editInterest => this.setState({ editInterest })}
+                            onSubmitEditing={this.onAddInterestPressed}
+                            blurOnSubmit={false}
                             value={this.state.editInterest}
                         />
-                        <Button disabled={!this.state.editInterest || this.state.editInterest.length < 2} onPress={this.onAddInterestPressed} title={'Add'} type={'outline'} />
-                        <FlatList
+                        {/* <Button disabled={!this.state.editInterest || this.state.editInterest.length < 2} onPress={this.onAddInterestPressed} title={'Add'} type={'outline'} /> */}
+                        {/* <FlatList
                             contentContainerStyle={{ margin: 16.0 }}
                             data={this.state.interests}
                             renderItem={this.renderInterest}
                             keyExtractor={item => item}
-                        />
+                        /> */}
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', marginVertical: 8.0 }}>
+                        {
+                            this.state.interests.map(interest => this.renderInterest({item: interest}))
+                        }
+                        </View>
                     </View>
                     <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
                         <Button disabled={this.state.interests.length < 3} title={"Are we done yet?"} onPress={this.onDonePressed} />

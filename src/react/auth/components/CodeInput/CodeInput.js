@@ -20,6 +20,7 @@ import styles, {
   DEFAULT_CELL_BG_COLOR,
   NOT_EMPTY_CELL_BG_COLOR,
 } from './CodeInputStyles';
+import { useEffect } from 'react';
 
 const {Value, Text: AnimatedText} = Animated;
 

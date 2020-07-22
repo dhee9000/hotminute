@@ -24,6 +24,8 @@ class CreateProfileName extends React.Component {
         lname: '',
     }
 
+    lnameInput = React.createRef();
+
     async componentDidMount() {
         let profileSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
         let profileData = profileSnapshot.data();
@@ -53,9 +55,11 @@ class CreateProfileName extends React.Component {
                             placeholder={'First Name'}
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={fname => this.setState({ fname })}
+                            onSubmitEditing={() => this.lnameInput.current.focus()}
                             value={this.state.fname}
                         />
                         <Input
+                            ref={this.lnameInput}
                             containerStyle={{ marginBottom: 32.0 }}
                             inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             inputContainerStyle={{ borderColor: Colors.accent }}
@@ -64,6 +68,7 @@ class CreateProfileName extends React.Component {
                             placeholder={'Last Name'}
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={lname => this.setState({ lname })}
+                            onSubmitEditing={this.onDonePressed}
                             value={this.state.lname}
                         />
                     </View>

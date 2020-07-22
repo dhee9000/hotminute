@@ -27,7 +27,8 @@ class Login extends React.Component {
         code: '',
         verifyingCode: false,
         codeVerified: false,
-        confirmation: {}
+        confirmation: {},
+        codeInputFocus: false,
     }
 
     onLoginPressed = async () => {
@@ -47,7 +48,7 @@ class Login extends React.Component {
 
         try {
             const confirmation = await auth().signInWithPhoneNumber(`+1${this.state.phno}`);
-            this.setState({ confirmation, sendingCode: false, codeSent: true });
+            this.setState({ confirmation, sendingCode: false, codeSent: true, codeInputFocus: true});
         }
         catch (e) {
             console.log("Send Code Error", e);
@@ -112,6 +113,7 @@ class Login extends React.Component {
                                         onChangeText={text => this.setState({ phno: text })}
                                         placeholder={'9728836969'}
                                         placeholderTextColor={Colors.textLightGray}
+                                        onSubmitEditing={this.onLoginPressed}
                                         value={this.state.phno}
                                     />
                                 </View>
@@ -133,12 +135,18 @@ class Login extends React.Component {
                                                 <Text style={{ color: Colors.text }}>We texted you a code to make sure your number is right.</Text>
                                             </View>
                                             <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
-                                                <CodeInput onChangeText={text => this.setState({ code: text })} value={this.state.code} />
+                                                <CodeInput autoFocus={this.state.codeInputFocus} onChangeText={text => {
+                                                    this.setState({ code: text }, () => {
+                                                        if (text.length === 6) {
+                                                            this.onVerifyCodePressed();
+                                                        }
+                                                    })
+                                                }} value={this.state.code} />
                                             </View>
                                             {this.state.verifyingCode ? <ActivityIndicator size={'large'} /> : null}
                                             <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
                                                 <Text style={{ color: Colors.textLightGray, alignSelf: 'center', marginVertical: 4.0 }} onPress={() => this.setState({ codeSent: false })}>Cancel</Text>
-                                                <Button title="Verify Code" onPress={this.onVerifyCodePressed} />
+                                                {/* <Button title="Verify Code" onPress={this.onVerifyCodePressed} /> */}
                                             </View>
                                         </View>
                                     </KeyboardAvoidingView>

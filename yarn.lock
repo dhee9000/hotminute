@@ -6334,10 +6334,10 @@ react-native-communications@^2.2.1:
   resolved "https://registry.yarnpkg.com/react-native-communications/-/react-native-communications-2.2.1.tgz#7883b56b20a002eeb790c113f8616ea8692ca795"
   integrity sha1-eIO1ayCgAu63kMET+GFuqGksp5U=
 
-react-native-confirmation-code-field@^6.4.0:
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/react-native-confirmation-code-field/-/react-native-confirmation-code-field-6.4.0.tgz#dd5bcc78fc7764cf746ea528be277aede18c34f9"
-  integrity sha512-SqbFaraXJ3SyzY/F5uD4r+HIvYeimFFl2nbo+duDw3q+TOR7wGArGpMr7TqzLrAyXL7v8qxRjqN3skCJdVf/8A==
+react-native-confirmation-code-field@^6.5.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-confirmation-code-field/-/react-native-confirmation-code-field-6.5.0.tgz#f5579ee66b3f902724f5596a7ea3c87308c4d6d9"
+  integrity sha512-thOctQtpkx5bcXIj6+S+gIKw7Z/jMBFf9FtqkiRQaZI1+IoMoA+n5CK4aYoosPQW4oAPTivL1mxOyA8T1kqmtA==
 
 react-native-countdown-component@^2.7.1:
   version "2.7.1"
