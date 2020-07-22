@@ -46,7 +46,7 @@ class CreateProfileOccupation extends React.Component {
             <DismissKeyboardView>
                 <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                     <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
-                        <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who do you do?</Text>
+                        <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>What do you do?</Text>
                     </View>
                     <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
