@@ -45,7 +45,7 @@ class CreateProfileName extends React.Component {
                     <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Who Are You?</Text>
                     </View>
-                    <Image source={require('../../../assets/img/name-visual.png')} style={{height: 144, width: 144}} />
+                    {/* <Image source={require('../../../assets/img/name-visual.png')} style={{height: 144, width: 144}} /> */}
                     <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
                             containerStyle={{ marginBottom: 32.0 }}
