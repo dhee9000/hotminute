@@ -262,9 +262,9 @@ class Profile extends React.Component {
     }
 
     logoutPressed = async () => {
+        this.props.navigation.navigate('Start');
         await auth().signOut();
         this.props.resetApp();
-        this.props.navigation.navigate('Start');
     }
 
     deleteAccount = async () => {
