@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, ScrollView, TouchableOpacity, Modal, Dimensions, Animated, LayoutAnimation, Platform, UIManager, Alert, KeyboardAvoidingView } from 'react-native';
+import { View, Image, ScrollView, TouchableOpacity, Modal, Dimensions, Animated, LayoutAnimation, Platform, UIManager, Alert, KeyboardAvoidingView, Linking } from 'react-native';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -43,7 +43,7 @@ class Profile extends React.Component {
         interests: [],
         images: {},
 
-        showSettings: false,
+        showSettings: true,
         editingProfile: false,
 
         asking: false,
@@ -369,8 +369,23 @@ class Profile extends React.Component {
                             <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
                         </TouchableOpacity>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>Settings</Text>
-                        <View>
-                            <Button title={'Log Out'} onPress={this.logoutPressed} />
+                        <View style={{alignItems: 'center', flex: 1}}>
+                            <View style={{flex: 1, alignItems: 'stretch', alignSelf: 'stretch'}}>
+                                <Button title={'Log Out'} onPress={this.logoutPressed} containerStyle={{alignSelf: 'stretch'}} />
+                            </View>
+                            <View style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}>
+                                <Text style={{fontFamily: Fonts.heading}}>Legal</Text>
+                                <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/ToS.html')}>
+                                    <Text style={{color: Colors.primary}}>Terms of Service</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/privacy.html')}>
+                                    <Text style={{color: Colors.primary}}>Privacy Policy</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/')} style={{alignItems: 'center'}}>
+                                    <Text style={{color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0}}>v0.0.1</Text>
+                                    <Text style={{color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0}}>© HotMinute LLC 2020</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </Modal>
