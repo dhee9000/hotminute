@@ -29,6 +29,7 @@ import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 
 import ImageResizer from 'react-native-image-resizer';
+import { assertValidExecutionArguments } from 'graphql/execution/execute';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -231,11 +232,11 @@ class Profile extends React.Component {
         let numImg = 0;
         Object.keys(this.state.images).map(() => numImg += 1);
         console.log("NUm IMG", numImg);
-        if(numImg <= 3){
+        if (numImg <= 3) {
             alert("You must have at least 3 images!");
             return;
         }
-        
+
         let newImageState = this.state.images;
 
         Object.keys(newImageState).map(key => {
@@ -248,7 +249,7 @@ class Profile extends React.Component {
             }
         });
 
-        this.setState({images: newImageState});
+        this.setState({ images: newImageState });
 
     }
 
@@ -263,6 +264,49 @@ class Profile extends React.Component {
     logoutPressed = async () => {
         await auth().signOut();
         this.props.navigation.navigate('Start');
+    }
+
+    deleteAccount = async () => {
+        Alert.alert(
+            'Are you sure?',
+            'Deleting your account is permanent and CANNOT BE UNDONE.\n\nOnly continue if you\'re sure you want to delete',
+            [
+                {
+                    text: 'Yes, DELETE MY ACCOUNT',
+                    onPress: async () => {
+                        
+                        let batch = firestore().batch();
+
+                        let rootCollections = [ 'profiles', 'filters', 'users', ];
+                        rootCollections.map(coll => batch.delete(firestore().collection(coll).doc(auth().currentUser.uid)));
+
+                        let searchCollections = [ 'matches', 'chats', 'swipes', 'pairingPool', 'pairings' ];
+                        let promises = searchCollections.map(async coll => {
+                            let docs = []
+                            let querySnapshot = await firestore().collection(coll).where('uids', 'array-contains', auth().currentUser.uid).get();
+                            docs.push(...querySnapshot.docs);
+                            querySnapshot = await firestore().collection(coll).where('uid', '==', auth().currentUser.uid).get();
+                            docs.push(...querySnapshot.docs);
+                            docs.map(doc => {
+                                batch.delete(doc.ref);
+                            });
+                        });
+
+                        await promises.pop();
+
+                        await batch.commit();
+                        this.logoutPressed();
+
+                    }
+                },
+                {
+                    text: 'Cancel',
+                    onPress: () => {
+                        return;
+                    }
+                }
+            ]
+        )
     }
 
     editingWiggle = new Animated.Value(0);
@@ -369,21 +413,24 @@ class Profile extends React.Component {
                             <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
                         </TouchableOpacity>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>Settings</Text>
-                        <View style={{alignItems: 'center', flex: 1}}>
-                            <View style={{flex: 1, alignItems: 'stretch', alignSelf: 'stretch'}}>
-                                <Button title={'Log Out'} onPress={this.logoutPressed} containerStyle={{alignSelf: 'stretch'}} />
+                        <View style={{ alignItems: 'center', flex: 1 }}>
+                            <View style={{ flex: 1, alignItems: 'center', alignSelf: 'stretch' }}>
+                                <Button title={'Log Out'} onPress={this.logoutPressed} containerStyle={{ alignSelf: 'stretch' }} />
+                                <TouchableOpacity onPress={this.deleteAccount} style={{ marginVertical: 16.0 }}>
+                                    <Text style={{ color: '#f55' }}>Delete Account</Text>
+                                </TouchableOpacity>
                             </View>
-                            <View style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}>
-                                <Text style={{fontFamily: Fonts.heading}}>Legal</Text>
+                            <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+                                <Text style={{ fontFamily: Fonts.heading }}>Legal</Text>
                                 <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/ToS.html')}>
-                                    <Text style={{color: Colors.primary}}>Terms of Service</Text>
+                                    <Text style={{ color: Colors.primary }}>Terms of Service</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/privacy.html')}>
-                                    <Text style={{color: Colors.primary}}>Privacy Policy</Text>
+                                    <Text style={{ color: Colors.primary }}>Privacy Policy</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/')} style={{alignItems: 'center'}}>
-                                    <Text style={{color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0}}>v0.0.1</Text>
-                                    <Text style={{color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0}}>© HotMinute LLC 2020</Text>
+                                <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/')} style={{ alignItems: 'center' }}>
+                                    <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>v0.0.1</Text>
+                                    <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>© HotMinute LLC 2020</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
