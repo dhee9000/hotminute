@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Platform, ScrollView, TouchableOpacity, FlatList, Image, KeyboardAvoidingView } from 'react-native';
+import { View, Platform, ScrollView, TouchableOpacity, FlatList, Image } from 'react-native';
 
 import { Text, DismissKeyboardView } from '../common/components';
 
@@ -79,7 +79,6 @@ class CreateProfileInterests extends React.Component {
     render() {
         return (
             <DismissKeyboardView>
-                <KeyboardAvoidingView style={{flex: 1}} behavior={'padding'}>
                 <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'space-evenly', padding: 16.0 }}>
                     <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Interests</Text>
@@ -87,6 +86,7 @@ class CreateProfileInterests extends React.Component {
                     <Image source={require('../../../assets/img/interests-visual.png')} style={{height: 144, width: 144}} />
                     <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
+                            containerStyle={{ marginBottom: 32.0 }}
                             inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             inputContainerStyle={{ borderColor: Colors.accent }}
                             label={'Add an Interest (at least 3)'}
@@ -95,11 +95,17 @@ class CreateProfileInterests extends React.Component {
                             placeholder={'Basketball'}
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={editInterest => this.setState({ editInterest })}
-                            returnKeyType={'next'}
                             onSubmitEditing={this.onAddInterestPressed}
                             blurOnSubmit={false}
                             value={this.state.editInterest}
                         />
+                        {/* <Button disabled={!this.state.editInterest || this.state.editInterest.length < 2} onPress={this.onAddInterestPressed} title={'Add'} type={'outline'} /> */}
+                        {/* <FlatList
+                            contentContainerStyle={{ margin: 16.0 }}
+                            data={this.state.interests}
+                            renderItem={this.renderInterest}
+                            keyExtractor={item => item}
+                        /> */}
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', marginVertical: 8.0 }}>
                         {
                             this.state.interests.map(interest => this.renderInterest({item: interest}))
@@ -110,7 +116,6 @@ class CreateProfileInterests extends React.Component {
                         <Button disabled={this.state.interests.length < 3} title={"Are we done yet?"} onPress={this.onDonePressed} />
                     </View>
                 </View>
-                </KeyboardAvoidingView>
             </DismissKeyboardView>
         )
     }
