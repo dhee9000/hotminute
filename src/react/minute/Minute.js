@@ -343,17 +343,21 @@ class Minute extends React.Component {
     }
 
     swipeRight = async () => {
-        firestore().collection('swipes').doc(`${auth().currentUser.uid}_${this.state.pairedUid}`).set({
+        firestore().collection('swipes').doc(`${auth().currentUser.uid}_${this.state.pairedUid}_${Date.now().toString()}`).set({
             uid: auth().currentUser.uid,
             swipedOn: this.state.pairedUid,
+            swipedAt: firestore.FieldValue.serverTimestamp(),
+            pairingId: this.state.poolEntryId,
             direction: 'right',
         });
     }
 
     swipeLeft = async () => {
-        firestore().collection('swipes').doc(`${auth().currentUser.uid}_${this.state.pairedUid}`).set({
+        firestore().collection('swipes').doc(`${auth().currentUser.uid}_${this.state.pairedUid}_${Date.now().toString()}`).set({
             uid: auth().currentUser.uid,
             swipedOn: this.state.pairedUid,
+            swipedAt: firestore.FieldValue.serverTimestamp(),
+            pairingId: this.state.poolEntryId,
             direction: 'left',
         });
         this.state.unsubscribePoolEntry();
