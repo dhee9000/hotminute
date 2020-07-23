@@ -30,6 +30,10 @@ const allIds = (state = [], action = {}) => {
                 }
             });
 
+            newState = newState.filter(id => {
+                return docs.map(doc => doc.id).includes(id)
+            });
+
             return newState;
 
         }
