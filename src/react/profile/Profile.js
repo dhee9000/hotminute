@@ -263,6 +263,7 @@ class Profile extends React.Component {
 
     logoutPressed = async () => {
         await auth().signOut();
+        this.props.resetApp();
         this.props.navigation.navigate('Start');
     }
 
@@ -470,7 +471,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    updateProfile: newProfile => dispatch({ type: ActionTypes.UPDATE_PROFILE.REQUEST, payload: { ...newProfile, updateId: new Date().getTime().toString() } })
+    updateProfile: newProfile => dispatch({ type: ActionTypes.UPDATE_PROFILE.REQUEST, payload: { ...newProfile, updateId: new Date().getTime().toString() } }),
+    resetApp: () => dispatch({type: '@@RESET'}),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
