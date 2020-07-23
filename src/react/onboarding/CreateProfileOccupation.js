@@ -59,7 +59,6 @@ class CreateProfileOccupation extends React.Component {
                             placeholder={'ex. Student, Youtuber, Model'}
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={occupation => this.setState({ occupation })}
-                            onSubmitEditing={this.onDonePressed}
                             value={this.state.occupation}
                         />
                     </View>

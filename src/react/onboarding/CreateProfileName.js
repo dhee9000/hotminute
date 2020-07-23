@@ -69,7 +69,6 @@ class CreateProfileName extends React.Component {
                             placeholder={'Last Name'}
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={lname => this.setState({ lname })}
-                            onSubmitEditing={this.onDonePressed}
                             value={this.state.lname}
                         />
                     </View>
