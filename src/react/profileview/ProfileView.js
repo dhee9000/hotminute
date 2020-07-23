@@ -189,7 +189,7 @@ class ProfileView extends React.Component {
                         <Text style={{ alignSelf: 'center' }}>match with</Text>
                         <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0 }}>{this.state.fname} {this.state.lname}</Text>
                         <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
-                        <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
+                        {/* <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} /> */}
                     </View>
                 </Modal>
             </View>
