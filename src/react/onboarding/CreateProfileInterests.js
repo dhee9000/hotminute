@@ -97,6 +97,7 @@ class CreateProfileInterests extends React.Component {
                             onChangeText={editInterest => this.setState({ editInterest })}
                             onSubmitEditing={this.onAddInterestPressed}
                             returnKeyLabel={'Add'}
+                            returnKeyType={'done'}
                             blurOnSubmit={false}
                             value={this.state.editInterest}
                         />
