@@ -104,11 +104,16 @@ class ProfileView extends React.Component {
         this.setState({ showMenu: !this.state.showMenu });
     }
 
-    unmatchPressed = () => {
+    unmatchPressed = async () => {
         let matchId = this.props.matchesIds.filter(matchId => {
             return this.props.matchesById[matchId].uids.includes(this.state.uid);
         })[0];
-        firestore().collection('matches').doc(matchId).delete();
+        let otherUid = this.props.matchesById[matchId].uids.filter(uid => uid != auth().currentUser.uid)[0];
+        let combinedId = generateCombinedDocId(auth().currentUser.uid, otherUid);
+        let batch = firestore().batch();
+        batch.delete(firestore().collection('matches').doc(matchId));
+        batch.delete(firestore().collection('chats').doc(combinedId));
+        await batch.commit();
         this.props.navigation.pop();
     }
 
@@ -174,8 +179,8 @@ class ProfileView extends React.Component {
                         <Text style={{ alignSelf: 'flex-start', fontFamily: Fonts.heading, marginTop: 16.0 }}>Pictures</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
                             {Object.keys(this.state.images).map(key => (
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewImage', { imageUri: this.state.images[key].uri })}>
-                                    <Image key={key} source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
+                                <TouchableOpacity key={key} onPress={() => this.props.navigation.navigate('ViewImage', { imageUri: this.state.images[key].uri })}>
+                                    <Image source={{ uri: this.state.images[key].uri }} resizeMode={'cover'} style={{ height: 120, width: 120, backgroundColor: Colors.primary, borderRadius: 8, margin: 2.0 }} />
                                 </TouchableOpacity>
                             ))}
                         </View>

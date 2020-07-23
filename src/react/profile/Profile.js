@@ -44,7 +44,7 @@ class Profile extends React.Component {
         interests: [],
         images: {},
 
-        showSettings: true,
+        showSettings: false,
         editingProfile: false,
 
         asking: false,
