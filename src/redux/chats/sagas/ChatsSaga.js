@@ -55,6 +55,8 @@ function* watchFetchMessagesRequested() {
                 let messagesSnapshot = yield call([chatRef, chatRef.get]);
                 let messagesDocs = messagesSnapshot.docs;
                 let messagesData = messagesDocs.map(message => ({ ...message.data(), id: message.id }));
+                messagesData.sort((a, b) => a.sentAt.toDate().getTime() - b.sentAt.toDate().getTime());
+                
 
                 yield put({ type: ActionTypes.FETCH_MESSAGES.SUCCESS, payload: { chatId, messages: messagesData } });
 
