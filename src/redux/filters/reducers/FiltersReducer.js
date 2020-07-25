@@ -15,11 +15,17 @@ const defaultFilters = {
 const FiltersReducer = (state = defaultFilters, action = {}) => {
     switch (action.type) {
         case ActionTypes.FETCH_FILTERS.REQUEST: {
-            return {
-                loading: true,
-                loaded: false,
-                error: false,
+
+            if(!state.loaded){
+                return {
+                    loading: true,
+                    loaded: false,
+                    error: false,
+                }
             }
+            else{
+                return state;
+            }            
             break;
         }
         case ActionTypes.FETCH_FILTERS.SUCCESS: {

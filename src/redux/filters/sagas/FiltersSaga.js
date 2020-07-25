@@ -6,7 +6,7 @@ import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 
 function* watchFiltersRequested() {
-    yield takeEvery(ActionTypes.FETCH_FILTERS.REQUEST,
+    yield takeLatest(ActionTypes.FETCH_FILTERS.REQUEST,
         function* onFiltersRequested(action) {
 
             console.log("REQUEST: Requested Filters");
@@ -37,33 +37,33 @@ function* watchUpdateFiltersRequested() {
 
             console.log("REQUEST: Update Filters");
             let filtersDocRef = firestore().collection('filters').doc(auth().currentUser.uid);
-            
+
             let nf = action.payload;
             let filtersToUpdate = {}
 
-            if(nf.maxDistance){
+            if (nf.maxDistance) {
                 filtersToUpdate.maxDistance = nf.maxDistance;
             }
 
-            if(nf.minAge){
+            if (nf.minAge) {
                 filtersToUpdate.minAge = nf.minAge;
             }
 
-            if(nf.maxAge){
+            if (nf.maxAge) {
                 filtersToUpdate.maxAge = nf.maxAge;
             }
 
-            if(nf.genders){
+            if (nf.genders) {
                 filtersToUpdate.genders = nf.genders;
             }
 
             try {
                 yield call([filtersDocRef, filtersDocRef.update], filtersToUpdate);
-                yield put({ type: ActionTypes.UPDATE_PROFILE, payload: action.payload.updateId });
+                yield put({ type: ActionTypes.UPDATE_FILTER.SUCCESS, payload: action.payload.updateId });
             }
-            catch(e){
+            catch (e) {
                 console.log("Filters Update Error: ", e);
-                yield put({type: ActionTypes.UPDATE_FILTER.FAILURE, payload: e});
+                yield put({ type: ActionTypes.UPDATE_FILTER.FAILURE, payload: e });
             }
         }
     );
