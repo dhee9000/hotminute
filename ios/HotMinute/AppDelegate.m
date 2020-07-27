@@ -73,19 +73,19 @@ static void InitializeFlipper(UIApplication *application) {
 
 // Temporary Fix for #1
 
-- (void)application:(UIApplication *)application
-    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-  // I used type:FIRAuthAPNSTokenTypeSandbox as the entitlement is set to development
-  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeSandbox];
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  #if DEBUG
+    [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeSandbox];
+  #else
+    [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeProd];
+  #endif
 }
 
-- (void)application:(UIApplication *)application
-    didReceiveRemoteNotification:(NSDictionary *)notification
-          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-  if ([[FIRAuth auth] canHandleNotification:notification]) {
-    completionHandler(UIBackgroundFetchResultNoData);
-    return;
-  }
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    if ([[FIRAuth auth] canHandleNotification:notification]) {
+      completionHandler(UIBackgroundFetchResultNoData);
+      return;
+    }
 }
 
 @end

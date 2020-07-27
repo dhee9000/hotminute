@@ -1,6 +1,6 @@
 const Fonts = {
-    primary: 'Poppins',
-    heading: 'PoppinsBold'
+    primary: 'Jost',
+    heading: 'JostBold'
 }
 
 export default Fonts;

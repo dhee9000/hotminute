@@ -1,10 +1,12 @@
 import {StyleSheet, Platform} from 'react-native';
 
+import { Colors } from '../../../../config';
+
 export const CELL_SIZE = 50;
 export const CELL_BORDER_RADIUS = 8;
-export const DEFAULT_CELL_BG_COLOR = '#fff';
-export const NOT_EMPTY_CELL_BG_COLOR = '#3557b7';
-export const ACTIVE_CELL_BG_COLOR = '#f7fafe';
+export const DEFAULT_CELL_BG_COLOR = Colors.textLightGray;
+export const NOT_EMPTY_CELL_BG_COLOR = Colors.primary;
+export const ACTIVE_CELL_BG_COLOR = Colors.text;
 
 const CodeInputStyles = StyleSheet.create({
   codeFiledRoot: {
@@ -22,7 +24,7 @@ const CodeInputStyles = StyleSheet.create({
     fontSize: 30,
     textAlign: 'center',
     borderRadius: CELL_BORDER_RADIUS,
-    color: '#3759b8',
+    color: Colors.primary,
     backgroundColor: '#fff',
 
     // IOS

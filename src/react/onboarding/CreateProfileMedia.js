@@ -19,7 +19,9 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth, { firebase } from '@react-native-firebase/auth';
 
-const BLANK_IMAGE_URI = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fsvg-artwork-icon-vector%2F&psig=AOvVaw3ZF6RKqDGx8HUSe1ho4leA&ust=1583049630546000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLDPxMml9ucCFQAAAAAdAAAAABAD';
+import ImageResizer from 'react-native-image-resizer';
+
+const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 
 class CreateProfileMedia extends React.Component {
 
@@ -35,7 +37,7 @@ class CreateProfileMedia extends React.Component {
         let profileSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
         let profileData = profileSnapshot.data();
         if(profileSnapshot.exists && profileData.mediaComplete){
-            this.props.navigation.navigate('SelectPreferences');
+            this.props.navigation.navigate('SelectPreferencesDistance');
         }
     }
 
@@ -52,6 +54,10 @@ class CreateProfileMedia extends React.Component {
             try {
                 let image = await ImagePicker.launchImageLibraryAsync({ allowsEditing: false, aspect: [1, 1] });
                 if (!image.cancelled) {
+
+                    let resizedImage = await ImageResizer.createResizedImage(image.uri, 1920, 1920, 'JPEG', 80, 0, null, true);
+                    image.uri = resizedImage.uri;
+
                     newState = {};
                     newState.images = { ...this.state.images };
                     newState.images[id] = image;
@@ -109,7 +115,7 @@ class CreateProfileMedia extends React.Component {
 
         await profileRef.update({ mediaComplete: true });
 
-        this.props.navigation.navigate('SelectPreferences');
+        this.props.navigation.navigate('SelectPreferencesDistance');
     }
 
     ProfileImage = props => {
@@ -129,6 +135,7 @@ class CreateProfileMedia extends React.Component {
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                     <Text style={{ color: Colors.text, marginBottom: 16.0 }}>Choose up to 6 pictures (at least 3) of yourself to show on your profile after dates match with you.</Text>
+                    <Text style={{ fontFamily: Fonts.heading, marginBottom: 16.0 }}>Your first picture will become your profile picture.</Text>
                     <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'space-evenly', marginVertical: 2.0 }}>
                         <this.ProfileImage imageId={1} />
                         <this.ProfileImage imageId={2} />

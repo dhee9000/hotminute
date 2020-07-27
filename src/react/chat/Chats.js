@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, FlatList, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, Image, TouchableOpacity, Alert, ActivityIndicator, Modal, Dimensions } from 'react-native';
 
-import { Text } from '../common/components';
+import { Text, TabBar } from '../common/components';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../redux/ActionTypes';
@@ -9,110 +9,85 @@ import * as States from '../../redux/ActionTypes';
 
 import { Colors, Fonts } from '../../config';
 
-import firebase from '@react-native-firebase/app';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+import { TabView, SceneMap } from 'react-native-tab-view';
 
-const BLANK_IMAGE_URI = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fsvg-artwork-icon-vector%2F&psig=AOvVaw3ZF6RKqDGx8HUSe1ho4leA&ust=1583049630546000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLDPxMml9ucCFQAAAAAdAAAAABAD';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+import auth, { firebase } from '@react-native-firebase/auth';
+
+import Animated from 'react-native-reanimated';
+import { Button } from 'react-native-elements';
+
+import {MatchesView, ChatsView} from './components';
+
+const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+const { height, width } = Dimensions.get('screen');
+
+generateCombinedDocId = function (uid1, uid2) {
+    if (uid1.localeCompare(uid2) < 0) {
+        return `${uid1}_${uid2}`;
+    }
+    else if (uid1.localeCompare(uid2) > 0) {
+        return `${uid2}_${uid1}`;
+    }
+    else {
+        throw (new Error("cannot create combined id for same user"));
+    }
+}
 
 class Chats extends React.Component {
 
     state = {
-        chats: [],
-        matches: [],
-        matchesToDisplay: [],
+        tabIdx: 0,
+        routes: [
+            { key: 'matches', title: 'matches' },
+            { key: 'chats', title: 'chats' },
+        ]
     }
 
-    async componentDidMount() {
-        await this.getChats();
-        await this.getMatches();
-    }
-
-    getChats = async () => {
-        let snapshotA = await firestore().collection('chats').where('uid1', '==', auth().currentUser.uid).get();
-        let snapshotB = await firestore().collection('chats').where('uid2', '==', auth().currentUser.uid).get();
-        
-        let chats = [];
-        snapshotA.docs.forEach(doc => chats.push({...doc.data(), id: doc.id}));
-        snapshotB.docs.forEach(doc => chats.push({...doc.data(), id: doc.id}));
-
-        this.setState({chats});
-    }
-
-    getMatches = async () => {
-        let matchesSnapshotA = await firestore().collection('matches').where('uid1', '==', auth().currentUser.uid).get();
-        let matchesSnapshotB = await firestore().collection('matches').where('uid2', '==', auth().currentUser.uid).get();
-        
-        let matches = [];
-        matchesSnapshotA.docs.forEach(doc => matches.push({...doc.data(), id: doc.id}));
-        matchesSnapshotB.docs.forEach(doc => matches.push({...doc.data(), id: doc.id}));
-
-        this.setState({matches});
-    }
-
-    async componentDidUpdate(prevProps, prevState){
-        if(prevState.matches != this.state.matches){
-            let matchesToDisplay = this.state.matches.filter(match => {
-
-                let uid = auth().currentUser.uid;
-                let otherUid = match.uid1 == uid ? match.uid2 : match.uid1;
-                let uidInChats = chats.find(chat => {
-                    return chat.uid1 == otherUid || chat.uid2 == otherUid;
-                });
-    
-                return uidInChats === -1;
-    
-            });
-            this.setState({matchesToDisplay});
+    renderTabScene = ({ route, focused }) => {
+        switch (route.key) {
+            case 'matches': {
+                return (<MatchesView navigation={this.props.navigation} />)
+            }
+            case 'chats': {
+                return (<ChatsView navigation={this.props.navigation} />)
+            }
         }
     }
 
+
+
     render() {
         return (
-            <View style={{ backgroundColor: Colors.background, flex: 1 }}>
-                <View style={{ padding: 16.0, }}>
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0 }}>Chats</Text>
-                </View>
-                <View>
-                    <FlatList
-                        horizontal
-                        data={this.state.matchesToDisplay}
-                        contentContainerStyle={{margin:8.0}}
-                        ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
-                    />
-                </View>
-                <View>
-                    <FlatList
-                        ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
-                        data={this.state.chats}
-                        keyExtractor={item => item.id}
-                        renderItem={({ item }) => {
-                            return (
-                                <TouchableOpacity>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 8.0, elevation: 2.0 }}>
-                                        <Image source={{ uri: item.displayImageURL }} style={{ height: 48, width: 48, borderRadius: 24, marginRight: 8.0 }} />
-                                        <View style={{flex: 1}}>
-                                            <Text style={{ fontFamily: Fonts.heading, fontSize: 18.0 }}>{item.fname} {item.lname}</Text>
-                                            <Text style={{ fontSize: 14.0, color: Colors.textLightGray }} numberOfLines={1}>{item.mostRecentMessage}</Text>
-                                        </View>
-                                        <Text style={{color: Colors.textLightGray}}>1d</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            )
-                        }}
-                    />
-                </View>
+            <View style={{ backgroundColor: Colors.background, flex: 1, paddingTop: 32.0 }}>
+                <TabView
+                    navigationState={{ index: this.state.tabIdx, routes: this.state.routes }}
+                    renderScene={this.renderTabScene}
+                    renderTabBar={props => <TabBar {...props} onChangeTab={i => this.setState({ tabIdx: i })} />}
+                    onIndexChange={idx => this.setState({ tabIdx: idx })}
+                    swipeEnabled={false}
+                />
             </View>
         )
     }
 }
 
 const mapStateToProps = state => ({
+    profileIds: state.profiles.allIds,
+    profilesById: state.profiles.byId,
 
+    matchesIds: state.matches.allIds,
+    matchesById: state.matches.byId,
+
+    chatsIds: state.chats.allIds,
+    chatsById: state.chats.byId,
 });
 
 const mapDispatchToProps = dispatch => ({
-
+    getProfile: uid => dispatch({ type: ActionTypes.FETCH_PROFILE.REQUEST, payload: uid }),
+    listenMatches: () => dispatch({ type: ActionTypes.LISTEN_MATCHES.REQUEST }),
+    listenChats: () => dispatch({ type: ActionTypes.LISTEN_CHATS.REQUEST }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chats);

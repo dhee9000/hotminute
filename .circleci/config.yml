@@ -4,6 +4,7 @@ jobs:
     working_directory: ~/hotminute
     docker:
       - image: 'circleci/node:12'
+    resource_class: small
     steps:
       - checkout
       - restore_cache:
@@ -31,7 +32,8 @@ jobs:
     working_directory: ~/hotminute/android
     environment:
       FL_OUTPUT_DIR: output
-      FASTLANE_LANE: internal
+      FASTLANE_LANE_1: debug
+      FASTLANE_LANE_2: internal
     docker:
       - image: 'circleci/android:api-28-node'
     resource_class: large
@@ -59,10 +61,16 @@ jobs:
           name: Run Jetifier
           command: yarn jetifier || npx jetify
       - run:
+          name: Build Debug APK
+          command: bundle exec fastlane $FASTLANE_LANE_1
+      - run:
           name: 'Fastlane: Deploy Beta'
-          command: bundle exec fastlane $FASTLANE_LANE
+          command: bundle exec fastlane $FASTLANE_LANE_2
       - store_artifacts:
           path: output
+      - store_artifacts:
+          name: 'Save Debug APK'
+          path: app/build/outputs/apk/debug/app-debug.apk
   deploy-android-beta:
     working_directory: ~/hotminute/android
     environment:
