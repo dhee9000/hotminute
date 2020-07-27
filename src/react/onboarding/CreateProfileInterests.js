@@ -83,7 +83,7 @@ class CreateProfileInterests extends React.Component {
                     <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Interests</Text>
                     </View>
-                    <Image source={require('../../../assets/img/interests-visual.png')} style={{height: 144, width: 144}} />
+                    {/* <Image source={require('../../../assets/img/interests-visual.png')} style={{height: 144, width: 144}} /> */}
                     <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
                             containerStyle={{ marginBottom: 32.0 }}
@@ -95,20 +95,20 @@ class CreateProfileInterests extends React.Component {
                             placeholder={'Basketball'}
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={editInterest => this.setState({ editInterest })}
-                            onSubmitEditing={this.onAddInterestPressed}
+                            // onSubmitEditing={this.onAddInterestPressed}
                             returnKeyLabel={'Add'}
                             returnKeyType={'done'}
-                            blurOnSubmit={false}
+                            // blurOnSubmit={false}
                             value={this.state.editInterest}
                         />
-                        {/* <Button disabled={!this.state.editInterest || this.state.editInterest.length < 2} onPress={this.onAddInterestPressed} title={'Add'} type={'outline'} /> */}
+                        <Button disabled={!this.state.editInterest || this.state.editInterest.length < 2} onPress={this.onAddInterestPressed} title={'Add'} type={'outline'} />
                         {/* <FlatList
                             contentContainerStyle={{ margin: 16.0 }}
                             data={this.state.interests}
                             renderItem={this.renderInterest}
                             keyExtractor={item => item}
                         /> */}
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', marginVertical: 8.0 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', flexWrap: 'wrap', marginVertical: 16.0 }}>
                         {
                             this.state.interests.map(interest => this.renderInterest({item: interest}))
                         }
