@@ -81,7 +81,6 @@ export default function App() {
               <AppContainer style={{ flex: 1 }} />
             </ThemeProvider>
           </ReduxProvider>
-          <AlphaWarning />
         </SafeAreaView>
       </View>
     );

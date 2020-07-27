@@ -49,20 +49,21 @@ class CreateProfileBio extends React.Component {
                     <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>Bio</Text>
                     </View>
-                    <Image source={require('../../../assets/img/bio-visual.png')} style={{height: 144, width: 144}} />
+                    <Image source={require('../../../assets/img/bio-visual.png')} style={{ height: 144, width: 144 }} />
                     <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
                             containerStyle={{ marginBottom: 32.0 }}
                             inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             inputContainerStyle={{ borderColor: Colors.accent }}
-                            numberOfLines={4}
-                            multiline
+                            //numberOfLines={4}
+                            //multiline
                             labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                             keyboardType={'default'}
                             placeholder={'A short description of yourself'}
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={bio => this.setState({ bio })}
                             value={this.state.bio}
+                            returnKeyType={'done'}
                         />
                     </View>
                     <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
