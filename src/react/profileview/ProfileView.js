@@ -114,7 +114,7 @@ class ProfileView extends React.Component {
         batch.delete(firestore().collection('matches').doc(matchId));
         batch.delete(firestore().collection('chats').doc(combinedId));
         await batch.commit();
-        this.props.navigation.pop();
+        this.props.navigation.navigate('Matches');
     }
 
     reportMatchPressed = () => {
