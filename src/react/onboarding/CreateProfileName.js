@@ -57,6 +57,7 @@ class CreateProfileName extends React.Component {
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={fname => this.setState({ fname })}
                             onSubmitEditing={() => this.lnameInput.current.focus()}
+                            returnKeyType={'done'}
                             value={this.state.fname}
                         />
                         <Input
@@ -70,6 +71,7 @@ class CreateProfileName extends React.Component {
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={lname => this.setState({ lname })}
                             value={this.state.lname}
+                            returnKeyType={'done'}
                         />
                     </View>
                     <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>

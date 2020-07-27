@@ -48,7 +48,7 @@ class CreateProfileOccupation extends React.Component {
                     <View style={{ flex: 1, paddingTop: 16.0, width: '100%' }}>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.heading }}>What do you do?</Text>
                     </View>
-                    <Image source={require('../../../assets/img/occupation-visual.png')} style={{height: 144, width: 144}} />
+                    <Image source={require('../../../assets/img/occupation-visual.png')} style={{ height: 144, width: 144 }} />
                     <View style={{ flex: 3, justifyContent: 'center', width: '100%' }}>
                         <Input
                             containerStyle={{ marginBottom: 32.0 }}
@@ -60,6 +60,7 @@ class CreateProfileOccupation extends React.Component {
                             placeholderTextColor={Colors.textLightGray}
                             onChangeText={occupation => this.setState({ occupation })}
                             value={this.state.occupation}
+                            returnKeyType={'done'}
                         />
                     </View>
                     <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
