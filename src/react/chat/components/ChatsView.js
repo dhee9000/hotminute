@@ -53,7 +53,7 @@ class ChatsView extends React.Component {
                                 <Text style={{ fontSize: 14.0 }}>{chat.lastMessageBy == auth().currentUser.uid ? 'You' : profile.fname}: {chat.lastMessage}</Text>
                             </View>
                         </View>
-                        <Text style={{ fontSize: 16.0, color: Colors.textLightGray, }}>1d</Text>
+                        {/* <Text style={{ fontSize: 16.0, color: Colors.textLightGray, }}>1d</Text> */}
                     </View>
                 </TouchableOpacity>
             )
