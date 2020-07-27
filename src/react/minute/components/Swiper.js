@@ -158,7 +158,7 @@ class Swiper extends React.Component {
         let imageRotateY = this.gestureX.interpolate({ inputRange: [-200, 200], outputRange: ['-45deg', '45deg'], extrapolate: 'clamp' });
         let imageRotateX = this.gestureY.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: ['0deg', '-45deg'], extrapolate: 'clamp' });
         let swipeRightProgress = this.gestureX.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [0, 0.5], extrapolate: 'clamp' });
-        let swipeLeftProgress = this.gestureX.interpolate({ inputRange: [-GESTURE_THRESHOLD, 0], outputRange: [0.5, 0], extrapolate: 'clamp' });
+        let swipeLeftProgress = this.gestureX.interpolate({ inputRange: [-GESTURE_THRESHOLD, 0], outputRange: [0.5, 0.25], extrapolate: 'clamp' });
         let swipeDownProgress = this.gestureY.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [0, 0.16], extrapolate: 'clamp' });
 
         return (
@@ -173,8 +173,8 @@ class Swiper extends React.Component {
                         </View>
                         <View style={{ flex: 1, margin: 16, alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                <LottieView source={require('../../../../assets/animations/SwipeLeft.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress} />
-                                <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [-GESTURE_THRESHOLD, 0], outputRange: ['#f55', Colors.textLightGray], extrapolate: 'clamp' }) }}>NO</Animated.Text>
+                                <LottieView source={require('../../../../assets/animations/SwipeLeft.json')} style={{ height: 36, width: 36, }} progress={this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress} />
+                                {/* <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [-GESTURE_THRESHOLD, 0], outputRange: ['#f55', Colors.textLightGray], extrapolate: 'clamp' }) }}>NO</Animated.Text> */}
                             </View>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                 <LottieView source={require('../../../../assets/animations/SwipeClock.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedDown ? this.extendProgress : swipeDownProgress} />
@@ -182,7 +182,7 @@ class Swiper extends React.Component {
                             </View>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                 <LottieView source={require('../../../../assets/animations/SwipeRight.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedRight ? this.swipeProgress : swipeRightProgress} />
-                                <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, '#5f5'], extrapolate: 'clamp' }) }}>YES</Animated.Text>
+                                {/* <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, '#5f5'], extrapolate: 'clamp' }) }}>YES</Animated.Text> */}
                             </View>
                         </View>
                     </Animated.View>
@@ -242,7 +242,7 @@ class Countdown extends React.Component {
                         transform: [{ translateY: this.countAnim.interpolate({ inputRange: [0, 1], outputRange: [-50, 0] }) }]
                     }
                 }>
-                    <Text style={[this.textStyle, {color: this.props.time < 10 ? '#f55' : Colors.text,}]}>{this.state.nextTime}</Text>
+                    <Text style={[this.textStyle, { color: this.props.time < 10 ? '#f55' : Colors.text, }]}>{this.state.nextTime}</Text>
                 </Animated.View>
                 <Animated.View style={
                     {
@@ -255,7 +255,7 @@ class Countdown extends React.Component {
                         ]
                     }
                 }>
-                    <Text style={[this.textStyle, {color: this.props.time < 10 ? '#f55' : Colors.text,}]}>{this.state.currTime}</Text>
+                    <Text style={[this.textStyle, { color: this.props.time < 10 ? '#f55' : Colors.text, }]}>{this.state.currTime}</Text>
                 </Animated.View>
             </View>
         )
