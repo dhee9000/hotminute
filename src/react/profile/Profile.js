@@ -191,10 +191,11 @@ class Profile extends React.Component {
         this.setState({ interests: this.state.interests.filter(i => i !== interest) });
     }
 
-    addImage = async () => {
+    addImage = async (id) => {
         let { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
-        id = 6;
+        id = id ? id : 6;
+        console.log(id);
 
         while (!this.state.images[id - 1] && id > 1) {
             id--;
@@ -251,6 +252,23 @@ class Profile extends React.Component {
 
         this.setState({ images: newImageState });
 
+    }
+
+    editImage = id => {
+        Alert.alert('Edit Image', 'Would you like to replace or delete this image?', [
+            {
+                text: 'Delete Image',
+                onPress: () => {
+                    this.deleteImage(id);
+                }
+            },
+            {
+                text: 'Edit Image',
+                onPress: () => {
+                    this.addImage(id);
+                }
+            }
+        ]);
     }
 
     askForField = (prompt, defAns, cb) => {
@@ -385,9 +403,9 @@ class Profile extends React.Component {
                                     {
                                         this.state.editingProfile ?
                                             <View style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '100%', alignItems: 'center', justifyContent: 'flex-start', }}>
-                                                <TouchableOpacity onPress={() => this.deleteImage(key)}>
+                                                <TouchableOpacity onPress={() => this.editImage(key)}>
                                                     <View style={{ borderRadius: 8, backgroundColor: '#E63462AA', height: 120, width: 120, alignItems: 'center', justifyContent: 'center' }}>
-                                                        <Text style={{ fontSize: 32.0, fontFamily: Fonts.heading, color: Colors.background }}>X</Text>
+                                                        <Icon name={'edit'} size={32} color={Colors.text} />
                                                     </View>
                                                 </TouchableOpacity>
                                             </View>
@@ -397,7 +415,7 @@ class Profile extends React.Component {
                                 </View>
                             ))}
                             {this.state.editingProfile ?
-                                <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.addImage}>
+                                <TouchableOpacity disabled={!this.state.editingProfile} onPress={() => this.addImage()}>
                                     <View style={{ backgroundColor: Colors.background, borderColor: Colors.primary, borderStyle: 'dashed', height: 120, width: 120, borderWidth: 2.0, paddingHorizontal: 8.0, borderRadius: 16.0, margin: 2.0, alignItems: 'center', justifyContent: 'center' }}>
                                         <Text style={{ color: Colors.primary }}>+</Text>
                                     </View>
