@@ -29,6 +29,7 @@ class Login extends React.Component {
         codeVerified: false,
         confirmation: {},
         codeInputFocus: false,
+        subscribeToAuth: () => {},
     }
 
     onLoginPressed = async () => {
@@ -49,6 +50,12 @@ class Login extends React.Component {
         try {
             const confirmation = await auth().signInWithPhoneNumber(`+1${this.state.phno}`);
             this.setState({ confirmation, sendingCode: false, codeSent: true, codeInputFocus: true});
+            let subscribeToAuth = auth().onAuthStateChanged(user => {
+                if(user){
+                    this.setState({verifyingCode: false, codeVerified: true});
+                }
+            });
+            this.setState({ subscribeToAuth });
         }
         catch (e) {
             console.log("Send Code Error", e);
@@ -90,6 +97,15 @@ class Login extends React.Component {
         if (auth().currentUser) {
             alert("Already signed in as: " + auth().currentUser.uid);
         }
+        auth().onAuthStateChanged(user => {
+            if(user){
+                this.setState({ verifyingCode: false, codeVerified: true });
+            }
+        })
+    }
+
+    componentWillUnmount(){
+        this.state.subscribeToAuth();
     }
 
     render() {
