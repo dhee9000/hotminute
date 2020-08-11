@@ -20,6 +20,7 @@ const IMG_DIM = 128;
 const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Programming", "Comedy"];
 
 import { Button, Icon } from 'react-native-elements';
+import { async } from 'q';
 
 const generateCombinedDocId = (uid1, uid2) => {
     let strings = [uid1, uid2];
@@ -91,7 +92,7 @@ class ProfileView extends React.Component {
             await firestore().collection('chats').doc(chatId).set({
                 uids: [auth().currentUser.uid, this.state.uid],
             });
-            this.setState({chatExists: true});
+            this.setState({ chatExists: true });
             this.props.navigation.navigate('ChatView', { chatId, userId: this.state.uid });
         }
         else {
@@ -123,7 +124,7 @@ class ProfileView extends React.Component {
             return this.props.matchesById[matchId].uids.includes(this.state.uid);
         })[0];
         let otherUid = this.props.matchesById[matchId].uids.filter(uid => uid != auth().currentUser.uid)[0];
-
+        inf
         Alert.prompt(
             'Why are you reporting this user?',
             'Give us a brief description so that we investigate this report. If you don\'t want to report and instead want to block this user, use the block option!',
@@ -137,6 +138,13 @@ class ProfileView extends React.Component {
             }
         );
 
+        // this.unmatchPressed(matchId);
+    }
+    onBlockPressed = async () => {
+        let matchId = this.props.matchesIds.filter(matchId => {
+            return this.props.matchesById[matchId].uids.includes(this.state.uid);
+        })[0];
+        let otherUid = this.props.matchesById[matchId].uids.filter(uid => uid != auth().currentUser.uid)[0];
         this.unmatchPressed(matchId);
     }
 
@@ -194,7 +202,8 @@ class ProfileView extends React.Component {
                         <Text style={{ alignSelf: 'center' }}>match with</Text>
                         <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0 }}>{this.state.fname} {this.state.lname}</Text>
                         <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
-                        {/* <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} /> */}
+                        <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
+                        <Button title={'Block'} onPress={() => this.onBlockPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
                     </View>
                 </Modal>
             </View>

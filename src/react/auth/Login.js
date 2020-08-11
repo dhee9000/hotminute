@@ -124,10 +124,10 @@ class Login extends React.Component {
                                         inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                                         inputContainerStyle={{ borderColor: Colors.accent }}
                                         keyboardType={'phone-pad'}
-                                        label={'Phone Number'}
-                                        labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                        //label={'Phone Number'}
+                                        //labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
                                         onChangeText={text => this.setState({ phno: text })}
-                                        placeholder={'9728836969'}
+                                        placeholder={'Phone Number'}
                                         placeholderTextColor={Colors.textLightGray}
                                         onSubmitEditing={this.onLoginPressed}
                                         value={this.state.phno}

@@ -18,7 +18,7 @@ import auth from '@react-native-firebase/auth';
 class CreateProfileGender extends React.Component {
 
     state = {
-        gender: 'male',
+        gender: null,
     }
 
     async componentDidMount() {
@@ -52,7 +52,7 @@ class CreateProfileGender extends React.Component {
                     <RadioButton options={[{ key: 'male', text: 'Male' }, { key: 'female', text: 'Female' }, { key: 'other', text: 'Other' }]} onOptionChange={this.onChangeGender} />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button title={"Looks Good"} onPress={this.onDonePressed} />
+                    <Button disabled={!this.state.gender} title={"Looks Good"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )

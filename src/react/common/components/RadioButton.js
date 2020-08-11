@@ -7,7 +7,7 @@ import { Fonts, Colors, AgoraConfig } from '../../../config';
 export default class RadioButton extends Component {
 
     state = {
-        value: this.props.options[0].key,
+        value: null,
     };
 
     render() {
@@ -35,7 +35,7 @@ export default class RadioButton extends Component {
                         </View>
                     );
                 })}
-                <Text style={{alignSelf: 'center', color: Colors.textLightGray,}}> Selected: {options.filter(option => option.key === this.state.value)[0].text} </Text>
+                {/* <Text style={{ alignSelf: 'center', color: Colors.textLightGray, }}> Selected: {options.filter(option => option.key === this.state.value)[0].text} </Text> */}
             </View>
         );
     }
