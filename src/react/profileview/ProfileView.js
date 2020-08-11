@@ -19,7 +19,7 @@ const IMG_DIM = 128;
 
 const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Programming", "Comedy"];
 
-import { Button, Icon } from 'react-native-elements';
+import { Input, Button, Icon } from 'react-native-elements';
 import { async } from 'q';
 
 const generateCombinedDocId = (uid1, uid2) => {
@@ -42,6 +42,9 @@ class ProfileView extends React.Component {
         uid: '',
 
         showMenu: false,
+        showReport: false,
+
+        reportReason: '',
     }
 
     async componentDidMount() {
@@ -118,27 +121,25 @@ class ProfileView extends React.Component {
         this.props.navigation.navigate('Matches');
     }
 
+    showReport = () => {
+        this.setState({ showReport: !this.state.showReport });
+    }
+
     reportMatchPressed = () => {
 
         let matchId = this.props.matchesIds.filter(matchId => {
             return this.props.matchesById[matchId].uids.includes(this.state.uid);
         })[0];
         let otherUid = this.props.matchesById[matchId].uids.filter(uid => uid != auth().currentUser.uid)[0];
-        inf
-        Alert.prompt(
-            'Why are you reporting this user?',
-            'Give us a brief description so that we investigate this report. If you don\'t want to report and instead want to block this user, use the block option!',
-            text => {
-                firestore().collection('reports').add({
-                    reportedBy: auth().currentUser.uid,
-                    reportedUser: otherUid,
-                    reportReason: text,
-                    reportedOn: firestore.FieldValue.serverTimestamp(),
-                });
-            }
-        );
+        firestore().collection('reports').add({
+            reportedBy: auth().currentUser.uid,
+            reportedUser: otherUid,
+            reportReason: this.state.reportReason,
+            reportedOn: firestore.FieldValue.serverTimestamp(),
+        });
 
-        // this.unmatchPressed(matchId);
+        this.unmatchPressed(matchId);
+        alert("User Reported and Unmatched!");
     }
     onBlockPressed = async () => {
         let matchId = this.props.matchesIds.filter(matchId => {
@@ -202,8 +203,33 @@ class ProfileView extends React.Component {
                         <Text style={{ alignSelf: 'center' }}>match with</Text>
                         <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0 }}>{this.state.fname} {this.state.lname}</Text>
                         <Button title={'Unmatch'} onPress={() => this.unmatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
-                        <Button title={'Report'} onPress={() => this.reportMatchPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
+                        <Button title={'Report'} onPress={() => this.showReport(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
                         <Button title={'Block'} onPress={() => this.onBlockPressed(this.state.matchMenuId)} containerStyle={{ margin: 2.0 }} />
+                    </View>
+                </Modal>
+                <Modal visible={this.state.showReport} transparent animated animationType={'slide'}>
+                    <View style={{ justifyContent: 'flex-start', padding: 16.0, marginTop: height / 3, backgroundColor: Colors.background, flex: 1, elevation: 4.0 }}>
+                        <TouchableOpacity onPress={this.showReport}>
+                            <Icon name={'arrow-drop-down'} size={32} color={Colors.primary} />
+                        </TouchableOpacity>
+                        <Text style={{ alignSelf: 'center', color: Colors.primary }}>report</Text>
+                        <Text style={{ alignSelf: 'center', fontFamily: Fonts.heading, fontSize: 32.0 }}>{this.state.fname} {this.state.lname}</Text>
+                        <Text>Give us a brief description so that we investigate this report. If you don't want to report and instead want to block this user, use the block option!</Text>
+                        <View>
+                            <Input
+                                containerStyle={{ marginBottom: 32.0 }}
+                                inputStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                inputContainerStyle={{ borderColor: Colors.accent }}
+                                labelStyle={{ fontFamily: Fonts.primary, fontWeight: 'normal', color: Colors.text }}
+                                keyboardType={'default'}
+                                placeholder={'Reason'}
+                                placeholderTextColor={Colors.textLightGray}
+                                onChangeText={text => this.setState({ reportReason: text })}
+                                value={this.state.reportReason}
+                            />
+                            <Button containerStyle={{margin: 4.0}} title={'Report'} onPress={this.reportMatchPressed} />
+                            <Button containerStyle={{margin: 4.0}} title={'Cancel'} onPress={this.showReport} />
+                        </View>
                     </View>
                 </Modal>
             </View>
