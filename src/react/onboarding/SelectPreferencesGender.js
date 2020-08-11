@@ -19,7 +19,7 @@ class SelectPreferencesGender extends React.Component {
 
     state = {
         genders: {
-            male: true,
+            male: false,
             female: false,
             other: false,
         }
@@ -36,7 +36,7 @@ class SelectPreferencesGender extends React.Component {
     }
 
     onDonePressed = () => {
-        this.props.navigation.navigate('SelectPreferencesAge', {maxDistance: this.state.maxDistance, genders: this.state.genders});
+        this.props.navigation.navigate('SelectPreferencesAge', { maxDistance: this.state.maxDistance, genders: this.state.genders });
     }
 
     render() {
@@ -64,7 +64,7 @@ class SelectPreferencesGender extends React.Component {
                     />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 32.0, width: '100%' }}>
-                    <Button title={"Almost Done"} onPress={this.onDonePressed} />
+                    <Button disabled={!this.state.genders.male && !this.state.genders.female && !this.state.genders.other} title={"Almost Done"} onPress={this.onDonePressed} />
                 </View>
             </View>
         )

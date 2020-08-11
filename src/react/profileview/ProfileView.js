@@ -124,7 +124,7 @@ class ProfileView extends React.Component {
             return this.props.matchesById[matchId].uids.includes(this.state.uid);
         })[0];
         let otherUid = this.props.matchesById[matchId].uids.filter(uid => uid != auth().currentUser.uid)[0];
-
+        inf
         Alert.prompt(
             'Why are you reporting this user?',
             'Give us a brief description so that we investigate this report. If you don\'t want to report and instead want to block this user, use the block option!',

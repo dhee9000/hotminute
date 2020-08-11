@@ -69,9 +69,9 @@
 	<key>NSMotionUsageDescription</key>
 	<string>Allow HotMinute to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Give HotMinute periences permission to save photos in order to choose which pictures you want presented to your matches!</string>
+	<string>Give HotMinute permission to save photos in order to choose which pictures you want presented to your matches!</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give HotMinute periences permission to access your photos in order to choose which pictures you want presented to your matches!</string>
+	<string>Give HotMinute permission to access your photos in order to choose which pictures you want presented to your matches!</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow HotMinute to access your reminders to keep you updated on what's new!</string>
 	<key>UIAppFonts</key>

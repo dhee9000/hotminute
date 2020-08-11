@@ -80,7 +80,7 @@ class Start extends React.Component {
             <View style={{ flex: 1, backgroundColor: Colors.background, justifyContent: 'flex-start', alignItems: 'center' }}>
                 <Heart height={64} width={64} />
                 <Text style={{ fontFamily: Fonts.heading, fontSize: 24, textAlign: 'center', marginBottom: 24.0, color: Colors.primary }}>welcome to hotminute</Text>
-                <View style={{ height: 400.0, width: width * 0.9, borderWidth: 4.0, borderColor: Colors.textLightGray, padding: 16.0, backgroundColor: '#33333355' }}>
+                <View style={{ height: 590.0, width: width * 0.9, borderWidth: 4.0, borderColor: Colors.textLightGray, padding: 16.0, backgroundColor: '#33333355' }}>
                     <ScrollView contentContainerStyle={{ padding: 16.0 }}>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 24, textAlign: 'center', marginVertical: 24.0 }}>Terms of Use</Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>

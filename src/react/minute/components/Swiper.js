@@ -178,7 +178,7 @@ class Swiper extends React.Component {
                             </View>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                 <LottieView source={require('../../../../assets/animations/SwipeClock.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedDown ? this.extendProgress : swipeDownProgress} />
-                                <Animated.Text style={{ fontSize: 12.0, color: this.gestureY.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, '#55f'], extrapolate: 'clamp' }) }}>EXTEND</Animated.Text>
+                                {/* <Animated.Text style={{ fontSize: 12.0, color: this.gestureY.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, '#55f'], extrapolate: 'clamp' }) }}>EXTEND</Animated.Text> */}
                             </View>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                 <LottieView source={require('../../../../assets/animations/SwipeRight.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedRight ? this.swipeProgress : swipeRightProgress} />
