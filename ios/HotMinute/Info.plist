@@ -109,5 +109,7 @@
 	<string>Dark</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CodePushDeploymentKey</key>
+	<string>dzG8-GRjYfjzJiJhi51EEuefYopViCDX6didO</string>
 </dict>
 </plist>
