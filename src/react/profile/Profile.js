@@ -448,7 +448,7 @@ class Profile extends React.Component {
                                     <Text style={{ color: Colors.primary }}>Privacy Policy</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/')} style={{ alignItems: 'center' }}>
-                                    <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>v0.0.1</Text>
+                                    <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>v0.1.0</Text>
                                     <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>© HotMinute LLC 2020</Text>
                                 </TouchableOpacity>
                             </View>
