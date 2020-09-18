@@ -17,6 +17,8 @@ import messaging from '@react-native-firebase/messaging';
 import storage from '@react-native-firebase/storage';
 import config from '../../config/Agora';
 
+import CodePush from "react-native-code-push";
+
 const MAPS_API_KEY = GoogleMaps.key;
 
 class Splash extends React.Component {
@@ -53,49 +55,61 @@ class Splash extends React.Component {
             this.setState({ initialTimeOver: true });
         }, 1000)
 
+
+        this.setState({ currentActionString: 'Checking Updates...' });
+        await CodePush.sync({ updateDialog: true, installMode: CodePush.InstallMode.IMMEDIATE });
+
+
         this.setState({ currentActionString: 'Checking User...' });
         if (!auth().currentUser) {
             this.goToStart();
         }
         else {
             this.setState({ currentActionString: 'Checking Profile...' });
-            let profileDocSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
-            if (!profileDocSnapshot.exists || !profileDocSnapshot.data().profileComplete) {
-                this.goToStart();
-            }
-            else {
-                this.setState({ currentActionString: 'Registering Notifications...' });
-                let fcmToken = await messaging().getToken();
-                await firestore().collection('users').doc(auth().currentUser.uid).set({
-                    fcmTokens: firestore.FieldValue.arrayUnion(fcmToken)
-                }, { merge: true });
+            try {
+                let profileDocSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
+                if (!profileDocSnapshot.exists || !profileDocSnapshot.data().profileComplete) {
+                    this.goToStart();
+                }
+                else {
+                    this.setState({ currentActionString: 'Registering Notifications...' });
+                    let fcmToken = await messaging().getToken();
+                    await firestore().collection('users').doc(auth().currentUser.uid).set({
+                        fcmTokens: firestore.FieldValue.arrayUnion(fcmToken)
+                    }, { merge: true });
 
-                this.setState({ currentActionString: 'Almost Done...'})
-                this.goToMain();
+                    this.setState({ currentActionString: 'Almost Done...' })
+                    this.goToMain();
+                }
+            }
+            catch(e){
+                console.log(e);
+                auth().signOut();
+                this.goToStart();
             }
         }
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.state.initialTimeOver && this.state.jumpTo){
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.initialTimeOver && this.state.jumpTo) {
             this.props.navigation.navigate(this.state.jumpTo);
         }
     }
 
     goToStart = () => {
-        this.setState({ jumpTo: 'Start'});
+        this.setState({ jumpTo: 'Start' });
     }
 
     goToMain = () => {
-        this.setState({ jumpTo: 'Main'});
+        this.setState({ jumpTo: 'Main' });
     }
 
     goToLocation = state => {
-        this.setState({ jumpTo: 'Location'});
+        this.setState({ jumpTo: 'Location' });
     }
 
     goToDatingPeriods = () => {
-        this.setState({ jumpTo: 'DatingPeriodInfo'});
+        this.setState({ jumpTo: 'DatingPeriodInfo' });
     }
 
     enterAnim = new Animated.Value(0);
