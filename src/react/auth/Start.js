@@ -78,12 +78,12 @@ class Start extends React.Component {
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background, justifyContent: 'flex-start', alignItems: 'center' }}>
-                <View style={{ margin: 16.0, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ marginTop: 16.0, alignItems: 'center', justifyContent: 'center' }}>
                     <Heart height={64} width={64} />
-                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24, textAlign: 'center', marginBottom: 24.0, color: Colors.primary }}>welcome</Text>
+                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24, textAlign: 'center', color: Colors.primary }}>welcome</Text>
                 </View>
-                <Text style={{ flex: 1, fontSize: 24.0, textAlign: 'center' }}>"Insert love is blind quote here"{'\n'}- team hotminute</Text>
-                <Text style={{ fontSize: 12.0, marginHorizontal: 16.0, textAlign: 'center' }}>Please read the Terms of Use to begin using hotminute. You must be 18 years or older to use hotminute. Unauthorized access of hotminute data and/or impersonation or harassment of anyone is strictly prohibited and will not be tolerated.</Text>
+                <Text style={{ fontSize: 24.0, textAlign: 'center' }}>Connect. Match. Date.</Text>
+                <Text style={{ marginVertical: 8.0, fontSize: 12.0, marginHorizontal: 16.0, textAlign: 'center' }}>Please read the Terms of Use to begin using hotminute. You must be 18 years or older to use hotminute. Unauthorized access of hotminute data and/or impersonation or harassment of anyone is strictly prohibited and will not be tolerated.</Text>
                 <View style={{ flex: 2, alignSelf: 'stretch', margin: 16.0, borderWidth: 4.0, borderColor: Colors.textLightGray, backgroundColor: '#444444' }}>
                     <ScrollView contentContainerStyle={{ paddingHorizontal: 8.0 }}>
                         <Text style={{ fontFamily: Fonts.heading, fontSize: 24, textAlign: 'center', marginVertical: 8.0 }}>Terms of Use</Text>
