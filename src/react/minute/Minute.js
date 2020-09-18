@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Animated, Easing, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert, TouchableOpacity, LayoutAnimation, UIManager } from 'react-native';
+import { View, Animated, Easing, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert, TouchableOpacity, LayoutAnimation, UIManager, Linking } from 'react-native';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -21,7 +21,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import RemoteConfig from '@react-native-firebase/remote-config';
 
-import { Input, Button, Icon, Slider, CheckBox } from 'react-native-elements';
+import { Input, Button, Icon, Slider, CheckBox, SocialIcon } from 'react-native-elements';
 
 import { RtcEngine, AgoraView } from 'react-native-agora'
 const { Agora } = NativeModules;
@@ -36,6 +36,13 @@ import LottieView from 'lottie-react-native';
 import { FiltersModal, InstructionsModal, Swiper } from './components';
 
 import Heart from '../../../assets/svg/heart.svg';
+
+const LAUNCH_DATE = new Date(1601604000000);
+
+function dateDiffInDays(date1, date2) {
+    // round to the nearest whole number
+    return Math.round((date2-date1)/(1000*60*60*24));
+}
 
 class Minute extends React.Component {
 
@@ -374,6 +381,28 @@ class Minute extends React.Component {
     confettiAnimation = new Animated.Value(0);
 
     render() {
+
+        let currentTime = new Date();
+        if(currentTime < LAUNCH_DATE){
+            return(
+                <View style={{flex: 1, padding: 16.0, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{fontFamily: Fonts.heading, color: Colors.primary, fontSize: 32.0}}>hotminute</Text>
+                    <Text>welcome to hotminute!</Text>
+                    <View style={{margin: 32.0, alignItems: 'center', justifyContent: 'center'}}>
+                    <View style={{flexDirection: 'row', margin: 16.0}}>
+                        <View style={{backgroundColor: Colors.primary, width: 64, height: 64, alignItems: 'center', justifyContent: 'center'}}>
+            <Text style={{fontSize: 48.0}}>{dateDiffInDays(currentTime, LAUNCH_DATE)}</Text>
+                        </View>
+                    </View>
+                    <Text style={{fontSize: 32.0}}>DAYS</Text>
+                    </View>
+                    <Text style={{textAlign: 'center'}}>come back on October 1st at 9:00PM CST to start matching! in the meantime, you can check out our instagram to stay updated!</Text>
+                    <View style={{marginTop: 16.0}}>
+                        <SocialIcon type={'instagram'} light onPress={() => {Linking.openURL('https://instagram.com/hotminuteapp')}} />
+                    </View>
+                </View>
+            )
+        }
 
 
         if (!this.state.preCheckCompleted) {
