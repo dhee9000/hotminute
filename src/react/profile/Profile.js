@@ -29,7 +29,6 @@ import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 
 import ImageResizer from 'react-native-image-resizer';
-import { assertValidExecutionArguments } from 'graphql/execution/execute';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -332,6 +331,11 @@ class Profile extends React.Component {
     editingJitter = new Animated.Value(0);
 
     render() {
+
+        const diff = Date.now() - this.state.dob.getTime(); 
+        const ageDate = new Date(diff); 
+        const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+
         return (
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ flex: 1 }}>
@@ -363,7 +367,7 @@ class Profile extends React.Component {
                                 </Animated.View>
                             </TouchableOpacity>
                         </View>
-                        <Text style={{ fontSize: 28, color: Colors.textLightGray, fontFamily: Fonts.heading }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
+                        <Text style={{ fontSize: 28, color: Colors.textLightGray, fontFamily: Fonts.heading }}>{age}</Text>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editOccupation}>
                             <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
                                 <Text style={{ fontSize: 20, color: Colors.textLightGray, textAlign: 'center' }}>{this.state.occupation}</Text>
