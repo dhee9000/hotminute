@@ -58,10 +58,10 @@ class CreateProfileMedia extends React.Component {
                     let resizedImage = await ImageResizer.createResizedImage(image.uri, 1920, 1920, 'JPEG', 80, 0, null, true);
                     image.uri = resizedImage.uri;
 
-                    newState = {};
+                    let newState = {};
                     newState.images = { ...this.state.images };
+                    newState.numImagesSelected = !this.state.images[id] ? this.state.numImagesSelected + 1 : this.state.numImagesSelected;
                     newState.images[id] = image;
-                    newState.numImagesSelected = this.state.numImagesSelected + 1;
                     this.setState(newState);
                 }
                 else {
