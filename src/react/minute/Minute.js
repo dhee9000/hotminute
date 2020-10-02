@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Animated, Easing, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert, TouchableOpacity, LayoutAnimation, UIManager } from 'react-native';
+import { View, Animated, Easing, SafeAreaView, Dimensions, NativeModules, Modal, ActivityIndicator, ScrollView, Image, Alert, TouchableOpacity, LayoutAnimation, UIManager, Linking, TouchableWithoutFeedback, AppState } from 'react-native';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -21,7 +21,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import RemoteConfig from '@react-native-firebase/remote-config';
 
-import { Input, Button, Icon, Slider, CheckBox } from 'react-native-elements';
+import { Input, Button, Icon, Slider, CheckBox, SocialIcon } from 'react-native-elements';
 
 import { RtcEngine, AgoraView } from 'react-native-agora'
 const { Agora } = NativeModules;
@@ -36,6 +36,13 @@ import LottieView from 'lottie-react-native';
 import { FiltersModal, InstructionsModal, Swiper } from './components';
 
 import Heart from '../../../assets/svg/heart.svg';
+
+const LAUNCH_DATE = new Date(1601604000000);
+
+function dateDiffInDays(date1, date2) {
+    // round to the nearest whole number
+    return Math.round((date2 - date1) / (1000 * 60 * 60 * 24));
+}
 
 class Minute extends React.Component {
 
@@ -63,7 +70,7 @@ class Minute extends React.Component {
         preCheckCompleted: false,
         hasAudioPermission: false,
         hasLocationPermission: false,
-        locationCheckSuccessful: false,
+        locationCheckSuccessful: true,
         userLocation: {},
 
         // AGORA STATE VARIABLES
@@ -73,6 +80,9 @@ class Minute extends React.Component {
         partnerOnCall: false,
         vidMute: false,
         audMute: false,
+
+        timerPressCount: 0,
+        influencerModeActive: false,
     }
 
     callStartAnimation = new Animated.Value(0);
@@ -93,7 +103,7 @@ class Minute extends React.Component {
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             this.setState({ joinedCall: true });
             setTimeout(() => {
-                if(this.state.waitingForPartner && !this.state.partnerOnCall){
+                if (this.state.waitingForPartner && !this.state.partnerOnCall) {
                     alert('Your partner didn\'t join the call!');
                     this.leaveRoom();
                 }
@@ -136,7 +146,7 @@ class Minute extends React.Component {
         }
 
         // Check Location Permission
-        let granted = await Location.requestPermission({ ios: "whenInUse", android: { detail: "coarse" } });
+        let granted = await Location.requestPermission({ ios: "whenInUse", android: { detail: "fine" } });
         if (!granted) {
             this.setState({ preCheckCompleted: true, hasLocationPermission: false });
             return;
@@ -149,22 +159,20 @@ class Minute extends React.Component {
         let { longitude, latitude } = currentLocation;
         let response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GoogleMaps.key}`);
         let addressLookup = await response.json();
-
-        const supportedRegions = RemoteConfig().getValue('supported_region_codes');
-        console.log("SUPPORTED REGIONS:", supportedRegions);
         let regionCode = addressLookup.results[0].address_components.filter(component => component.types.includes('administrative_area_level_1'))[0].short_name;
-
-        this.setState({ userLocation: { location: currentLocation, address: addressLookup, regionCode } });
-
-        if (["TX"].includes(regionCode)) {
-            this.setState({ locationCheckSuccessful: true });
-        }
-        else {
-            this.setState({ locationCheckSuccessful: false });
-        }
+        this.setState({ preCheckCompleted: true, userLocation: { location: currentLocation, address: addressLookup, regionCode } });
         console.log("PRE CHECK", "REGION CHECK COMPLETED");
 
-        this.setState({ preCheckCompleted: true, hasRecordingPermission: true, hasLocationPermission: true, locationCheckSuccessful: true });;
+        AppState.addEventListener("change", this._handleAppStateChange);
+
+    }
+
+    _handleAppStateChange = (nextAppState) => {
+        if(nextAppState === "inactive" || nextAppState === "background"){
+            if(this.state.enteredPool ){
+                this.leavePool();
+            }
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -370,10 +378,76 @@ class Minute extends React.Component {
         });
     }
 
+    timerPressed = () => {
+        if(this.state.timerPressCount + 1 == 10){
+            Animated.timing(this.influencerAnimation, {
+                duration: 500,
+                toValue: 1,
+                useNativeDriver: true,
+                easing: Easing.bounce,
+            }).start();
+        }
+        this.setState({timerPressCount: this.state.timerPressCount + 1});
+    }
+
+    onHMPress = () => {
+        if(this.state.timerPressCount == 10){
+            this.setState({influencerModeActive: true});
+            alert('Influencer Mode Activated!');
+        }
+    }
+
+    onReport = () => {
+        Alert.alert('Report User', 'Are you sure you want to report this user?', [
+            {
+                text: 'Report',
+                onPress: async () => {
+                    await firestore().collection('callReport').add({
+                        uid: this.state.pairedUid,
+                        reportedAt: firestore.Timestamp.now(),
+                    });
+                    this.swipeLeft();
+                }
+            },
+            {
+                text: 'Cancel',
+                onPress: () => {}
+            }
+        ]);
+    }
+
     loadingAnimation = new Animated.Value(0);
     confettiAnimation = new Animated.Value(0);
+    influencerAnimation = new Animated.Value(0);
 
     render() {
+
+        let currentTime = new Date();
+        if (currentTime < LAUNCH_DATE && ! this.state.influencerModeActive) {
+            return (
+                <View style={{ flex: 1, padding: 16.0, justifyContent: 'center', alignItems: 'center' }}>
+                    <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0, transform: [{ scale: 1.25 }] }} pointerEvents={'none'} autoPlay speed={0.5} loop={false} />
+                    <TouchableWithoutFeedback onPress={this.onHMPress}>
+                        <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 32.0 }}>hotminute</Text>
+                    </TouchableWithoutFeedback>
+                    <Text>welcome to hotminute!</Text>
+                    <View style={{ margin: 32.0, alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'row', margin: 16.0 }}>
+                            <TouchableWithoutFeedback onPress={this.timerPressed}>
+                                <Animated.View style={{ backgroundColor: Colors.primary, width: 64, height: 64, alignItems: 'center', justifyContent: 'center', transform: [{scale: this.influencerAnimation.interpolate({inputRange: [0, 1], outputRange: [1, 0.5]})}] }}>
+                                    <Text style={{ fontSize: 48.0 }}>{dateDiffInDays(currentTime, LAUNCH_DATE)}</Text>
+                                </Animated.View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                        <Text style={{ fontSize: 32.0 }}>DAYS</Text>
+                    </View>
+                    <Text style={{ textAlign: 'center' }}><Text style={{ color: Colors.primary }}>GRAND RELEASE</Text> on October 1st at 9:00PM CST to start matching! in the meantime, you can check out our instagram to stay updated!</Text>
+                    <View style={{ marginTop: 16.0 }}>
+                        <SocialIcon type={'instagram'} light onPress={() => { Linking.openURL('https://instagram.com/hotminuteapp') }} />
+                    </View>
+                </View>
+            )
+        }
 
 
         if (!this.state.preCheckCompleted) {
@@ -385,16 +459,16 @@ class Minute extends React.Component {
             )
         }
 
-        // if (!this.state.hasRecordingPermission) {
-        //     return (
-        //         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        //             <Image source={require('../../../assets/img/audio-permission.png')} style={{ height: 196, width: 196 }} />
-        //             <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
-        //             <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Recording Permission</Text>
-        //             <Text style={{ textAlign: 'center' }}>It looks like you denied the audio recording permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the microphone permission!</Text>
-        //         </View>
-        //     )
-        // }
+        if (!this.state.hasRecordingPermission) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Image source={require('../../../assets/img/audio-permission.png')} style={{ height: 196, width: 196 }} />
+                    <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
+                    <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Recording Permission</Text>
+                    <Text style={{ textAlign: 'center' }}>It looks like you denied the audio recording permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the microphone permission!</Text>
+                </View>
+            )
+        }
 
         if (!this.state.hasLocationPermission) {
             return (
@@ -430,7 +504,7 @@ class Minute extends React.Component {
                         this.state.joinedCall && !this.state.waitingForPartner ?
                             // IF JOINED CALL
                             <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
-                                <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} />
+                                <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} onReport={this.onReport} />
                                 <View pointerEvents={'none'} style={{ position: 'absolute', height, width, top: 0, left: 0 }}>
                                     <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0 }} progress={this.confettiAnimation} />
                                 </View>
@@ -457,6 +531,7 @@ class Minute extends React.Component {
                                         !this.state.enteredPool && !this.state.joinedCall && !this.state.waitingForPartner ?
                                             <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
                                                 <Icon name={'sort'} size={32} color={Colors.textLightGray} />
+                                                <Text style={{color: Colors.textLightGray, fontSize: 10.0}}>FILTERS</Text>
                                             </TouchableOpacity>
                                             :
                                             null
@@ -464,13 +539,13 @@ class Minute extends React.Component {
                                     {
                                         this.state.waitingForPartner ? null :
 
-                                        <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
-                                            <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
-                                                <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={[Colors.primaryDark, Colors.primary]}>
-                                                    <Text style={{ fontFamily: Fonts.heading, color: notInPool ? Colors.background : Colors.text }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
-                                                </LinearGradient>
-                                            </TouchableOpacity>
-                                        </View>
+                                            <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
+                                                <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
+                                                    <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={[Colors.primaryDark, Colors.primary]}>
+                                                        <Text style={{ fontFamily: Fonts.heading, color: notInPool ? Colors.background : Colors.text }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
+                                                    </LinearGradient>
+                                                </TouchableOpacity>
+                                            </View>
                                     }
                                 </View>
                             </>

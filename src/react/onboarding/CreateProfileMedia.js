@@ -36,7 +36,7 @@ class CreateProfileMedia extends React.Component {
     async componentDidMount() {
         let profileSnapshot = await firestore().collection('profiles').doc(auth().currentUser.uid).get();
         let profileData = profileSnapshot.data();
-        if(profileSnapshot.exists && profileData.mediaComplete){
+        if (profileSnapshot.exists && profileData.mediaComplete) {
             this.props.navigation.navigate('SelectPreferencesDistance');
         }
     }
@@ -44,7 +44,7 @@ class CreateProfileMedia extends React.Component {
     imageTapped = async (id) => {
 
         // Make sure previous images are filled first
-        while(!this.state.images[id-1] && id > 1){
+        while (!this.state.images[id - 1] && id > 1) {
             id--;
         }
 
@@ -52,16 +52,16 @@ class CreateProfileMedia extends React.Component {
         // let { status } = await ImagePicker.requestCameraRollPermissionsAsync();
         if (status === 'granted') {
             try {
-                let image = await ImagePicker.launchImageLibraryAsync({ allowsEditing: false, aspect: [1, 1] });
+                let image = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, aspect: [1, 1] });
                 if (!image.cancelled) {
 
                     let resizedImage = await ImageResizer.createResizedImage(image.uri, 1920, 1920, 'JPEG', 80, 0, null, true);
                     image.uri = resizedImage.uri;
 
-                    newState = {};
+                    let newState = {};
                     newState.images = { ...this.state.images };
+                    newState.numImagesSelected = !this.state.images[id] ? this.state.numImagesSelected + 1 : this.state.numImagesSelected;
                     newState.images[id] = image;
-                    newState.numImagesSelected = this.state.numImagesSelected + 1;
                     this.setState(newState);
                 }
                 else {
@@ -73,12 +73,12 @@ class CreateProfileMedia extends React.Component {
             }
         }
         else {
-            alert("Camera Roll Permission Required!");
+            alert("Camera Roll Permission Required! Go to Settings > hotminute > Permissions > Camera Roll to enable it.");
         }
     }
 
     clearImages = () => {
-        this.setState({images: {}, numImagesSelected: 0})
+        this.setState({ images: {}, numImagesSelected: 0 })
     }
 
     uploadPressed = async () => {
@@ -95,7 +95,7 @@ class CreateProfileMedia extends React.Component {
             });
 
             let { id } = imageDoc;
-            
+
             // Upload the image.
             let fileName = `${auth().currentUser.uid}_${Date.now().toString()}`.replace(' ', '');
             let fileExtension = image.uri.substr(image.uri.lastIndexOf('.') + 1);
@@ -147,8 +147,8 @@ class CreateProfileMedia extends React.Component {
                         <this.ProfileImage imageId={5} />
                         <this.ProfileImage imageId={6} />
                     </View>
-                    <View style={{ marginVertical: 16.0, alignItems: 'center'}}>
-                        <Text style={{color: Colors.textLightGray}} onPress={this.clearImages}>Clear All</Text>
+                    <View style={{ marginVertical: 16.0, alignItems: 'center' }}>
+                        <Text style={{ color: Colors.textLightGray }} onPress={this.clearImages}>Clear All</Text>
                     </View>
                     <View style={{ marginVertical: 16.0 }}>
                         {this.state.uploading ?

@@ -17,6 +17,8 @@ import * as Font from 'expo-font';
 
 import RemoteConfig from '@react-native-firebase/remote-config';
 
+import CodePush from "react-native-code-push";
+
 const { height, width } = Dimensions.get('screen');
 
 const theme = {
@@ -28,7 +30,7 @@ const theme = {
   }
 }
 
-export default function App() {
+function App() {
 
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
@@ -106,3 +108,9 @@ const AlphaWarning = props => (
     </View>
   </>
 )
+
+const CodePushOptions = { checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME };
+
+const CodePushApp = CodePush(CodePushOptions)(App)
+
+export default CodePushApp;
