@@ -62,6 +62,7 @@ class Minute extends React.Component {
 
         timeLeft: 60,
         waitingForPartner: false,
+        bothExtended: false,
 
         showInstructionsPopup: false,
         showMarketingPopup: false,
@@ -168,8 +169,8 @@ class Minute extends React.Component {
     }
 
     _handleAppStateChange = (nextAppState) => {
-        if(nextAppState === "inactive" || nextAppState === "background"){
-            if(this.state.enteredPool ){
+        if (nextAppState === "inactive" || nextAppState === "background") {
+            if (this.state.enteredPool) {
                 this.leavePool();
             }
         }
@@ -258,7 +259,7 @@ class Minute extends React.Component {
                 this.confettiAnimation.setValue(0);
             }
             if (data.partnerExtended && data.extended) {
-                this.setState({ timeLeft: this.state.timeLeft + 30 });
+                this.setState({ timeLeft: this.state.timeLeft + 30, bothExtended: true });
                 this.playConfetti();
             }
             if (data.matched) {
@@ -379,7 +380,7 @@ class Minute extends React.Component {
     }
 
     timerPressed = () => {
-        if(this.state.timerPressCount + 1 == 10){
+        if (this.state.timerPressCount + 1 == 10) {
             Animated.timing(this.influencerAnimation, {
                 duration: 500,
                 toValue: 1,
@@ -387,12 +388,12 @@ class Minute extends React.Component {
                 easing: Easing.bounce,
             }).start();
         }
-        this.setState({timerPressCount: this.state.timerPressCount + 1});
+        this.setState({ timerPressCount: this.state.timerPressCount + 1 });
     }
 
     onHMPress = () => {
-        if(this.state.timerPressCount == 10){
-            this.setState({influencerModeActive: true});
+        if (this.state.timerPressCount == 10) {
+            this.setState({ influencerModeActive: true });
             alert('Influencer Mode Activated!');
         }
     }
@@ -411,7 +412,7 @@ class Minute extends React.Component {
             },
             {
                 text: 'Cancel',
-                onPress: () => {}
+                onPress: () => { }
             }
         ]);
     }
@@ -423,7 +424,7 @@ class Minute extends React.Component {
     render() {
 
         let currentTime = new Date();
-        if (currentTime < LAUNCH_DATE && ! this.state.influencerModeActive) {
+        if (currentTime < LAUNCH_DATE && !this.state.influencerModeActive) {
             return (
                 <View style={{ flex: 1, padding: 16.0, justifyContent: 'center', alignItems: 'center' }}>
                     <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0, transform: [{ scale: 1.25 }] }} pointerEvents={'none'} autoPlay speed={0.5} loop={false} />
@@ -434,7 +435,7 @@ class Minute extends React.Component {
                     <View style={{ margin: 32.0, alignItems: 'center', justifyContent: 'center' }}>
                         <View style={{ flexDirection: 'row', margin: 16.0 }}>
                             <TouchableWithoutFeedback onPress={this.timerPressed}>
-                                <Animated.View style={{ backgroundColor: Colors.primary, width: 64, height: 64, alignItems: 'center', justifyContent: 'center', transform: [{scale: this.influencerAnimation.interpolate({inputRange: [0, 1], outputRange: [1, 0.5]})}] }}>
+                                <Animated.View style={{ backgroundColor: Colors.primary, width: 64, height: 64, alignItems: 'center', justifyContent: 'center', transform: [{ scale: this.influencerAnimation.interpolate({ inputRange: [0, 1], outputRange: [1, 0.5] }) }] }}>
                                     <Text style={{ fontSize: 48.0 }}>{dateDiffInDays(currentTime, LAUNCH_DATE)}</Text>
                                 </Animated.View>
                             </TouchableWithoutFeedback>
@@ -496,15 +497,15 @@ class Minute extends React.Component {
 
         // TODO: Review Logic
         let notInPool = this.state.pairingEnabled || !this.state.enteredPool ? true : this.state.pairingEnabled || this.state.enteredPool ? false : false;
-
+        
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
                 <View style={{ flex: 1 }}>
                     {
                         this.state.joinedCall && !this.state.waitingForPartner ?
                             // IF JOINED CALL
-                            <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
-                                <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} onReport={this.onReport} />
+                            <Animated.View style={{ flex: 1, transform: [{ scale: this.callStartAnimation }] }}>
+                                <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} onReport={this.onReport} onEndCall={this.leaveRoom} extended={this.state.bothExtended} />
                                 <View pointerEvents={'none'} style={{ position: 'absolute', height, width, top: 0, left: 0 }}>
                                     <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0 }} progress={this.confettiAnimation} />
                                 </View>
@@ -531,7 +532,7 @@ class Minute extends React.Component {
                                         !this.state.enteredPool && !this.state.joinedCall && !this.state.waitingForPartner ?
                                             <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
                                                 <Icon name={'sort'} size={32} color={Colors.textLightGray} />
-                                                <Text style={{color: Colors.textLightGray, fontSize: 10.0}}>FILTERS</Text>
+                                                <Text style={{ color: Colors.textLightGray, fontSize: 10.0 }}>FILTERS</Text>
                                             </TouchableOpacity>
                                             :
                                             null
