@@ -7,7 +7,7 @@ import { Fonts, Colors } from '../../../config';
 import { connect } from 'react-redux';
 import * as ActionTypes from '../../../redux/ActionTypes';
 
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { PanGestureHandler, State, TouchableOpacity } from 'react-native-gesture-handler';
 
 import LottieView from 'lottie-react-native';
 
@@ -50,6 +50,12 @@ class Swiper extends React.Component {
     onExtend = () => {
         if (this.props.onExtend) {
             this.props.onExtend();
+        }
+    }
+
+    onReport = () => {
+        if(this.props.onReport) {
+            this.props.onReport();
         }
     }
 
@@ -171,6 +177,9 @@ class Swiper extends React.Component {
                         <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
                             <Countdown time={this.props.timeLeft} />
                         </View>
+                        <TouchableOpacity onPress={this.onReport}>
+                            <Text style={{fontSize: 12.0}}>REPORT</Text>
+                        </TouchableOpacity>
                         <View style={{ flex: 1, margin: 16, alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                 <LottieView source={require('../../../../assets/animations/SwipeLeft.json')} style={{ height: 36, width: 36, }} progress={this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress} />
