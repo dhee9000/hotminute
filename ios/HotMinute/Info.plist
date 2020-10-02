@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Hot Minute</string>
+	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -32,9 +32,21 @@
 				<string>com.googleusercontent.apps.350931211842-foq84g2sr903cl2pclibhckhkfjdh0jh</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Bundle ID</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>app.hotminute</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CodePushDeploymentKey</key>
+	<string>dzG8-GRjYfjzJiJhi51EEuefYopViCDX6didO</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
@@ -53,27 +65,27 @@
 		</dict>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Allow Hot Minute to access your calendar</string>
+	<string>Allow HotMinute to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow Hot Minute to use the camera</string>
+	<string>Allow HotMinute to use the camera</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Allow Hot Minute experiences to access your contacts</string>
+	<string>Allow HotMinute experiences to access your contacts</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Allow Hot Minute to use your location</string>
+	<string>Allow HotMinute to use your location in order to find your potential matches based off of your location filter!</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Allow Hot Minute to use your location</string>
+	<string>Allow HotMinute to use your location in order to find your potential matches based off of your location filter!</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Hot Minute to use your location</string>
+	<string>Allow HotMinute to use your location in order to find your potential matches based off of your location filter!</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow Hot Minute to access your microphone</string>
+	<string>Allow HotMinute to access your microphone, this allows you to converse with your potential match through a one minute voice call!</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Hot Minute to access your device's accelerometer</string>
+	<string>Allow HotMinute to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Give Hot Minute periences permission to save photos</string>
+	<string>Give HotMinute permission to save photos in order to choose which pictures you want presented to your matches!</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give Hot Minute periences permission to access your photos</string>
+	<string>Give HotMinute permission to access your photos in order to choose which pictures you want presented to your matches!</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>Allow Hot Minute to access your reminders</string>
+	<string>Allow HotMinute to access your reminders to keep you updated on what's new!</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

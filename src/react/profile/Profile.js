@@ -29,7 +29,6 @@ import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 
 import ImageResizer from 'react-native-image-resizer';
-import { assertValidExecutionArguments } from 'graphql/execution/execute';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -293,13 +292,13 @@ class Profile extends React.Component {
                 {
                     text: 'Yes, DELETE MY ACCOUNT',
                     onPress: async () => {
-                        
+
                         let batch = firestore().batch();
 
-                        let rootCollections = [ 'profiles', 'filters', 'users', ];
+                        let rootCollections = ['profiles', 'filters', 'users',];
                         rootCollections.map(coll => batch.delete(firestore().collection(coll).doc(auth().currentUser.uid)));
 
-                        let searchCollections = [ 'matches', 'chats', 'swipes', 'pairingPool', 'pairings' ];
+                        let searchCollections = ['matches', 'chats', 'swipes', 'pairingPool', 'pairings'];
                         let promises = searchCollections.map(async coll => {
                             let docs = []
                             let querySnapshot = await firestore().collection(coll).where('uids', 'array-contains', auth().currentUser.uid).get();
@@ -332,6 +331,11 @@ class Profile extends React.Component {
     editingJitter = new Animated.Value(0);
 
     render() {
+
+        const diff = Date.now() - this.state.dob.getTime(); 
+        const ageDate = new Date(diff); 
+        const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+
         return (
             <View style={{ backgroundColor: Colors.background, flex: 1 }}>
                 <View style={{ flex: 1 }}>
@@ -363,7 +367,7 @@ class Profile extends React.Component {
                                 </Animated.View>
                             </TouchableOpacity>
                         </View>
-                        <Text style={{ fontSize: 28, color: Colors.textLightGray, fontFamily: Fonts.heading }}>{new Date().getFullYear() - this.state.dob.getFullYear()}</Text>
+                        <Text style={{ fontSize: 28, color: Colors.textLightGray, fontFamily: Fonts.heading }}>{age}</Text>
                         <TouchableOpacity disabled={!this.state.editingProfile} onPress={this.editOccupation}>
                             <Animated.View style={{ transform: [{ translateX: this.editingJitter.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) }] }}>
                                 <Text style={{ fontSize: 20, color: Colors.textLightGray, textAlign: 'center' }}>{this.state.occupation}</Text>
@@ -435,20 +439,20 @@ class Profile extends React.Component {
                         <View style={{ alignItems: 'center', flex: 1 }}>
                             <View style={{ flex: 1, alignItems: 'center', alignSelf: 'stretch' }}>
                                 <Button title={'Log Out'} onPress={this.logoutPressed} containerStyle={{ alignSelf: 'stretch' }} />
-                                <TouchableOpacity onPress={this.deleteAccount} style={{ marginVertical: 16.0 }}>
+                                <TouchableOpacity onPress={this.deleteAccount} style={{ marginVertical: 5.0 }}>
                                     <Text style={{ color: '#f55' }}>Delete Account</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center', marginTop: 120 }}>
                                 <Text style={{ fontFamily: Fonts.heading }}>Legal</Text>
                                 <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/ToS.html')}>
-                                    <Text style={{ color: Colors.primary }}>Terms of Service</Text>
+                                    <Text style={{ color: Colors.primary }}>Terms of Use</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/privacy.html')}>
                                     <Text style={{ color: Colors.primary }}>Privacy Policy</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/')} style={{ alignItems: 'center' }}>
-                                    <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>v0.0.1</Text>
+                                    <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>v0.1.0</Text>
                                     <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>© HotMinute LLC 2020</Text>
                                 </TouchableOpacity>
                             </View>
@@ -490,7 +494,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     updateProfile: newProfile => dispatch({ type: ActionTypes.UPDATE_PROFILE.REQUEST, payload: { ...newProfile, updateId: new Date().getTime().toString() } }),
-    resetApp: () => dispatch({type: '@@RESET'}),
+    resetApp: () => dispatch({ type: '@@RESET' }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

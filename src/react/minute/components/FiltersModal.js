@@ -35,6 +35,7 @@ const FiltersModal = (props) => {
                 <Text style={{ fontFamily: Fonts.heading, fontSize: 28.0, alignSelf: 'center', marginBottom: 16.0 }}>Filters</Text>
                 <TabView
                     style={{ flex: 1 }}
+                    swipeEnabled={false}
                     navigationState={{ index: filterTabIdx, routes: [{ key: 'distance', title: 'distance' }, { key: 'gender', title: 'gender' }, { key: 'age', title: 'age' }] }}
                     renderScene={SceneMap({ distance: DistanceFilter, gender: GenderFilter, age: AgeFilter })}
                     renderTabBar={props => <TabBar {...props} onChangeTab={i => setfilterTabIdx(i)} />}
