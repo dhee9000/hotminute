@@ -65,7 +65,6 @@ class Minute extends React.Component {
         bothExtended: false,
 
         showInstructionsPopup: false,
-        showMarketingPopup: false,
 
         // Checks
         preCheckCompleted: false,
@@ -84,6 +83,9 @@ class Minute extends React.Component {
 
         timerPressCount: 0,
         influencerModeActive: false,
+
+        showSecondChance: false,
+        secondChanceTimeout: {},
     }
 
     callStartAnimation = new Animated.Value(0);
@@ -194,8 +196,8 @@ class Minute extends React.Component {
             }).start();
             this.runTime();
         }
-        if (prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall) {
-            this.leaveRoom();
+        if (prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall && !(prevState.joinedCall && ! this.state.joinedCall)) {
+            this.onTimeFinish();
         }
         if (!prevState.enteredPool && this.state.enteredPool) {
 
@@ -278,6 +280,8 @@ class Minute extends React.Component {
     }
 
     leavePool = async () => {
+        this.setState({showSecondChance: false});
+        clearTimeout(this.state.secondChanceTimeout);
         // Remove existing pool entries
         let existingPoolEntriesSnapshot = await firestore().collection('pairingPool').where('uid', '==', auth().currentUser.uid).where('active', '==', true).get();
         let batch = firestore().batch();
@@ -336,11 +340,19 @@ class Minute extends React.Component {
             this.setState({ timer });
         }
         else {
-            this.leaveRoom();
+            this.onTimeFinish();
         }
     }
 
-    leaveRoom = async () => {
+    onTimeFinish = async () => {
+        this.leaveRoom(false);
+        let secondChanceTimeout = setTimeout(() => {
+            this.leavePool();
+        }, 5000);
+        this.setState({ showSecondChance: true, secondChanceTimeout });
+    }
+
+    leaveRoom = async (leavePool = true) => {
         this.setState({ showInstructionsPopup: false });
         if (this.state.timer) {
             clearTimeout(this.state.timer);
@@ -348,7 +360,9 @@ class Minute extends React.Component {
         RtcEngine.leaveChannel();
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.setState({ partnerOnCall: false, partnerUid: null, joinedCall: false, timer: null, waitingForPartner: false });
-        this.leavePool();
+        if (leavePool) {
+            this.leavePool();
+        }
     }
 
     swipeRight = async () => {
@@ -497,7 +511,7 @@ class Minute extends React.Component {
 
         // TODO: Review Logic
         let notInPool = this.state.pairingEnabled || !this.state.enteredPool ? true : this.state.pairingEnabled || this.state.enteredPool ? false : false;
-        
+
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
                 <View style={{ flex: 1 }}>
@@ -559,26 +573,23 @@ class Minute extends React.Component {
                 {/* INSTRUCTIONS MODAL */}
                 <InstructionsModal showModal={this.state.showInstructionsPopup} onClose={() => this.setState({ showInstructionsPopup: false })} />
 
-                {/* MARKETING PROMO MODAL */}
-                <Modal visible={this.state.showMarketingPopup} transparent animated animationType={'fade'}>
-                    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, }}>
-                        <View style={{ backgroundColor: Colors.background, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0 }}>
-                            <TouchableOpacity onPress={() => this.setState({ showMarketingPopup: false })} style={{ position: 'absolute', top: 8.0, left: 8.0, margin: 4.0, backgroundColor: Colors.primary, borderRadius: 16, elevation: 1.0, zIndex: 2 }}>
-                                <Icon name={'close'} size={32} color={Colors.background} />
-                            </TouchableOpacity>
-                            <Image source={{ uri: 'https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/v346-filmful-16-confettibackground_2.jpg?bg=transparent&con=3&cs=srgb&dpr=1&fm=jpg&ixlib=php-3.1.0&q=80&usm=15&vib=3&w=1300&s=48e970065b37ebf5466b48691a2a847d' }}
-                                style={{ height: 128.0, width: 312.0 }} resizeMode={'cover'} resizeMethod={'scale'}
-                            />
-                            <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, marginVertical: 4.0, marginHorizontal: 16.0 }}>Pickup Line Contest</Text>
-                            <Text style={{ margin: 16.0 }}>Enter your best pickup lines and get a chance to win <Text style={{ color: Colors.primary }}>hotminute premium</Text>!</Text>
-                            <TouchableOpacity style={{ alignSelf: 'stretch', margin: 16.0 }}>
-                                <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 28.0, height: 56, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
-                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Enter Now</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
+                {/* SECOND CHANCE MODAL */}
+                <Modal visible={this.state.showSecondChance} transparent animationType={'slide'}>
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16.0 }}>
+                        <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#212121', padding: 16.0, borderRadius: 8.0, shadowColor: "#000", shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 2, }}>
+                            <LottieView style={{height: 48.0, width: 48.0, margin: 8.0}} source={require('../.././../assets/animations/SwipeClock.json')} autoPlay loop />
+                            <Text style={{fontFamily: Fonts.heading, marginTop: 16.0}}>Uh Oh! Looks like you ran out of time!</Text>
+                            <Text style={{color: Colors.primary, marginBottom: 16.0}}>here's a second chance</Text>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                                <TouchableOpacity onPress={this.swipeLeft} style={{flex: 1, margin: 4.0}}><View style={{backgroundColor: '#f55', padding: 8.0, borderRadius: 4.0}}><Text>NOPE</Text></View></TouchableOpacity>
+                                <TouchableOpacity onPress={this.leavePool} style={{flex: 1, margin: 4.0}}><View style={{backgroundColor: '#afafaf', padding: 8.0, borderRadius: 4.0}}><Text style={{color: Colors.background}}>CANCEL</Text></View></TouchableOpacity>
+                                <TouchableOpacity onPress={this.swipeRight} style={{flex: 1, margin: 4.0}}><View style={{backgroundColor: Colors.primary, padding: 8.0, borderRadius: 4.0}}><Text style={{color: Colors.background}}>MATCH</Text></View></TouchableOpacity>
+                            </View>
+                            <Text style={{fontSize: 10.0, marginTop: 4.0}}>you have 5 seconds.</Text>
                         </View>
                     </View>
                 </Modal>
+
             </View>
         )
     }

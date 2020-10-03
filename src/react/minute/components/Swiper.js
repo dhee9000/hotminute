@@ -206,7 +206,7 @@ class Swiper extends React.Component {
                                 <Text style={{ fontSize: 14.0 }}>REPORT</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={this.onEndCall} style={{ margin: 16.0, backgroundColor: '#ffffffaa', padding: 8.0, borderRadius: 4.0 }}>
-                                <Icon name={'call-end'} color={'#f55'} size={32} />
+                                <Text style={{ fontSize: 14.0, color: '#f55' }}>END CALL</Text>
                             </TouchableOpacity>
                             <Countdown time={this.props.timeLeft} />
                         </View>
