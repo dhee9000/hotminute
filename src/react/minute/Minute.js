@@ -62,9 +62,9 @@ class Minute extends React.Component {
 
         timeLeft: 60,
         waitingForPartner: false,
+        bothExtended: false,
 
         showInstructionsPopup: false,
-        showMarketingPopup: false,
 
         // Checks
         preCheckCompleted: false,
@@ -83,6 +83,9 @@ class Minute extends React.Component {
 
         timerPressCount: 0,
         influencerModeActive: false,
+
+        showSecondChance: false,
+        secondChanceTimeout: {},
     }
 
     callStartAnimation = new Animated.Value(0);
@@ -168,8 +171,8 @@ class Minute extends React.Component {
     }
 
     _handleAppStateChange = (nextAppState) => {
-        if(nextAppState === "inactive" || nextAppState === "background"){
-            if(this.state.enteredPool ){
+        if (nextAppState === "inactive" || nextAppState === "background") {
+            if (this.state.enteredPool) {
                 this.leavePool();
             }
         }
@@ -193,8 +196,8 @@ class Minute extends React.Component {
             }).start();
             this.runTime();
         }
-        if (prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall) {
-            this.leaveRoom();
+        if (prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall && !(prevState.joinedCall && ! this.state.joinedCall)) {
+            this.onTimeFinish();
         }
         if (!prevState.enteredPool && this.state.enteredPool) {
 
@@ -258,7 +261,7 @@ class Minute extends React.Component {
                 this.confettiAnimation.setValue(0);
             }
             if (data.partnerExtended && data.extended) {
-                this.setState({ timeLeft: this.state.timeLeft + 30 });
+                this.setState({ timeLeft: this.state.timeLeft + 30, bothExtended: true });
                 this.playConfetti();
             }
             if (data.matched) {
@@ -277,6 +280,8 @@ class Minute extends React.Component {
     }
 
     leavePool = async () => {
+        this.setState({showSecondChance: false});
+        clearTimeout(this.state.secondChanceTimeout);
         // Remove existing pool entries
         let existingPoolEntriesSnapshot = await firestore().collection('pairingPool').where('uid', '==', auth().currentUser.uid).where('active', '==', true).get();
         let batch = firestore().batch();
@@ -335,11 +340,19 @@ class Minute extends React.Component {
             this.setState({ timer });
         }
         else {
-            this.leaveRoom();
+            this.onTimeFinish();
         }
     }
 
-    leaveRoom = async () => {
+    onTimeFinish = async () => {
+        this.leaveRoom(false);
+        let secondChanceTimeout = setTimeout(() => {
+            this.leavePool();
+        }, 5000);
+        this.setState({ showSecondChance: true, secondChanceTimeout });
+    }
+
+    leaveRoom = async (leavePool = true) => {
         this.setState({ showInstructionsPopup: false });
         if (this.state.timer) {
             clearTimeout(this.state.timer);
@@ -347,7 +360,9 @@ class Minute extends React.Component {
         RtcEngine.leaveChannel();
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.setState({ partnerOnCall: false, partnerUid: null, joinedCall: false, timer: null, waitingForPartner: false });
-        this.leavePool();
+        if (leavePool) {
+            this.leavePool();
+        }
     }
 
     swipeRight = async () => {
@@ -379,7 +394,7 @@ class Minute extends React.Component {
     }
 
     timerPressed = () => {
-        if(this.state.timerPressCount + 1 == 10){
+        if (this.state.timerPressCount + 1 == 10) {
             Animated.timing(this.influencerAnimation, {
                 duration: 500,
                 toValue: 1,
@@ -387,12 +402,12 @@ class Minute extends React.Component {
                 easing: Easing.bounce,
             }).start();
         }
-        this.setState({timerPressCount: this.state.timerPressCount + 1});
+        this.setState({ timerPressCount: this.state.timerPressCount + 1 });
     }
 
     onHMPress = () => {
-        if(this.state.timerPressCount == 10){
-            this.setState({influencerModeActive: true});
+        if (this.state.timerPressCount == 10) {
+            this.setState({ influencerModeActive: true });
             alert('Influencer Mode Activated!');
         }
     }
@@ -411,7 +426,7 @@ class Minute extends React.Component {
             },
             {
                 text: 'Cancel',
-                onPress: () => {}
+                onPress: () => { }
             }
         ]);
     }
@@ -423,7 +438,7 @@ class Minute extends React.Component {
     render() {
 
         let currentTime = new Date();
-        if (currentTime < LAUNCH_DATE && ! this.state.influencerModeActive) {
+        if (currentTime < LAUNCH_DATE && !this.state.influencerModeActive) {
             return (
                 <View style={{ flex: 1, padding: 16.0, justifyContent: 'center', alignItems: 'center' }}>
                     <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0, transform: [{ scale: 1.25 }] }} pointerEvents={'none'} autoPlay speed={0.5} loop={false} />
@@ -434,7 +449,7 @@ class Minute extends React.Component {
                     <View style={{ margin: 32.0, alignItems: 'center', justifyContent: 'center' }}>
                         <View style={{ flexDirection: 'row', margin: 16.0 }}>
                             <TouchableWithoutFeedback onPress={this.timerPressed}>
-                                <Animated.View style={{ backgroundColor: Colors.primary, width: 64, height: 64, alignItems: 'center', justifyContent: 'center', transform: [{scale: this.influencerAnimation.interpolate({inputRange: [0, 1], outputRange: [1, 0.5]})}] }}>
+                                <Animated.View style={{ backgroundColor: Colors.primary, width: 64, height: 64, alignItems: 'center', justifyContent: 'center', transform: [{ scale: this.influencerAnimation.interpolate({ inputRange: [0, 1], outputRange: [1, 0.5] }) }] }}>
                                     <Text style={{ fontSize: 48.0 }}>{dateDiffInDays(currentTime, LAUNCH_DATE)}</Text>
                                 </Animated.View>
                             </TouchableWithoutFeedback>
@@ -459,16 +474,16 @@ class Minute extends React.Component {
             )
         }
 
-        // if (!this.state.hasRecordingPermission) {
-        //     return (
-        //         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        //             <Image source={require('../../../assets/img/audio-permission.png')} style={{ height: 196, width: 196 }} />
-        //             <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
-        //             <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Recording Permission</Text>
-        //             <Text style={{ textAlign: 'center' }}>It looks like you denied the audio recording permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the microphone permission!</Text>
-        //         </View>
-        //     )
-        // }
+        if (!this.state.hasRecordingPermission) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Image source={require('../../../assets/img/audio-permission.png')} style={{ height: 196, width: 196 }} />
+                    <Text style={{ color: Colors.primary, fontFamily: Fonts.heading, fontSize: 32.0, textAlign: 'center', marginVertical: 16.0 }}>Oops!</Text>
+                    <Text style={{ fontSize: 24.0, marginBottom: 16.0 }}>Recording Permission</Text>
+                    <Text style={{ textAlign: 'center' }}>It looks like you denied the audio recording permission. hotminute works by putting you on a call with potential matches so we need access to your mic. Please go into your phone's Settings, find HotMinute and enable the microphone permission!</Text>
+                </View>
+            )
+        }
 
         if (!this.state.hasLocationPermission) {
             return (
@@ -503,8 +518,8 @@ class Minute extends React.Component {
                     {
                         this.state.joinedCall && !this.state.waitingForPartner ?
                             // IF JOINED CALL
-                            <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
-                                <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} onReport={this.onReport} />
+                            <Animated.View style={{ flex: 1, transform: [{ scale: this.callStartAnimation }] }}>
+                                <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} onReport={this.onReport} onEndCall={this.leaveRoom} extended={this.state.bothExtended} />
                                 <View pointerEvents={'none'} style={{ position: 'absolute', height, width, top: 0, left: 0 }}>
                                     <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0 }} progress={this.confettiAnimation} />
                                 </View>
@@ -531,7 +546,7 @@ class Minute extends React.Component {
                                         !this.state.enteredPool && !this.state.joinedCall && !this.state.waitingForPartner ?
                                             <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
                                                 <Icon name={'sort'} size={32} color={Colors.textLightGray} />
-                                                <Text style={{color: Colors.textLightGray, fontSize: 10.0}}>FILTERS</Text>
+                                                <Text style={{ color: Colors.textLightGray, fontSize: 10.0 }}>FILTERS</Text>
                                             </TouchableOpacity>
                                             :
                                             null
@@ -558,26 +573,23 @@ class Minute extends React.Component {
                 {/* INSTRUCTIONS MODAL */}
                 <InstructionsModal showModal={this.state.showInstructionsPopup} onClose={() => this.setState({ showInstructionsPopup: false })} />
 
-                {/* MARKETING PROMO MODAL */}
-                <Modal visible={this.state.showMarketingPopup} transparent animated animationType={'fade'}>
-                    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, }}>
-                        <View style={{ backgroundColor: Colors.background, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0 }}>
-                            <TouchableOpacity onPress={() => this.setState({ showMarketingPopup: false })} style={{ position: 'absolute', top: 8.0, left: 8.0, margin: 4.0, backgroundColor: Colors.primary, borderRadius: 16, elevation: 1.0, zIndex: 2 }}>
-                                <Icon name={'close'} size={32} color={Colors.background} />
-                            </TouchableOpacity>
-                            <Image source={{ uri: 'https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/v346-filmful-16-confettibackground_2.jpg?bg=transparent&con=3&cs=srgb&dpr=1&fm=jpg&ixlib=php-3.1.0&q=80&usm=15&vib=3&w=1300&s=48e970065b37ebf5466b48691a2a847d' }}
-                                style={{ height: 128.0, width: 312.0 }} resizeMode={'cover'} resizeMethod={'scale'}
-                            />
-                            <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, marginVertical: 4.0, marginHorizontal: 16.0 }}>Pickup Line Contest</Text>
-                            <Text style={{ margin: 16.0 }}>Enter your best pickup lines and get a chance to win <Text style={{ color: Colors.primary }}>hotminute premium</Text>!</Text>
-                            <TouchableOpacity style={{ alignSelf: 'stretch', margin: 16.0 }}>
-                                <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 28.0, height: 56, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
-                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Enter Now</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
+                {/* SECOND CHANCE MODAL */}
+                <Modal visible={this.state.showSecondChance} transparent animationType={'slide'}>
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16.0 }}>
+                        <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#212121', padding: 16.0, borderRadius: 8.0, shadowColor: "#000", shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 2, }}>
+                            <LottieView style={{height: 48.0, width: 48.0, margin: 8.0}} source={require('../.././../assets/animations/SwipeClock.json')} autoPlay loop />
+                            <Text style={{fontFamily: Fonts.heading, marginTop: 16.0}}>Uh Oh! Looks like you ran out of time!</Text>
+                            <Text style={{color: Colors.primary, marginBottom: 16.0}}>here's a second chance</Text>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                                <TouchableOpacity onPress={this.swipeLeft} style={{flex: 1, margin: 4.0}}><View style={{backgroundColor: '#f55', padding: 8.0, borderRadius: 4.0}}><Text>NOPE</Text></View></TouchableOpacity>
+                                <TouchableOpacity onPress={this.leavePool} style={{flex: 1, margin: 4.0}}><View style={{backgroundColor: '#afafaf', padding: 8.0, borderRadius: 4.0}}><Text style={{color: Colors.background}}>CANCEL</Text></View></TouchableOpacity>
+                                <TouchableOpacity onPress={this.swipeRight} style={{flex: 1, margin: 4.0}}><View style={{backgroundColor: Colors.primary, padding: 8.0, borderRadius: 4.0}}><Text style={{color: Colors.background}}>MATCH</Text></View></TouchableOpacity>
+                            </View>
+                            <Text style={{fontSize: 10.0, marginTop: 4.0}}>you have 5 seconds.</Text>
                         </View>
                     </View>
                 </Modal>
+
             </View>
         )
     }
