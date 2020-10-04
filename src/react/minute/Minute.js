@@ -196,7 +196,7 @@ class Minute extends React.Component {
             }).start();
             this.runTime();
         }
-        if (prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall && !(prevState.joinedCall && ! this.state.joinedCall)) {
+        if (prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall && !(prevState.joinedCall && !this.state.joinedCall)) {
             this.onTimeFinish();
         }
         if (!prevState.enteredPool && this.state.enteredPool) {
@@ -280,7 +280,7 @@ class Minute extends React.Component {
     }
 
     leavePool = async () => {
-        this.setState({showSecondChance: false});
+        this.setState({ showSecondChance: false });
         clearTimeout(this.state.secondChanceTimeout);
         // Remove existing pool entries
         let existingPoolEntriesSnapshot = await firestore().collection('pairingPool').where('uid', '==', auth().currentUser.uid).where('active', '==', true).get();
@@ -308,27 +308,28 @@ class Minute extends React.Component {
 
     joinRoom = async () => {
         RtcEngine.leaveChannel();
-        Alert.alert('Join Call', `Are you ready to join this call?`, [
-            {
-                text: 'Join',
-                onPress: () => {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                    RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
-                    this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, waitingForPartner: true });
-                    setTimeout(() => {
-                        RtcEngine.joinChannelWithUserAccount(this.state.roomId, auth().currentUser.uid, this.state.roomToken);  //Join Channel
-                        RtcEngine.enableAudio();
-                        RtcEngine.disableVideo();
-                    }, 1000)
-                }
-            },
-            {
-                text: 'Cancel',
-                onPress: () => {
-                    return;
-                }
-            }
-        ])
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
+        this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, waitingForPartner: true });
+        setTimeout(() => {
+            RtcEngine.joinChannelWithUserAccount(this.state.roomId, auth().currentUser.uid, this.state.roomToken);  //Join Channel
+            RtcEngine.enableAudio();
+            RtcEngine.disableVideo();
+        }, 1000)
+        // Alert.alert('', `You get one hot minute before you need to swipe!`, [
+        //     {
+        //         text: 'Join',
+        //         onPress: () => {
+
+        //         }
+        //     },
+        //     {
+        //         text: 'Cancel',
+        //         onPress: () => {
+        //             return;
+        //         }
+        //     }
+        // ])
     }
 
     runTime = () => {
@@ -577,15 +578,15 @@ class Minute extends React.Component {
                 <Modal visible={this.state.showSecondChance} transparent animationType={'slide'}>
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16.0 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#212121', padding: 16.0, borderRadius: 8.0, shadowColor: "#000", shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 2, }}>
-                            <LottieView style={{height: 48.0, width: 48.0, margin: 8.0}} source={require('../.././../assets/animations/SwipeClock.json')} autoPlay loop />
-                            <Text style={{fontFamily: Fonts.heading, marginTop: 16.0}}>Uh Oh! Looks like you ran out of time!</Text>
-                            <Text style={{color: Colors.primary, marginBottom: 16.0}}>here's a second chance</Text>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
-                                <TouchableOpacity onPress={this.swipeLeft} style={{flex: 1, margin: 4.0}}><View style={{backgroundColor: '#f55', padding: 8.0, borderRadius: 4.0}}><Text>NOPE</Text></View></TouchableOpacity>
-                                <TouchableOpacity onPress={this.leavePool} style={{flex: 1, margin: 4.0}}><View style={{backgroundColor: '#afafaf', padding: 8.0, borderRadius: 4.0}}><Text style={{color: Colors.background}}>CANCEL</Text></View></TouchableOpacity>
-                                <TouchableOpacity onPress={this.swipeRight} style={{flex: 1, margin: 4.0}}><View style={{backgroundColor: Colors.primary, padding: 8.0, borderRadius: 4.0}}><Text style={{color: Colors.background}}>MATCH</Text></View></TouchableOpacity>
+                            <LottieView style={{ height: 48.0, width: 48.0, margin: 8.0 }} source={require('../.././../assets/animations/SwipeClock.json')} autoPlay loop />
+                            <Text style={{ fontFamily: Fonts.heading, marginTop: 16.0 }}>Uh Oh! Looks like you ran out of time!</Text>
+                            <Text style={{ color: Colors.primary, marginBottom: 16.0 }}>here's a second chance</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
+                                <TouchableOpacity onPress={this.swipeLeft} style={{ flex: 1, margin: 4.0 }}><View style={{ backgroundColor: '#f55', padding: 8.0, borderRadius: 4.0 }}><Text>NOPE</Text></View></TouchableOpacity>
+                                <TouchableOpacity onPress={this.leavePool} style={{ flex: 1, margin: 4.0 }}><View style={{ backgroundColor: '#afafaf', padding: 8.0, borderRadius: 4.0 }}><Text style={{ color: Colors.background }}>CANCEL</Text></View></TouchableOpacity>
+                                <TouchableOpacity onPress={this.swipeRight} style={{ flex: 1, margin: 4.0 }}><View style={{ backgroundColor: Colors.primary, padding: 8.0, borderRadius: 4.0 }}><Text style={{ color: Colors.background }}>MATCH</Text></View></TouchableOpacity>
                             </View>
-                            <Text style={{fontSize: 10.0, marginTop: 4.0}}>you have 5 seconds.</Text>
+                            <Text style={{ fontSize: 10.0, marginTop: 4.0 }}>you have 5 seconds.</Text>
                         </View>
                     </View>
                 </Modal>
