@@ -308,7 +308,7 @@ class Minute extends React.Component {
 
     joinRoom = async () => {
         RtcEngine.leaveChannel();
-        Alert.alert('Join Call', `Are you ready to join this call? Your partner's name is ${this.state.pairedProfile.fname} ${this.state.pairedProfile.lname}.`, [
+        Alert.alert('Join Call', `Are you ready to join this call?`, [
             {
                 text: 'Join',
                 onPress: () => {
