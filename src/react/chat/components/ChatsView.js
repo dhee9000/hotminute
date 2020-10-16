@@ -42,6 +42,7 @@ class ChatsView extends React.Component {
 
             let profile = this.props.profilesById[uid];
             let chat = this.props.chatsById[item];
+            let read = !chat.lastMessageAt ? true : !chat.lastOpened ? true : !chat.lastOpened[auth().currentUser.uid] ? true : chat.lastOpened[auth().currentUser.uid].toMillis() >= chat.lastMessageAt.toMillis();
 
             return (
                 <TouchableOpacity onPress={() => this.chatClicked(chat.id, uid)}>
@@ -49,11 +50,16 @@ class ChatsView extends React.Component {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 16, height: 64, width: 64, }} />
                             <View style={{ justifyContent: 'center', alignItems: 'flex-start', padding: 8.0 }}>
-                                <Text numberOfLines={2} style={{ fontSize: 20.0, textAlign: 'center' }}>{profile.fname} {profile.lname}</Text>
-                                <Text style={{ fontSize: 14.0 }}>{chat.lastMessageBy == auth().currentUser.uid ? 'You' : profile.fname}: {chat.lastMessage}</Text>
+                                <Text numberOfLines={2} style={{ fontSize: 20.0, textAlign: 'center', fontFamily: read ? Fonts.primary : Fonts.heading }}>{profile.fname} {profile.lname}</Text>
+                                <Text numberOfLines={1} style={{ fontSize: 14.0, fontFamily: read ? Fonts.primary : Fonts.heading, maxWidth: width/2 }}>{chat.lastMessageBy == auth().currentUser.uid ? 'You' : profile.fname}: {chat.lastMessage}</Text>
                             </View>
                         </View>
-                        {/* <Text style={{ fontSize: 16.0, color: Colors.textLightGray, }}>1d</Text> */}
+                        <View style={{}}>
+                            {
+                                !read &&
+                                <View style={{ height: 16.0, width: 16.0, borderRadius: 8.0, backgroundColor: Colors.primary }} />
+                            }
+                        </View>
                     </View>
                 </TouchableOpacity>
             )

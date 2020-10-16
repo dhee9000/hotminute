@@ -196,11 +196,11 @@ class Swiper extends React.Component {
 
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Animated.View style={{ position: 'absolute', top: 0, left: 0, transform: [{ rotateY: imageRotateY }, { rotateX: imageRotateX }] }}>
+                <Animated.View style={{ position: 'absolute', top: 0, left: 0, transform: [{ rotateY: imageRotateY }, { rotateX: imageRotateX }], zIndex: 0 }}>
                     <Animated.Image blurRadius={24.0} source={{ uri: this.props.pictureURL ? this.props.pictureURL : BLANK_IMAGE_URI }} style={{ height, width, borderRadius: 8.0 }} />
                 </Animated.View>
                 <PanGestureHandler onHandlerStateChange={this.handleGestureStateChanged} onGestureEvent={Animated.event([{ nativeEvent: { translationX: this.gestureX, translationY: this.gestureY } }], { useNativeDriver: false })} minPointers={1} maxPointers={1}>
-                    <Animated.View style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', backgroundColor: '#33333377', zIndex: 100 }}>
+                    <Animated.View style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', backgroundColor: '#33333377', zIndex: 1000 }}>
                         <View style={{ flex: 4, justifyContent: 'flex-end', alignItems: 'center' }}>
                             <TouchableOpacity onPress={this.onReport} style={{ margin: 16.0 }}>
                                 <Text style={{ fontSize: 14.0 }}>REPORT</Text>

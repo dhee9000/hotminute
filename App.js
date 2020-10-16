@@ -94,7 +94,7 @@ function App() {
 const NotifViewer = props => {
   return (
     <View style={{ position: 'absolute', top: 16, left: 0, width, padding: 16.0, elevation: 16.0, zIndex: 100 }}>
-      <View style={{ flex: 1, backgroundColor: Colors.primary, padding: 16.0, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ flex: 1, backgroundColor: Colors.primary, padding: 16.0, borderRadius: 8.0, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{fontSize: 16.0, color: Colors.text}}>{props.notifText}</Text>
       </View>
     </View>
