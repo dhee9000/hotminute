@@ -65,12 +65,13 @@ class MatchesView extends React.Component {
 
     renderMatch = ({ item }) => {
 
-        let uid = this.props.matchesById[item].uids.filter(uid => uid != auth().currentUser.uid)[0];
+        // let uid = this.props.matchesById[item].uids.filter(uid => uid != auth().currentUser.uid)[0];
+        let uid = item.uids.filter(uid => uid != auth().currentUser.uid)[0];
 
         if (this.props.profileIds.includes(uid) && this.props.profilesById[uid].loaded) {
             let profile = this.props.profilesById[uid];
             return (
-                <TouchableOpacity onPress={() => { this.matchClicked(item) }}>
+                <TouchableOpacity onPress={() => { this.matchClicked(item.id) }}>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', margin: 8.0 }}>
                         <Image blurRadius={4.0} source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 8, height: 96, width: '100%' }} />
@@ -98,12 +99,22 @@ class MatchesView extends React.Component {
             otherUid = relatedMatch.uids.filter(uid => uid != auth().currentUser.uid)[0];
             matchMenuProfile = this.props.profilesById[otherUid];
         }
+
+        let matches = this.props.matchesIds.map(id => ({...this.props.matchesById[id], id}));
+        matches = matches.sort((a, b) => {
+            if(a.dateMatched && b.dateMatched){
+                return a.dateMatched.toDate() < b.dateMatched.toDate() ? 1 : a.dateMatched.toDate() >  b.dateMatched.toDate() ? -1 : 0;
+            }
+            else{
+                return 0;
+            }
+        });
         return (
             <View style={{ paddingTop: 16.0 }}>
                 <FlatList
-                    data={this.props.matchesIds}
+                    data={matches}
                     renderItem={this.renderMatch}
-                    keyExtractor={item => item}
+                    keyExtractor={item => item.id}
                     ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No matches found.</Text>}
                 />
             </View>

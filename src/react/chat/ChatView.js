@@ -64,6 +64,7 @@ class ChatView extends React.Component {
             messageObj.id = messageRef.id;
             this.props.messageSent(this.state.chatId, messageObj);
         });
+        this.updateLastSeen();
     }
 
     onContentSizeChange = (e) => {

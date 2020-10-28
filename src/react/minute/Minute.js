@@ -37,6 +37,8 @@ import { FiltersModal, InstructionsModal, Swiper } from './components';
 
 import Heart from '../../../assets/svg/heart.svg';
 
+const DatingPeriodHours = [new Date('January 7, 2000 18:00:00-6:00'), new Date('January 7, 2000 21:00:00-6:00'), new Date('January 7, 2000 00:00:00-6:00')]
+
 class Minute extends React.Component {
 
     state = {
@@ -154,12 +156,20 @@ class Minute extends React.Component {
         this.setState({ hasLocationPermission: true });
 
         // Check Location in Supported Region
-        let currentLocation = await Location.getLatestLocation();
-        let { longitude, latitude } = currentLocation;
-        let response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GoogleMaps.key}`);
-        let addressLookup = await response.json();
-        let regionCode = addressLookup.results[0].address_components.filter(component => component.types.includes('administrative_area_level_1'))[0].short_name;
-        this.setState({ preCheckCompleted: true, userLocation: { location: currentLocation, address: addressLookup, regionCode } });
+        let currentLocation = await Location.getLatestLocation({ timeout: 5000 });
+        if(currentLocation){
+            let { longitude, latitude } = currentLocation;
+            let response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GoogleMaps.key}`);
+            let addressLookup = await response.json();
+            let regionCode = addressLookup.results[0].address_components.filter(component => component.types.includes('administrative_area_level_1'))[0].short_name;
+            this.setState({ preCheckCompleted: true, userLocation: { location: currentLocation, address: addressLookup, regionCode } });
+        }
+        else{
+            console.log(currentLocation);
+            alert("Could not acquire location! App may not function correctly!");
+            this.setState({ preCheckCompleted: true, hasLocationPermission: true});
+        }
+        
         console.log("PRE CHECK", "REGION CHECK COMPLETED");
 
         this.datingPeriodCheck();
@@ -253,6 +263,15 @@ class Minute extends React.Component {
                 useNativeDriver: false,
             }).start();
         }
+        if (!prevState.showDatingPeriodInfo && this.state.showDatingPeriodInfo && this.state.enteredPool) {
+            this.leavePool();
+        }
+        if (!prevState.joinedCall && this.state.joinedCall && this.state.showDatingPeriodInfo) {
+            this.setState({ showDatingPeriodInfo: false });
+        }
+        if (!prevState.joinedCall && this.state.joinedCall) {
+            this.props.navigation.navigate('Date');
+        }
     }
 
     joinPool = async () => {
@@ -294,7 +313,7 @@ class Minute extends React.Component {
             }
             if (data.matched) {
                 this.leaveRoom();
-                this.props.navigation.navigate('Matches');
+                this.props.navigation.navigate('Matches', {screen: 0});
                 this.state.unsubscribePoolEntry();
                 this.playConfetti();
             }
@@ -365,7 +384,7 @@ class Minute extends React.Component {
         RtcEngine.leaveChannel();
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
-        this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, waitingForPartner: true });
+        this.setState({ showDatingPeriodInfo: false, partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, waitingForPartner: true });
         setTimeout(() => {
             RtcEngine.joinChannelWithUserAccount(this.state.roomId, auth().currentUser.uid, this.state.roomToken);  //Join Channel
             RtcEngine.enableAudio();
@@ -475,10 +494,15 @@ class Minute extends React.Component {
     }
 
     datingPeriodCheck = () => {
-        // TODO: ACTUALLY CHECK FOR DATING PERIODS
-        if (true) {
-            this.setState({ datingPeriodActive: false });
-        }
+        let inDatingPeriod = false;
+        let currentTime = new Date();
+        DatingPeriodHours.forEach(time => {
+            if (currentTime.getHours() >= time.getHours() && currentTime.getHours() < time.getHours() + 1) {
+                inDatingPeriod = inDatingPeriod || true;
+            }
+        })
+
+        this.setState({ datingPeriodActive: inDatingPeriod });
     }
 
     loadingAnimation = new Animated.Value(0);
@@ -569,7 +593,7 @@ class Minute extends React.Component {
                                             !this.state.datingPeriodActive &&
                                             <Animated.View style={{ opacity: this.messageAnimation }}>
                                                 <TouchableOpacity onPress={() => this.setState({ showDatingPeriodInfo: true })}>
-                                                <Icon name={'info'} size={12} color={Colors.text} />
+                                                    <Icon name={'info'} size={12} color={Colors.text} />
                                                     <Text style={{ textAlign: 'center', marginHorizontal: 16.0 }}>Not getting paired with anyone? Try coming back when a <Text style={{ color: Colors.primary }}>dating period</Text> is active!</Text>
                                                 </TouchableOpacity>
                                             </Animated.View>
@@ -637,7 +661,7 @@ class Minute extends React.Component {
 
                     {/* DATING PERIOD INFO MODAL */}
                     <Modal visible={this.state.showDatingPeriodInfo} transparent animationType={'slide'}>
-                        <View style={{ flex: 1, padding: 16.0, backgroundColor: Colors.background }}>
+                        <View style={{ flex: 1, padding: 16.0, backgroundColor: Colors.background, paddingTop: 32.0 }}>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0, }}>dating periods</Text>
                                 <Text>get more matches!</Text>
@@ -656,25 +680,25 @@ class Minute extends React.Component {
                                 <Text style={{ textAlign: 'center' }}>tired of seeing that heart pulse? introducing dating periods! special events where everyone can find more matches!</Text>
 
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8.0 }}>
-                                    <Image source={{ uri: 'https://media.giphy.com/media/L3KJjjqtoyzCuIVF7e/giphy.gif' }} style={{ height: 48, width: 48 }} />
-                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>6PM</Text>
-                                    <Text> Hot Chai Minute</Text>
+                                    <Image source={{ uri: 'https://media.giphy.com/media/WnNIM6yuM2QHJ7pGaK/giphy.gif' }} style={{ height: 48, width: 48 }} />
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>{new Date(DatingPeriodHours[0]).getHours() - (Math.floor(new Date(DatingPeriodHours[0]).getHours() / 12) * 12)} PM</Text>
+                                    <Text> Golden Hour</Text>
                                 </View>
 
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8.0 }}>
-                                    <Image source={{ uri: 'https://media.giphy.com/media/gGrKBu0MLQ4AwkJMay/giphy.gif' }} style={{ height: 48, width: 48 }} />
-                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>9PM</Text>
-                                    <Text> Dum Biryani Hour</Text>
+                                    <Image source={{ uri: 'https://media.giphy.com/media/ifS5VwP9UWUsN9Elu6/giphy.gif' }} style={{ height: 48, width: 48 }} />
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>{new Date(DatingPeriodHours[1]).getHours() - (Math.floor(new Date(DatingPeriodHours[0]).getHours() / 12) * 12)} PM</Text>
+                                    <Text> Two To Tango</Text>
                                 </View>
 
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8.0 }}>
-                                    <Image source={{ uri: 'https://media.giphy.com/media/f3GQ9j5er6gyi08blo/giphy.gif' }} style={{ height: 48, width: 48 }} />
-                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>12AM</Text>
-                                    <Text> Midnight Masala Time</Text>
+                                    <Image source={{ uri: 'https://media.giphy.com/media/SVUWMrKDk8JDEYtwrT/giphy.gif' }} style={{ height: 48, width: 48 }} />
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>{new Date(DatingPeriodHours[2]).getHours() - (Math.floor(new Date(DatingPeriodHours[0]).getHours() / 12) * 12)} PM</Text>
+                                    <Text> Midnight Shenanigans</Text>
                                 </View>
                             </View>
 
-                            <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                            <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 16.0 }}>
                                 <Button containerStyle={{ alignSelf: 'stretch' }} title={'Continue'} onPress={() => this.setState({ showDatingPeriodInfo: false })} />
                             </View>
                         </View>

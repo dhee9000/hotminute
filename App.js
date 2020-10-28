@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Alert, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Alert, Dimensions, TouchableOpacity } from 'react-native';
 
 import { Colors, Fonts } from './src/config';
 
@@ -62,7 +62,7 @@ function App() {
       setNotifText(notifTitle);
       setTimeout(() => {
         setShowNotif(false);
-      }, 5000)
+      }, 3000)
     });
 
     return unsubscribe;
@@ -93,11 +93,13 @@ function App() {
 
 const NotifViewer = props => {
   return (
-    <View style={{ position: 'absolute', top: 16, left: 0, width, padding: 16.0, elevation: 16.0, zIndex: 100 }}>
-      <View style={{ flex: 1, backgroundColor: Colors.primary, padding: 16.0, borderRadius: 8.0, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{fontSize: 16.0, color: Colors.text}}>{props.notifText}</Text>
+    <TouchableOpacity>
+      <View style={{ position: 'absolute', top: 16, left: 0, width, padding: 16.0, elevation: 16.0, zIndex: 100 }}>
+        <View style={{ flex: 1, backgroundColor: Colors.primary, padding: 16.0, borderRadius: 8.0, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 16.0, color: Colors.text }}>{props.notifText}</Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
