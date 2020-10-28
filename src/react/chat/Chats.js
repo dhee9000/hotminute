@@ -18,7 +18,7 @@ import auth, { firebase } from '@react-native-firebase/auth';
 import Animated from 'react-native-reanimated';
 import { Button } from 'react-native-elements';
 
-import {MatchesView, ChatsView} from './components';
+import { MatchesView, ChatsView } from './components';
 
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 const { height, width } = Dimensions.get('screen');
@@ -54,6 +54,17 @@ class Chats extends React.Component {
                 return (<ChatsView navigation={this.props.navigation} />)
             }
         }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        //TODO: go to matches when navigating here to see matches
+        // if (prevProps != this.props) {
+        //     let screen = this.props.navigation.getParam('screen', -1);
+        //     if (screen != -1) {
+        //         this.setState({ tabIdx: screen });
+        //         this.props.navigation.setParams({screen: null});
+        //     }
+        // }
     }
 
 

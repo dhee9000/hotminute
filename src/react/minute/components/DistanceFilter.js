@@ -30,7 +30,8 @@ class DistanceFilter extends React.Component {
     render() {
         return (
             <View style={{ flex: 1, padding: 16.0, alignItems: 'stretch', justifyContent: 'center' }}>
-                <Text style={{fontSize: 12.0, color: Colors.textLightGray, alignSelf: 'center'}}>match only with people within a</Text>
+                <Text style={{alignSelf: 'center'}}>Location filters are currently disabled to ensure matches. Spread the word about the app and we'll enable them soon!</Text>
+                {/* <Text style={{fontSize: 12.0, color: Colors.textLightGray, alignSelf: 'center'}}>match only with people within a</Text>
                 <Slider
                     onValueChange={value => this.setState({ maxDistance: value })}
                     minimumValue={0}
@@ -43,7 +44,7 @@ class DistanceFilter extends React.Component {
                     onSlidingComplete={() => this.setState({sliding: false})}
                 />
                 <Text style={{alignSelf: 'center', fontSize: 32.0}}>{this.state.maxDistance} mi</Text>
-                <Text style={{fontSize: 12.0, color: Colors.textLightGray, alignSelf: 'center'}}>radius</Text>
+                <Text style={{fontSize: 12.0, color: Colors.textLightGray, alignSelf: 'center'}}>radius</Text> */}
             </View>
         )
     }

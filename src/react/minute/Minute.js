@@ -37,12 +37,7 @@ import { FiltersModal, InstructionsModal, Swiper } from './components';
 
 import Heart from '../../../assets/svg/heart.svg';
 
-const LAUNCH_DATE = new Date(1601604000000);
-
-function dateDiffInDays(date1, date2) {
-    // round to the nearest whole number
-    return Math.round((date2 - date1) / (1000 * 60 * 60 * 24));
-}
+const DatingPeriodHours = [new Date('January 7, 2000 18:00:00-6:00'), new Date('January 7, 2000 21:00:00-6:00'), new Date('January 7, 2000 00:00:00-6:00')]
 
 class Minute extends React.Component {
 
@@ -62,9 +57,9 @@ class Minute extends React.Component {
 
         timeLeft: 60,
         waitingForPartner: false,
+        bothExtended: false,
 
         showInstructionsPopup: false,
-        showMarketingPopup: false,
 
         // Checks
         preCheckCompleted: false,
@@ -83,6 +78,12 @@ class Minute extends React.Component {
 
         timerPressCount: 0,
         influencerModeActive: false,
+
+        showSecondChance: false,
+        secondChanceTimeout: {},
+
+        datingPeriodActive: false,
+        showDatingPeriodInfo: false,
     }
 
     callStartAnimation = new Animated.Value(0);
@@ -155,21 +156,46 @@ class Minute extends React.Component {
         this.setState({ hasLocationPermission: true });
 
         // Check Location in Supported Region
-        let currentLocation = await Location.getLatestLocation();
-        let { longitude, latitude } = currentLocation;
-        let response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GoogleMaps.key}`);
-        let addressLookup = await response.json();
-        let regionCode = addressLookup.results[0].address_components.filter(component => component.types.includes('administrative_area_level_1'))[0].short_name;
-        this.setState({ preCheckCompleted: true, userLocation: { location: currentLocation, address: addressLookup, regionCode } });
+        let currentLocation = await Location.getLatestLocation({ timeout: 5000 });
+        if(currentLocation){
+            let { longitude, latitude } = currentLocation;
+            let response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GoogleMaps.key}`);
+            let addressLookup = await response.json();
+            let regionCode = addressLookup.results[0].address_components.filter(component => component.types.includes('administrative_area_level_1'))[0].short_name;
+            this.setState({ preCheckCompleted: true, userLocation: { location: currentLocation, address: addressLookup, regionCode } });
+        }
+        else{
+            console.log(currentLocation);
+            alert("Could not acquire location! App may not function correctly!");
+            this.setState({ preCheckCompleted: true, hasLocationPermission: true});
+        }
+        
         console.log("PRE CHECK", "REGION CHECK COMPLETED");
+
+        this.datingPeriodCheck();
+
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(this.dpPulseAnim, {
+                    toValue: 1,
+                    duration: 3000,
+                    useNativeDriver: true
+                }),
+                Animated.timing(this.dpPulseAnim, {
+                    toValue: 0,
+                    duration: 3000,
+                    useNativeDriver: true
+                })
+            ])
+        ).start();
 
         AppState.addEventListener("change", this._handleAppStateChange);
 
     }
 
     _handleAppStateChange = (nextAppState) => {
-        if(nextAppState === "inactive" || nextAppState === "background"){
-            if(this.state.enteredPool ){
+        if (nextAppState === "inactive" || nextAppState === "background") {
+            if (this.state.enteredPool) {
                 this.leavePool();
             }
         }
@@ -193,8 +219,8 @@ class Minute extends React.Component {
             }).start();
             this.runTime();
         }
-        if (prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall) {
-            this.leaveRoom();
+        if (prevState.partnerOnCall && !this.state.waitingForPartner && !this.state.partnerOnCall && !(prevState.joinedCall && !this.state.joinedCall)) {
+            this.onTimeFinish();
         }
         if (!prevState.enteredPool && this.state.enteredPool) {
 
@@ -221,6 +247,30 @@ class Minute extends React.Component {
                     ...this.props.filters
                 }
             });
+        }
+
+        if (!prevState.datingPeriodActive && this.state.datingPeriodActive) {
+            Animated.timing(this.datingPeriodAnimation, {
+                duration: 1000,
+                toValue: 1,
+                useNativeDriver: false,
+            }).start();
+        }
+        if (prevState.datingPeriodActive && !this.state.datingPeriodActive) {
+            Animated.timing(this.datingPeriodAnimation, {
+                duration: 1000,
+                toValue: 0,
+                useNativeDriver: false,
+            }).start();
+        }
+        if (!prevState.showDatingPeriodInfo && this.state.showDatingPeriodInfo && this.state.enteredPool) {
+            this.leavePool();
+        }
+        if (!prevState.joinedCall && this.state.joinedCall && this.state.showDatingPeriodInfo) {
+            this.setState({ showDatingPeriodInfo: false });
+        }
+        if (!prevState.joinedCall && this.state.joinedCall) {
+            this.props.navigation.navigate('Date');
         }
     }
 
@@ -258,12 +308,12 @@ class Minute extends React.Component {
                 this.confettiAnimation.setValue(0);
             }
             if (data.partnerExtended && data.extended) {
-                this.setState({ timeLeft: this.state.timeLeft + 30 });
+                this.setState({ timeLeft: this.state.timeLeft + 30, bothExtended: true });
                 this.playConfetti();
             }
             if (data.matched) {
                 this.leaveRoom();
-                this.props.navigation.navigate('Matches');
+                this.props.navigation.navigate('Matches', {screen: 0});
                 this.state.unsubscribePoolEntry();
                 this.playConfetti();
             }
@@ -274,9 +324,37 @@ class Minute extends React.Component {
 
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.setState({ unsubscribePoolEntry: () => unsubscribePoolEntry(), enteredPool: true });
+        this.showUnableToFindPairMessage();
+    }
+
+    showUnableToFindPairMessage = () => {
+        let timeout = setTimeout(() => {
+
+            if (!this.state.joinedCall) {
+                Animated.timing(this.messageAnimation, {
+                    duration: 500,
+                    toValue: 1,
+                    useNativeDriver: true
+                }).start();
+            }
+
+        }, 5000);
+
+        this.setState({ unableToFindPairTimeout: timeout });
+    }
+
+    hideUnableToFindPairMessage = () => {
+        clearTimeout(this.state.unableToFindPairTimeout);
+        Animated.timing(this.messageAnimation, {
+            duration: 100,
+            toValue: 0,
+            useNativeDriver: true
+        }).start();
     }
 
     leavePool = async () => {
+        this.setState({ showSecondChance: false });
+        clearTimeout(this.state.secondChanceTimeout);
         // Remove existing pool entries
         let existingPoolEntriesSnapshot = await firestore().collection('pairingPool').where('uid', '==', auth().currentUser.uid).where('active', '==', true).get();
         let batch = firestore().batch();
@@ -290,6 +368,7 @@ class Minute extends React.Component {
 
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.setState({ enteredPool: false, pairedUid: null });
+        this.hideUnableToFindPairMessage();
     }
 
     playConfetti = () => {
@@ -303,27 +382,15 @@ class Minute extends React.Component {
 
     joinRoom = async () => {
         RtcEngine.leaveChannel();
-        Alert.alert('Join Call', `Are you ready to join this call? Your partner's name is ${this.state.pairedProfile.fname} ${this.state.pairedProfile.lname}.`, [
-            {
-                text: 'Join',
-                onPress: () => {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                    RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
-                    this.setState({ partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, waitingForPartner: true });
-                    setTimeout(() => {
-                        RtcEngine.joinChannelWithUserAccount(this.state.roomId, auth().currentUser.uid, this.state.roomToken);  //Join Channel
-                        RtcEngine.enableAudio();
-                        RtcEngine.disableVideo();
-                    }, 1000)
-                }
-            },
-            {
-                text: 'Cancel',
-                onPress: () => {
-                    return;
-                }
-            }
-        ])
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        RtcEngine.registerLocalUserAccount(auth().currentUser.uid.toString());
+        this.setState({ showDatingPeriodInfo: false, partnerOnCall: false, partnerUid: '', joinedCall: false, timeLeft: 61, waitingForPartner: true });
+        setTimeout(() => {
+            RtcEngine.joinChannelWithUserAccount(this.state.roomId, auth().currentUser.uid, this.state.roomToken);  //Join Channel
+            RtcEngine.enableAudio();
+            RtcEngine.disableVideo();
+        }, 1000)
+        this.hideUnableToFindPairMessage();
     }
 
     runTime = () => {
@@ -335,11 +402,19 @@ class Minute extends React.Component {
             this.setState({ timer });
         }
         else {
-            this.leaveRoom();
+            this.onTimeFinish();
         }
     }
 
-    leaveRoom = async () => {
+    onTimeFinish = async () => {
+        this.leaveRoom(false);
+        let secondChanceTimeout = setTimeout(() => {
+            this.leavePool();
+        }, 5000);
+        this.setState({ showSecondChance: true, secondChanceTimeout });
+    }
+
+    leaveRoom = async (leavePool = true) => {
         this.setState({ showInstructionsPopup: false });
         if (this.state.timer) {
             clearTimeout(this.state.timer);
@@ -347,7 +422,9 @@ class Minute extends React.Component {
         RtcEngine.leaveChannel();
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.setState({ partnerOnCall: false, partnerUid: null, joinedCall: false, timer: null, waitingForPartner: false });
-        this.leavePool();
+        if (leavePool) {
+            this.leavePool();
+        }
     }
 
     swipeRight = async () => {
@@ -379,7 +456,7 @@ class Minute extends React.Component {
     }
 
     timerPressed = () => {
-        if(this.state.timerPressCount + 1 == 10){
+        if (this.state.timerPressCount + 1 == 10) {
             Animated.timing(this.influencerAnimation, {
                 duration: 500,
                 toValue: 1,
@@ -387,12 +464,12 @@ class Minute extends React.Component {
                 easing: Easing.bounce,
             }).start();
         }
-        this.setState({timerPressCount: this.state.timerPressCount + 1});
+        this.setState({ timerPressCount: this.state.timerPressCount + 1 });
     }
 
     onHMPress = () => {
-        if(this.state.timerPressCount == 10){
-            this.setState({influencerModeActive: true});
+        if (this.state.timerPressCount == 10) {
+            this.setState({ influencerModeActive: true });
             alert('Influencer Mode Activated!');
         }
     }
@@ -411,44 +488,31 @@ class Minute extends React.Component {
             },
             {
                 text: 'Cancel',
-                onPress: () => {}
+                onPress: () => { }
             }
         ]);
+    }
+
+    datingPeriodCheck = () => {
+        let inDatingPeriod = false;
+        let currentTime = new Date();
+        DatingPeriodHours.forEach(time => {
+            if (currentTime.getHours() >= time.getHours() && currentTime.getHours() < time.getHours() + 1) {
+                inDatingPeriod = inDatingPeriod || true;
+            }
+        })
+
+        this.setState({ datingPeriodActive: inDatingPeriod });
     }
 
     loadingAnimation = new Animated.Value(0);
     confettiAnimation = new Animated.Value(0);
     influencerAnimation = new Animated.Value(0);
+    messageAnimation = new Animated.Value(0);
+    datingPeriodAnimation = new Animated.Value(0);
+    dpPulseAnim = new Animated.Value(0);
 
     render() {
-
-        let currentTime = new Date();
-        if (currentTime < LAUNCH_DATE && ! this.state.influencerModeActive) {
-            return (
-                <View style={{ flex: 1, padding: 16.0, justifyContent: 'center', alignItems: 'center' }}>
-                    <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0, transform: [{ scale: 1.25 }] }} pointerEvents={'none'} autoPlay speed={0.5} loop={false} />
-                    <TouchableWithoutFeedback onPress={this.onHMPress}>
-                        <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 32.0 }}>hotminute</Text>
-                    </TouchableWithoutFeedback>
-                    <Text>welcome to hotminute!</Text>
-                    <View style={{ margin: 32.0, alignItems: 'center', justifyContent: 'center' }}>
-                        <View style={{ flexDirection: 'row', margin: 16.0 }}>
-                            <TouchableWithoutFeedback onPress={this.timerPressed}>
-                                <Animated.View style={{ backgroundColor: Colors.primary, width: 64, height: 64, alignItems: 'center', justifyContent: 'center', transform: [{scale: this.influencerAnimation.interpolate({inputRange: [0, 1], outputRange: [1, 0.5]})}] }}>
-                                    <Text style={{ fontSize: 48.0 }}>{dateDiffInDays(currentTime, LAUNCH_DATE)}</Text>
-                                </Animated.View>
-                            </TouchableWithoutFeedback>
-                        </View>
-                        <Text style={{ fontSize: 32.0 }}>DAYS</Text>
-                    </View>
-                    <Text style={{ textAlign: 'center' }}><Text style={{ color: Colors.primary }}>GRAND RELEASE</Text> on October 1st at 9:00PM CST to start matching! in the meantime, you can check out our instagram to stay updated!</Text>
-                    <View style={{ marginTop: 16.0 }}>
-                        <SocialIcon type={'instagram'} light onPress={() => { Linking.openURL('https://instagram.com/hotminuteapp') }} />
-                    </View>
-                </View>
-            )
-        }
-
 
         if (!this.state.preCheckCompleted) {
             return (
@@ -493,91 +557,154 @@ class Minute extends React.Component {
             )
         }
 
-
-        // TODO: Review Logic
         let notInPool = this.state.pairingEnabled || !this.state.enteredPool ? true : this.state.pairingEnabled || this.state.enteredPool ? false : false;
+        let datingPeriodColor = this.datingPeriodAnimation.interpolate({ inputRange: [0, 1], outputRange: [Colors.background, '#22222200'] });
+        let hotminuteColor = this.datingPeriodAnimation.interpolate({ inputRange: [0, 1], outputRange: [Colors.primary, Colors.text] });
 
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background }}>
-                <View style={{ flex: 1 }}>
-                    {
-                        this.state.joinedCall && !this.state.waitingForPartner ?
-                            // IF JOINED CALL
-                            <Animated.View style={{ transform: [{ scale: this.callStartAnimation }] }}>
-                                <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} onReport={this.onReport} />
-                                <View pointerEvents={'none'} style={{ position: 'absolute', height, width, top: 0, left: 0 }}>
-                                    <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0 }} progress={this.confettiAnimation} />
-                                </View>
-                            </Animated.View>
-                            :
-                            <>
-                                <View style={{ flex: 1 }}>
-                                    <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
-                                        <Text style={{ fontFamily: Fonts.heading, color: Colors.primary, fontSize: 24.0 }}>hotminute</Text>
+                <LinearGradient style={{ flex: 1 }} colors={[Colors.primary, Colors.background]}>
+                    <Animated.View style={{ flex: 1, backgroundColor: datingPeriodColor }}>
+                        {
+                            this.state.joinedCall && !this.state.waitingForPartner ?
+                                // IF JOINED CALL
+                                <Animated.View style={{ flex: 1, transform: [{ scale: this.callStartAnimation }] }}>
+                                    <Swiper pictureURL={this.state.pairedProfile.pictureURL} timeLeft={this.state.timeLeft} onSwipeLeft={this.swipeLeft} onSwipeRight={this.swipeRight} onExtend={this.extendCall} onReport={this.onReport} onEndCall={this.leaveRoom} extended={this.state.bothExtended} />
+                                    <View pointerEvents={'none'} style={{ position: 'absolute', height, width, top: 0, left: 0 }}>
+                                        <LottieView source={require('../../../assets/animations/confetti.json')} style={{ height, width, position: 'absolute', top: 0, left: 0 }} progress={this.confettiAnimation} />
                                     </View>
-                                </View>
-                                <View style={{ alignItems: 'center', justifyContent: 'center', flex: 5 }}>
-                                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                        <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Animated.View style={{ backgroundColor: '#fff2f622', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
+                                </Animated.View>
+                                :
+                                <>
+                                    <View style={{ flex: 1 }}>
+                                        <View style={{ paddingTop: 32.0, alignItems: 'center', justifyContent: 'center' }}>
+                                            <Animated.Text style={{ fontFamily: Fonts.heading, color: hotminuteColor, fontSize: 24.0 }}>hotminute</Animated.Text>
                                         </View>
-                                        {/* <Image source={require('../../../assets/img/logo.png')} style={{ height: 128.0, width: 128.0, borderRadius: 8.0 }} /> */}
-                                        <Heart style={{ width: 196, height: 196 }} />
                                     </View>
-                                    <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
-                                </View>
-                                <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
-                                    {
-                                        !this.state.enteredPool && !this.state.joinedCall && !this.state.waitingForPartner ?
-                                            <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
-                                                <Icon name={'sort'} size={32} color={Colors.textLightGray} />
-                                                <Text style={{color: Colors.textLightGray, fontSize: 10.0}}>FILTERS</Text>
-                                            </TouchableOpacity>
-                                            :
-                                            null
-                                    }
-                                    {
-                                        this.state.waitingForPartner ? null :
-
-                                            <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
-                                                <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
-                                                    <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={[Colors.primaryDark, Colors.primary]}>
-                                                        <Text style={{ fontFamily: Fonts.heading, color: notInPool ? Colors.background : Colors.text }}>{notInPool ? 'Find a Match' : 'Cancel'}</Text>
-                                                    </LinearGradient>
-                                                </TouchableOpacity>
+                                    <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+                                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                            <View style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Animated.View style={{ backgroundColor: '#fff2f622', borderRadius: 32.0, height: 64.0, width: 64.0, transform: [{ scale: this.loadingAnimation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) }] }} />
                                             </View>
-                                    }
+                                            <Heart style={{ width: 196, height: 196 }} />
+                                        </View>
+                                        <Text style={{ alignSelf: 'center', textAlign: 'center', color: Colors.textLightGray, marginVertical: 2.0 }}>{this.state.waitingForPartner ? 'Waiting For Partner' : ''}</Text>
+                                        {
+                                            !this.state.datingPeriodActive &&
+                                            <Animated.View style={{ opacity: this.messageAnimation }}>
+                                                <TouchableOpacity onPress={() => this.setState({ showDatingPeriodInfo: true })}>
+                                                    <Icon name={'info'} size={12} color={Colors.text} />
+                                                    <Text style={{ textAlign: 'center', marginHorizontal: 16.0 }}>Not getting paired with anyone? Try coming back when a <Text style={{ color: Colors.primary }}>dating period</Text> is active!</Text>
+                                                </TouchableOpacity>
+                                            </Animated.View>
+                                        }
+                                        <Animated.View style={{ opacity: this.datingPeriodAnimation }}>
+                                            <Animated.View style={{ transform: [{ scale: this.dpPulseAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.25] }) }], opacity: this.dpPulseAnim }}>
+                                                <TouchableOpacity onPress={() => this.setState({ showDatingPeriodInfo: true })}>
+                                                    <Icon name={'info'} size={12} color={Colors.text} />
+                                                    <Text style={{ textAlign: 'center', marginHorizontal: 16.0, marginVertical: 4.0, fontSize: 12.0 }}>dating period active</Text>
+                                                </TouchableOpacity>
+                                            </Animated.View>
+                                        </Animated.View>
+                                    </View>
+                                    <View style={{ flex: 1, justifyContent: 'flex-end', alignSelf: 'center', alignItems: 'center' }}>
+                                        {
+                                            !this.state.enteredPool && !this.state.joinedCall && !this.state.waitingForPartner ?
+                                                <TouchableOpacity onPress={() => this.setState({ filtersVisible: true })} disabled={this.state.pairingEnabled || this.state.enteredPool}>
+                                                    <Icon name={'sort'} size={32} color={Colors.textLightGray} />
+                                                    <Text style={{ color: Colors.textLightGray, fontSize: 10.0 }}>FILTERS</Text>
+                                                </TouchableOpacity>
+                                                :
+                                                null
+                                        }
+                                        {
+                                            this.state.waitingForPartner ? null :
+
+                                                <View style={{ marginVertical: 8.0, width, padding: 16.0 }}>
+                                                    <TouchableOpacity onPress={notInPool ? this.joinPool : this.leavePool}>
+                                                        <LinearGradient style={{ margin: 2.0, paddingVertical: 8.0, borderRadius: 28.0, height: 48, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={[Colors.primaryDark, Colors.primary]}>
+                                                            <Animated.Text style={{ fontFamily: Fonts.heading, color: notInPool ? this.state.datingPeriodActive ? hotminuteColor : Colors.background : Colors.text }}>{notInPool ? 'Find a Match' : 'Cancel'}</Animated.Text>
+                                                        </LinearGradient>
+                                                    </TouchableOpacity>
+                                                </View>
+                                        }
+                                    </View>
+                                </>
+                        }
+                    </Animated.View>
+                </LinearGradient>
+
+                {/* MODALS GO HERE */}
+                <View>
+                    {/* FILTERS MODAL */}
+                    <FiltersModal showModal={this.state.filtersVisible} onClose={() => this.setState({ filtersVisible: false })} />
+
+                    {/* INSTRUCTIONS MODAL */}
+                    <InstructionsModal showModal={this.state.showInstructionsPopup} onClose={() => this.setState({ showInstructionsPopup: false })} />
+
+                    {/* SECOND CHANCE MODAL */}
+                    <Modal visible={this.state.showSecondChance} transparent animationType={'slide'}>
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16.0 }}>
+                            <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#212121', padding: 16.0, borderRadius: 8.0, shadowColor: "#000", shadowOffset: { width: 0, height: 2, }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 2, }}>
+                                <LottieView style={{ height: 48.0, width: 48.0, margin: 8.0 }} source={require('../.././../assets/animations/SwipeClock.json')} autoPlay loop />
+                                <Text style={{ fontFamily: Fonts.heading, marginTop: 16.0 }}>Uh Oh! Looks like you ran out of time!</Text>
+                                <Text style={{ color: Colors.primary, marginBottom: 16.0 }}>here's a second chance</Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={this.swipeLeft} style={{ flex: 1, margin: 4.0 }}><View style={{ backgroundColor: '#f55', padding: 8.0, borderRadius: 4.0 }}><Text>NOPE</Text></View></TouchableOpacity>
+                                    <TouchableOpacity onPress={this.leavePool} style={{ flex: 1, margin: 4.0 }}><View style={{ backgroundColor: '#afafaf', padding: 8.0, borderRadius: 4.0 }}><Text style={{ color: Colors.background }}>CANCEL</Text></View></TouchableOpacity>
+                                    <TouchableOpacity onPress={this.swipeRight} style={{ flex: 1, margin: 4.0 }}><View style={{ backgroundColor: Colors.primary, padding: 8.0, borderRadius: 4.0 }}><Text style={{ color: Colors.background }}>MATCH</Text></View></TouchableOpacity>
                                 </View>
-                            </>
-                    }
+                                <Text style={{ fontSize: 10.0, marginTop: 4.0 }}>you have 5 seconds.</Text>
+                            </View>
+                        </View>
+                    </Modal>
+
+                    {/* DATING PERIOD INFO MODAL */}
+                    <Modal visible={this.state.showDatingPeriodInfo} transparent animationType={'slide'}>
+                        <View style={{ flex: 1, padding: 16.0, backgroundColor: Colors.background, paddingTop: 32.0 }}>
+                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <Text style={{ fontFamily: Fonts.heading, fontSize: 32.0, }}>dating periods</Text>
+                                <Text>get more matches!</Text>
+
+                                <View style={{ flexDirection: 'row', marginVertical: 32.0 }}>
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Image source={require('../../../assets/img/DPActive.png')} style={{ width: 128, height: 128 / 1080 * 1500, margin: 4.0, borderRadius: 8.0 }} resizeMode={'contain'} />
+                                        <Text>active</Text>
+                                    </View>
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Image source={require('../../../assets/img/DPInactive.png')} style={{ width: 128, height: 128 / 1080 * 1500, margin: 4.0, borderRadius: 8.0 }} resizeMode={'contain'} />
+                                        <Text>inactive</Text>
+                                    </View>
+                                </View>
+
+                                <Text style={{ textAlign: 'center' }}>tired of seeing that heart pulse? introducing dating periods! special events where everyone can find more matches!</Text>
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8.0 }}>
+                                    <Image source={{ uri: 'https://media.giphy.com/media/WnNIM6yuM2QHJ7pGaK/giphy.gif' }} style={{ height: 48, width: 48 }} />
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>{new Date(DatingPeriodHours[0]).getHours() - (Math.floor(new Date(DatingPeriodHours[0]).getHours() / 12) * 12)} PM</Text>
+                                    <Text> Golden Hour</Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8.0 }}>
+                                    <Image source={{ uri: 'https://media.giphy.com/media/ifS5VwP9UWUsN9Elu6/giphy.gif' }} style={{ height: 48, width: 48 }} />
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>{new Date(DatingPeriodHours[1]).getHours() - (Math.floor(new Date(DatingPeriodHours[0]).getHours() / 12) * 12)} PM</Text>
+                                    <Text> Two To Tango</Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8.0 }}>
+                                    <Image source={{ uri: 'https://media.giphy.com/media/SVUWMrKDk8JDEYtwrT/giphy.gif' }} style={{ height: 48, width: 48 }} />
+                                    <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, color: Colors.primary }}>{new Date(DatingPeriodHours[2]).getHours() - (Math.floor(new Date(DatingPeriodHours[0]).getHours() / 12) * 12)} PM</Text>
+                                    <Text> Midnight Shenanigans</Text>
+                                </View>
+                            </View>
+
+                            <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 16.0 }}>
+                                <Button containerStyle={{ alignSelf: 'stretch' }} title={'Continue'} onPress={() => this.setState({ showDatingPeriodInfo: false })} />
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
 
-                {/* FILTERS MODAL */}
-                <FiltersModal showModal={this.state.filtersVisible} onClose={() => this.setState({ filtersVisible: false })} />
-
-                {/* INSTRUCTIONS MODAL */}
-                <InstructionsModal showModal={this.state.showInstructionsPopup} onClose={() => this.setState({ showInstructionsPopup: false })} />
-
-                {/* MARKETING PROMO MODAL */}
-                <Modal visible={this.state.showMarketingPopup} transparent animated animationType={'fade'}>
-                    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, }}>
-                        <View style={{ backgroundColor: Colors.background, justifyContent: 'flex-start', alignItems: 'center', borderRadius: 16.0, elevation: 4.0, marginHorizontal: 16.0 }}>
-                            <TouchableOpacity onPress={() => this.setState({ showMarketingPopup: false })} style={{ position: 'absolute', top: 8.0, left: 8.0, margin: 4.0, backgroundColor: Colors.primary, borderRadius: 16, elevation: 1.0, zIndex: 2 }}>
-                                <Icon name={'close'} size={32} color={Colors.background} />
-                            </TouchableOpacity>
-                            <Image source={{ uri: 'https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/v346-filmful-16-confettibackground_2.jpg?bg=transparent&con=3&cs=srgb&dpr=1&fm=jpg&ixlib=php-3.1.0&q=80&usm=15&vib=3&w=1300&s=48e970065b37ebf5466b48691a2a847d' }}
-                                style={{ height: 128.0, width: 312.0 }} resizeMode={'cover'} resizeMethod={'scale'}
-                            />
-                            <Text style={{ fontFamily: Fonts.heading, fontSize: 24.0, marginVertical: 4.0, marginHorizontal: 16.0 }}>Pickup Line Contest</Text>
-                            <Text style={{ margin: 16.0 }}>Enter your best pickup lines and get a chance to win <Text style={{ color: Colors.primary }}>hotminute premium</Text>!</Text>
-                            <TouchableOpacity style={{ alignSelf: 'stretch', margin: 16.0 }}>
-                                <LinearGradient style={{ margin: 2.0, paddingVertical: 16.0, borderRadius: 28.0, height: 56, justifyContent: 'center', alignItems: 'center', width: '100%' }} colors={notInPool ? [Colors.primaryDark, Colors.primary] : ['#f55', '#f77']}>
-                                    <Text style={{ fontFamily: Fonts.heading, color: Colors.background }}>Enter Now</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </Modal>
             </View>
         )
     }

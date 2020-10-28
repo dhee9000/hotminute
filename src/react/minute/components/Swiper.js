@@ -10,6 +10,7 @@ import * as ActionTypes from '../../../redux/ActionTypes';
 import { PanGestureHandler, State, TouchableOpacity } from 'react-native-gesture-handler';
 
 import LottieView from 'lottie-react-native';
+import { Icon } from 'react-native-elements';
 
 const BLANK_IMAGE_URI = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 
@@ -17,13 +18,17 @@ const { height, width } = Dimensions.get('screen');
 
 const GESTURE_THRESHOLD = 200;
 
+const AnimatedIcon = Animated.createAnimatedComponent(Icon);
+
 class Swiper extends React.Component {
 
     gestureX = new Animated.Value(0);
     gestureY = new Animated.Value(0);
 
     swipeProgress = new Animated.Value(0.5);
-    extendProgress = new Animated.Value(0.16);
+    extendProgress = new Animated.Value(0);
+
+    hintProgress = new Animated.Value(0);
 
     state = {
         rightThreshold: false,
@@ -33,6 +38,8 @@ class Swiper extends React.Component {
         swipedRight: false,
         swipedLeft: false,
         swipedDown: false,
+
+        text: 0,
     }
 
     onSwipeRight = () => {
@@ -54,8 +61,14 @@ class Swiper extends React.Component {
     }
 
     onReport = () => {
-        if(this.props.onReport) {
+        if (this.props.onReport) {
             this.props.onReport();
+        }
+    }
+
+    onEndCall = () => {
+        if (this.props.onEndCall) {
+            this.props.onEndCall();
         }
     }
 
@@ -85,6 +98,16 @@ class Swiper extends React.Component {
                 this.setState({ downThreshold: false });
             }
         });
+
+        Animated.loop(
+            Animated.timing(this.hintProgress,
+                {
+                    toValue: 6,
+                    duration: 15000,
+                    useNativeDriver: true,
+                }
+            )
+        ).start();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -110,7 +133,7 @@ class Swiper extends React.Component {
             Animated.timing(this.swipeProgress, {
                 toValue: 1,
                 duration: 1000,
-                useNativeDriver: false
+                useNativeDriver: true
             }).start();
         }
         if (!prevState.swipedLeft && this.state.swipedLeft) {
@@ -118,14 +141,14 @@ class Swiper extends React.Component {
             Animated.timing(this.swipeProgress, {
                 toValue: 1,
                 duration: 1000,
-                useNativeDriver: false
+                useNativeDriver: true
             }).start();
         }
         if (!prevState.swipedDown && this.state.swipedDown) {
             Animated.timing(this.extendProgress, {
-                toValue: 0.5,
+                toValue: 1,
                 duration: 1000,
-                useNativeDriver: false,
+                useNativeDriver: true,
             }).start();
         }
     }
@@ -159,6 +182,10 @@ class Swiper extends React.Component {
         }
     }
 
+    updateText = () => {
+        this.setState({ text: this.state.text < 2 ? this.state.text + 1 : 0 });
+    }
+
     render() {
 
         let imageRotateY = this.gestureX.interpolate({ inputRange: [-200, 200], outputRange: ['-45deg', '45deg'], extrapolate: 'clamp' });
@@ -168,30 +195,68 @@ class Swiper extends React.Component {
         let swipeDownProgress = this.gestureY.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [0, 0.16], extrapolate: 'clamp' });
 
         return (
-            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Animated.View style={{ transform: [{ rotateY: imageRotateY }, { rotateX: imageRotateX }] }}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Animated.View style={{ position: 'absolute', top: 0, left: 0, transform: [{ rotateY: imageRotateY }, { rotateX: imageRotateX }], zIndex: 0 }}>
                     <Animated.Image blurRadius={24.0} source={{ uri: this.props.pictureURL ? this.props.pictureURL : BLANK_IMAGE_URI }} style={{ height, width, borderRadius: 8.0 }} />
                 </Animated.View>
                 <PanGestureHandler onHandlerStateChange={this.handleGestureStateChanged} onGestureEvent={Animated.event([{ nativeEvent: { translationX: this.gestureX, translationY: this.gestureY } }], { useNativeDriver: false })} minPointers={1} maxPointers={1}>
-                    <Animated.View style={{ position: 'absolute', top: 0, left: 0, height, width, alignItems: 'center', justifyContent: 'center', backgroundColor: '#33333377' }}>
-                        <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
+                    <Animated.View style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', backgroundColor: '#33333377', zIndex: 1000 }}>
+                        <View style={{ flex: 4, justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <TouchableOpacity onPress={this.onReport} style={{ margin: 16.0 }}>
+                                <Text style={{ fontSize: 14.0 }}>REPORT</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.onEndCall} style={{ margin: 16.0, backgroundColor: '#ffffffaa', padding: 8.0, borderRadius: 4.0 }}>
+                                <Text style={{ fontSize: 14.0, color: '#f55' }}>END CALL</Text>
+                            </TouchableOpacity>
                             <Countdown time={this.props.timeLeft} />
                         </View>
-                        <TouchableOpacity onPress={this.onReport}>
-                            <Text style={{fontSize: 12.0}}>REPORT</Text>
-                        </TouchableOpacity>
-                        <View style={{ flex: 1, margin: 16, alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', padding: 16.0 }}>
+                            <View style={{ alignItems: 'center' }}>
+                                <Animated.View style={{ transform: [{ rotateZ: '90deg' }] }}>
+                                    <LottieView source={require('../../../../assets/animations/arrows.json')} style={{ height: 36, width: 36, }} progress={this.hintProgress.interpolate({ inputRange: [0, 1.9, 2, 3.9, 4, 5.9, 6], outputRange: [0, 1, 0, 0, 0, 0, 0] })} />
+                                </Animated.View>
+                                <Animated.Text style={{ fontFamily: Fonts.heading, fontSize: 12.0, color: Colors.text, opacity: this.hintProgress.interpolate({ inputRange: [0, 1.9, 2, 3.9, 4, 5.9, 6], outputRange: [0, 1, 0, 0, 0, 0, 0] }) }}>CANCEL</Animated.Text>
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                {/* <Animated.View style={{ transform: [{ rotateZ: this.hintProgress.interpolate({ inputRange: [0, 1, 1.9, 2, 3, 3.9, 4, 5, 5.9, 6], outputRange: ['0deg', '0deg', '0deg', '90deg', '90deg', '90deg', '270deg', '270deg', '270deg', '360deg'] }) }] }}> */}
+                                <LottieView source={require('../../../../assets/animations/arrows.json')} style={{ height: 36, width: 36, }} progress={this.hintProgress.interpolate({ inputRange: [0, 1.9, 2, 3.9, 4, 5.9, 6], outputRange: [0, 0, 0, 1, 0, 0, 0] })} />
+                                {/* </Animated.View> */}
+                                <Animated.Text style={{ fontFamily: Fonts.heading, fontSize: 12.0, color: Colors.text, opacity: this.hintProgress.interpolate({ inputRange: [0, 1.9, 2, 3.9, 4, 5.9, 6], outputRange: [0, 0, 0, 1, 0, 0, 0] }) }}>EXTEND</Animated.Text>
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                <Animated.View style={{ transform: [{ rotateZ: '270deg' }] }}>
+                                    <LottieView source={require('../../../../assets/animations/arrows.json')} style={{ height: 36, width: 36, }} progress={this.hintProgress.interpolate({ inputRange: [0, 1.9, 2, 3.9, 4, 5.9, 6], outputRange: [0, 0, 0, 0, 0, 1, 0] })} />
+                                </Animated.View>
+                                <Animated.Text style={{ fontFamily: Fonts.heading, fontSize: 12.0, color: Colors.text, opacity: this.hintProgress.interpolate({ inputRange: [0, 1.9, 2, 3.9, 4, 5.9, 6], outputRange: [0, 0, 0, 0, 0, 1, 0] }) }}>MATCH</Animated.Text>
+                            </View>
+                        </View>
+                        <View style={{ flex: 1, padding: 16, alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                <LottieView source={require('../../../../assets/animations/SwipeLeft.json')} style={{ height: 36, width: 36, }} progress={this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress} />
-                                {/* <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [-GESTURE_THRESHOLD, 0], outputRange: ['#f55', Colors.textLightGray], extrapolate: 'clamp' }) }}>NO</Animated.Text> */}
+                                {/* <LottieView source={require('../../../../assets/animations/SwipeLeft.json')} style={{ height: 36, width: 36, }} progress={this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress} /> */}
+                                {/* <View>
+                                    <Animated.Image source={require('../../../../assets/img/logo.png')} style={{ height: 32.0, width: 32.0, borderRadius: 8.0, tintColor: this.gestureX.interpolate({ inputRange: [-GESTURE_THRESHOLD, 0], outputRange: ['#f55', Colors.textLightGray], extrapolate: 'clamp' }) }} />
+                                    <Animated.Image source={require('../../../../assets/img/logo.png')} style={{ position: 'absolute', top: 0, left: 0, height: 32.0, width: 32.0, borderRadius: 8.0, opacity: this.state.swipedLeft ? this.swipeProgress : swipeLeftProgress }} />
+                                </View> */}
+                                <AnimatedIcon name={'close'} size={32} color={this.gestureX.interpolate({ inputRange: [-GESTURE_THRESHOLD, 0], outputRange: ['#f55', Colors.textLightGray], extrapolate: 'clamp' })} />
+                                <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [-GESTURE_THRESHOLD, 0], outputRange: ['#f55', Colors.textLightGray], extrapolate: 'clamp' }) }}>NOPE</Animated.Text>
                             </View>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                <LottieView source={require('../../../../assets/animations/SwipeClock.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedDown ? this.extendProgress : swipeDownProgress} />
-                                {/* <Animated.Text style={{ fontSize: 12.0, color: this.gestureY.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, '#55f'], extrapolate: 'clamp' }) }}>EXTEND</Animated.Text> */}
+                                {/* <LottieView source={require('../../../../assets/animations/SwipeClock.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedDown ? this.extendProgress : swipeDownProgress} /> */}
+                                <View>
+                                    {/* <Animated.Image source={require('../../../../assets/img/logo.png')} style={{ height: 32.0, width: 32.0, borderRadius: 8.0, tintColor: this.gestureY.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, '#55f'], extrapolate: 'clamp' }) }} />
+                                    <Animated.Image source={require('../../../../assets/img/logo.png')} style={{ position: 'absolute', top: 0, left: 0, height: 32.0, width: 32.0, borderRadius: 8.0, opacity: this.state.swipedDown ? this.extendProgress : swipeDownProgress }} /> */}
+                                    <AnimatedIcon name={'add-circle'} size={32} color={this.gestureY.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.text, '#55f'], extrapolate: 'clamp' })} />
+                                </View>
+                                <Animated.Text style={{ fontSize: 24.0, color: this.gestureY.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, '#55f'], extrapolate: 'clamp' }) }}>30s</Animated.Text>
+                                {this.state.swipedDown && !this.props.extended ? <Text style={{fontSize: 12.0}}>waiting for partner to extend</Text> : this.props.extended ? <Text style={{fontSize: 12.0}}>0 extends remaining</Text> : <Text style={{fontSize: 12.0}}>1 extends remaining</Text>}
                             </View>
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                 <LottieView source={require('../../../../assets/animations/SwipeRight.json')} style={{ height: 48, width: 48 }} progress={this.state.swipedRight ? this.swipeProgress : swipeRightProgress} />
-                                {/* <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, '#5f5'], extrapolate: 'clamp' }) }}>YES</Animated.Text> */}
+                                {/* <View>
+                                    <Animated.Image source={require('../../../../assets/img/logo.png')} style={{ height: 32.0, width: 32.0, borderRadius: 8.0, tintColor: this.gestureX.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, '#5f5'], extrapolate: 'clamp' }) }} />
+                                    <Animated.Image source={require('../../../../assets/img/logo.png')} style={{ position: 'absolute', top: 0, left: 0, height: 32.0, width: 32.0, borderRadius: 8.0, opacity: this.state.swipedRight ? this.swipeProgress : swipeRightProgress }} />
+                                </View> */}
+                                <Animated.Text style={{ fontSize: 12.0, color: this.gestureX.interpolate({ inputRange: [0, GESTURE_THRESHOLD], outputRange: [Colors.textLightGray, Colors.primary], extrapolate: 'clamp' }) }}>MATCH</Animated.Text>
                             </View>
                         </View>
                     </Animated.View>
@@ -242,10 +307,10 @@ class Countdown extends React.Component {
     render() {
 
         return (
-            <View>
+            <View style={{ width: 196, height: 196, alignItems: 'center', justifyContent: 'center' }}>
                 <Animated.View style={
                     {
-                        position: 'absolute',
+                        // position: 'absolute',
                         alignSelf: 'center',
                         opacity: this.countAnim,
                         transform: [{ translateY: this.countAnim.interpolate({ inputRange: [0, 1], outputRange: [-50, 0] }) }]

@@ -36,12 +36,15 @@ class ChatsView extends React.Component {
 
     renderChat = ({ item }) => {
 
-        let uid = this.props.chatsById[item].uids.filter(uid => uid != auth().currentUser.uid)[0];
+        // let uid = this.props.chatsById[item].uids.filter(uid => uid != auth().currentUser.uid)[0];
+        let uid = item.uids.filter(uid => uid != auth().currentUser.uid)[0]
 
         if (this.props.profileIds.includes(uid) && this.props.profilesById[uid].loaded) {
 
             let profile = this.props.profilesById[uid];
-            let chat = this.props.chatsById[item];
+            // let chat = this.props.chatsById[item];
+            let chat = item;
+            let read = !chat.lastMessageAt ? true : !chat.lastOpened ? true : !chat.lastOpened[auth().currentUser.uid] ? true : chat.lastOpened[auth().currentUser.uid].toMillis() >= chat.lastMessageAt.toMillis();
 
             return (
                 <TouchableOpacity onPress={() => this.chatClicked(chat.id, uid)}>
@@ -49,11 +52,16 @@ class ChatsView extends React.Component {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image source={{ uri: profile.images["1"] ? profile.images["1"].url : BLANK_IMAGE_URI }} style={{ borderRadius: 16, height: 64, width: 64, }} />
                             <View style={{ justifyContent: 'center', alignItems: 'flex-start', padding: 8.0 }}>
-                                <Text numberOfLines={2} style={{ fontSize: 20.0, textAlign: 'center' }}>{profile.fname} {profile.lname}</Text>
-                                <Text style={{ fontSize: 14.0 }}>{chat.lastMessageBy == auth().currentUser.uid ? 'You' : profile.fname}: {chat.lastMessage}</Text>
+                                <Text numberOfLines={2} style={{ fontSize: 20.0, textAlign: 'center', fontFamily: read ? Fonts.primary : Fonts.heading }}>{profile.fname} {profile.lname}</Text>
+                                <Text numberOfLines={1} style={{ fontSize: 14.0, fontFamily: read ? Fonts.primary : Fonts.heading, maxWidth: width/2 }}>{chat.lastMessageBy == auth().currentUser.uid ? 'You' : profile.fname}: {chat.lastMessage}</Text>
                             </View>
                         </View>
-                        {/* <Text style={{ fontSize: 16.0, color: Colors.textLightGray, }}>1d</Text> */}
+                        <View style={{}}>
+                            {
+                                !read &&
+                                <View style={{ height: 16.0, width: 16.0, borderRadius: 8.0, backgroundColor: Colors.primary }} />
+                            }
+                        </View>
                     </View>
                 </TouchableOpacity>
             )
@@ -66,12 +74,23 @@ class ChatsView extends React.Component {
     }
 
     render() {
+
+        let chats = this.props.chatsIds.map(id => ({...this.props.chatsById[id], id}));
+        chats = chats.sort((a, b) => {
+            if(a.lastMessageAt && b.lastMessageAt){
+                return a.lastMessageAt.toDate() < b.lastMessageAt.toDate() ? 1 : a.lastMessageAt.toDate() >  b.lastMessageAt.toDate() ? -1 : 0;
+            }
+            else{
+                return 0;
+            }
+        })
+
         return (
             <View style={{ paddingTop: 16.0 }}>
                 <FlatList
+                    data={chats}
                     ListEmptyComponent={<Text style={{ color: Colors.textLightGray, alignSelf: 'center', textAlign: 'center', marginHorizontal: 16.0 }}>No chats found. Start matching to find people to chat with!</Text>}
-                    data={this.props.chatsIds}
-                    keyExtractor={item => item}
+                    keyExtractor={item => item.id}
                     renderItem={this.renderChat}
                 />
             </View>

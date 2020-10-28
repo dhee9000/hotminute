@@ -20,7 +20,6 @@ const IMG_DIM = 128;
 const TEST_INTERESTS = ["Dance", "Movies", "Bollywood", "TikTok", "Science", "Programming", "Comedy"];
 
 import { Input, Button, Icon } from 'react-native-elements';
-import { async } from 'q';
 
 const generateCombinedDocId = (uid1, uid2) => {
     let strings = [uid1, uid2];

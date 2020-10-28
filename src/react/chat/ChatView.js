@@ -32,15 +32,31 @@ class ChatView extends React.Component {
             return;
         }
         this.setState({ chatId, userId });
+        this.updateLastSeen();
+    }
+    
+    componentWillUnmount(){
+        this.updateLastSeen();
+    }
+
+    updateLastSeen = async () => {
+        let chatId = this.state.chatId
+        let updateDoc = {};
+        updateDoc[`lastOpened.${auth().currentUser.uid}`] = firestore.Timestamp.now();
+        updateDoc = {
+            lastOpened: {
+
+            }
+        }
+        updateDoc.lastOpened[auth().currentUser.uid] = firestore.Timestamp.now();
+        firestore().collection('chats').doc(chatId).set(updateDoc, {merge: true});
     }
 
     onSend = messages => {
         messages.map(async msg => {
 
-            let date = new Date();
-
             let messageObj = {
-                sentAt: date,
+                sentAt: firestore.Timestamp.now(),
                 sentBy: auth().currentUser.uid,
                 text: msg.text,
             }
@@ -48,6 +64,7 @@ class ChatView extends React.Component {
             messageObj.id = messageRef.id;
             this.props.messageSent(this.state.chatId, messageObj);
         });
+        this.updateLastSeen();
     }
 
     onContentSizeChange = (e) => {

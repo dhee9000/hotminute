@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Alert, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Alert, Dimensions, TouchableOpacity } from 'react-native';
 
 import { Colors, Fonts } from './src/config';
 
@@ -30,6 +30,8 @@ const theme = {
   }
 }
 
+import messaging from '@react-native-firebase/messaging';
+
 function App() {
 
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -49,28 +51,22 @@ function App() {
     loadFonts().then(() => setFontsLoaded(true));
   }, []);
 
+  const [showNotif, setShowNotif] = useState(false);
+  const [notifText, setNotifText] = useState('');
+
   useEffect(() => {
-    // try {
-    //   RemoteConfig().setDefaults(
-    //     {
-    //       supported_region_codes: ['TX']
-    //     }
-    //   )
-    //     .then(RemoteConfig().fetchAndActivate)
-    //     .then(
-    //       activated => {
-    //         if (activated) {
-    //           console.log("Activated Remote Config");
-    //         }
-    //         else {
-    //           console.log("Could not activate Remote Config");
-    //         }
-    //       }
-    //     )
-    // }
-    // catch (e) {
-    //   console.log(e);
-    // }
+
+    let unsubscribe = messaging().onMessage(async message => {
+      let notifTitle = message.notification.title;
+      setShowNotif(true);
+      setNotifText(notifTitle);
+      setTimeout(() => {
+        setShowNotif(false);
+      }, 3000)
+    });
+
+    return unsubscribe;
+
   }, [])
 
   if (fontsLoaded) {
@@ -78,6 +74,7 @@ function App() {
       <View style={{ flex: 1 }}>
         <StatusBar barStyle={'light-content'} backgroundColor={'transparent'} translucent />
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+          {showNotif && <NotifViewer notifText={notifText} />}
           <ReduxProvider store={appState} style={{ flex: 1 }}>
             <ThemeProvider theme={theme} style={{ flex: 1 }}>
               <AppContainer style={{ flex: 1 }} />
@@ -92,6 +89,18 @@ function App() {
       <View />
     )
   }
+}
+
+const NotifViewer = props => {
+  return (
+    <TouchableOpacity>
+      <View style={{ position: 'absolute', top: 16, left: 0, width, padding: 16.0, elevation: 16.0, zIndex: 100 }}>
+        <View style={{ flex: 1, backgroundColor: Colors.primary, padding: 16.0, borderRadius: 8.0, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 16.0, color: Colors.text }}>{props.notifText}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 }
 
 const AlphaWarning = props => (

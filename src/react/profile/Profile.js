@@ -29,6 +29,7 @@ import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 
 import ImageResizer from 'react-native-image-resizer';
+import CodePush from 'react-native-code-push';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -203,7 +204,7 @@ class Profile extends React.Component {
         // let { status } = await ImagePicker.requestCameraRollPermissionsAsync();
         if (status === 'granted') {
             try {
-                let image = await ImagePicker.launchImageLibraryAsync({ allowsEditing: false, aspect: [1, 1] });
+                let image = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, aspect: [1, 1] });
                 if (!image.cancelled) {
 
                     let resizedImage = await ImageResizer.createResizedImage(image.uri, 1920, 1920, 'JPEG', 80, 0, null, true);
@@ -451,8 +452,8 @@ class Profile extends React.Component {
                                 <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/privacy.html')}>
                                     <Text style={{ color: Colors.primary }}>Privacy Policy</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => Linking.openURL('https://hotminute.app/')} style={{ alignItems: 'center' }}>
-                                    <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>v0.1.0</Text>
+                                <TouchableOpacity onPress={() => CodePush.sync({deploymentKey: Platform.select({ios: 'Bs3pmcZVjEXewWDuzg0Z3mnVwMlmuw3174wcm', android: 'UNl_F5pN3mqJWqRaQaGQ5XZ-VWlN6xtkuPPlq'})})} style={{ alignItems: 'center' }}>
+                                    <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>v1.0.0 (Pre-Release Branch)</Text>
                                     <Text style={{ color: Colors.textLightGray, fontSize: 10.0, marginVertical: 4.0 }}>© HotMinute LLC 2020</Text>
                                 </TouchableOpacity>
                             </View>
